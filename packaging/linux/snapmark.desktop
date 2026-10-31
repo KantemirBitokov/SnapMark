@@ -1,0 +1,29 @@
+[Desktop Entry]
+Type=Application
+Name=SnapMark
+GenericName=Screenshot tool
+GenericName[ru]=Скриншоты
+Comment=Screenshots with markers and comments, screen recording
+Comment[ru]=Скриншоты с метками и комментариями, запись экрана
+Exec=snapmark %U
+Icon=snapmark
+Terminal=false
+Categories=Utility;Graphics;
+Keywords=screenshot;capture;annotate;record;
+StartupNotify=false
+Actions=Region;Full;Record;
+
+[Desktop Action Region]
+Name=Region screenshot
+Name[ru]=Скриншот области
+Exec=snapmark --region
+
+[Desktop Action Full]
+Name=Full screen
+Name[ru]=Весь экран
+Exec=snapmark --full
+
+[Desktop Action Record]
+Name=Record video
+Name[ru]=Записать видео
+Exec=snapmark --record

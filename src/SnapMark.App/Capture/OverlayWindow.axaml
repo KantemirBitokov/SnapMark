@@ -1,0 +1,390 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:SnapMark.Localization"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cap="using:SnapMark.Capture"
+        x:Class="SnapMark.Capture.OverlayWindow"
+        Title="SnapMark"
+        SystemDecorations="None"
+        Topmost="True"
+        ShowInTaskbar="False"
+        CanResize="False"
+        WindowStartupLocation="Manual"
+        Background="Black">
+
+  <Grid>
+    <cap:CaptureSurface x:Name="Surface"/>
+
+    <Canvas x:Name="Layer">
+
+      <!-- Подсказка до выделения -->
+      <Border x:Name="Hint" Classes="hud" IsHitTestVisible="False">
+        <TextBlock x:Name="HintText"/>
+      </Border>
+
+      <!-- ═══════════ Панель Markup: инструменты ═══════════ -->
+      <Border x:Name="ToolsBar" Classes="pill" IsVisible="False" Padding="6">
+        <StackPanel Orientation="Horizontal" Spacing="2">
+
+          <StackPanel x:Name="ToolButtons" Orientation="Horizontal" Spacing="2">
+            <Button Classes="tool" Tag="Select" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Выбор, перемещение и удаление объектов (V)'}">
+              <Path Data="{StaticResource Icon.Select}"/>
+            </Button>
+
+            <Border Classes="vsep"/>
+
+            <Button Classes="tool" Tag="Pen" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Перо (P): толщина зависит от скорости и нажима. Задержи в конце — станет ровной фигурой'}">
+              <Path Data="{StaticResource Icon.InkPen}"/>
+            </Button>
+            <Button Classes="tool" Tag="Pencil" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Карандаш (C)'}">
+              <Path Data="{StaticResource Icon.Pencil}"/>
+            </Button>
+            <Button Classes="tool" Tag="Highlighter" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Маркер-выделитель (H)'}">
+              <Path Data="{StaticResource Icon.Marker}"/>
+            </Button>
+            <Button Classes="tool" Tag="Eraser" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Ластик (E): проведи по объекту, чтобы удалить'}">
+              <Path Data="{StaticResource Icon.Eraser}"/>
+            </Button>
+
+            <Border Classes="vsep"/>
+
+            <!-- Кнопка фигуры показывает последнюю выбранную; стрелка рядом открывает выбор -->
+            <Button x:Name="ShapeButton" Classes="tool" Tag="Arrow" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Фигура (S)'}">
+              <Path x:Name="ShapeIcon" Data="{StaticResource Icon.Arrow}"/>
+            </Button>
+          </StackPanel>
+
+          <Button x:Name="ShapesMenuButton" Classes="tool small" Width="18" Click="OnShapesMenuClick" ToolTip.Tip="{l:Tr 'Выбрать фигуру'}" VerticalAlignment="Center">
+            <Path Data="{StaticResource Icon.Chevron}"/>
+          </Button>
+
+          <StackPanel x:Name="ToolButtons2" Orientation="Horizontal" Spacing="2">
+            <Button Classes="tool" Tag="Text" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Текст (T)'}">
+              <Path Data="{StaticResource Icon.Text}"/>
+            </Button>
+            <Button Classes="tool" Tag="Marker" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка A, B, C… с комментарием (M)'}">
+              <Grid Width="20" Height="20">
+                <Path Data="{StaticResource Icon.MarkerCircle}"/>
+                <TextBlock Text="A" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              </Grid>
+            </Button>
+            <Button Classes="tool" Tag="MarkerArrow" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка со стрелкой (N): нажми и тяни к цели'}">
+              <Grid Width="20" Height="20">
+                <Path Data="{StaticResource Icon.MarkerArrow}"/>
+                <TextBlock Text="A" FontSize="6.5" FontWeight="Bold" Margin="4.6,3.2,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Top"/>
+              </Grid>
+            </Button>
+          </StackPanel>
+
+          <Border Classes="vsep"/>
+
+          <!-- Цвет и толщина -->
+          <Button x:Name="StyleButton" Classes="tool" Click="OnStyleClick" ToolTip.Tip="{l:Tr 'Цвет, прозрачность, толщина, шрифт'}">
+            <Grid Width="22" Height="22">
+              <Ellipse Width="22" Height="22" Stroke="#33000000" StrokeThickness="1">
+                <Ellipse.Fill>
+                  <ConicGradientBrush>
+                    <ConicGradientBrush.GradientStops>
+                    <GradientStop Color="#FF3B30" Offset="0"/>
+                    <GradientStop Color="#FFCC00" Offset="0.2"/>
+                    <GradientStop Color="#34C759" Offset="0.4"/>
+                    <GradientStop Color="#0A84FF" Offset="0.6"/>
+                    <GradientStop Color="#AF52DE" Offset="0.8"/>
+                    <GradientStop Color="#FF3B30" Offset="1"/>
+                    </ConicGradientBrush.GradientStops>
+                  </ConicGradientBrush>
+                </Ellipse.Fill>
+              </Ellipse>
+              <Ellipse x:Name="ColorDot" Width="14" Height="14" Stroke="White" StrokeThickness="1.5"/>
+            </Grid>
+          </Button>
+
+          <StackPanel x:Name="WidthButtons" Orientation="Horizontal" Spacing="0">
+            <Button Classes="tool small" Tag="2" Click="OnWidthClick" ToolTip.Tip="{l:Tr 'Тонкая линия'}" VerticalAlignment="Center">
+              <Ellipse Classes="dot" Width="4" Height="4"/>
+            </Button>
+            <Button Classes="tool small" Tag="4" Click="OnWidthClick" ToolTip.Tip="{l:Tr 'Средняя линия'}" VerticalAlignment="Center">
+              <Ellipse Classes="dot" Width="7" Height="7"/>
+            </Button>
+            <Button Classes="tool small" Tag="8" Click="OnWidthClick" ToolTip.Tip="{l:Tr 'Толстая линия'}" VerticalAlignment="Center">
+              <Ellipse Classes="dot" Width="11" Height="11"/>
+            </Button>
+          </StackPanel>
+
+          <Border Classes="vsep"/>
+
+          <Button x:Name="UndoButton" Classes="tool" Click="OnUndoClick" ToolTip.Tip="{l:Tr 'Отменить (Ctrl+Z)'}">
+            <Path Data="{StaticResource Icon.Undo}"/>
+          </Button>
+          <Button x:Name="RedoButton" Classes="tool" Click="OnRedoClick" ToolTip.Tip="{l:Tr 'Повторить (Ctrl+Y)'}">
+            <Path Data="{StaticResource Icon.Redo}"/>
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <!-- Выбор фигуры -->
+      <Border x:Name="ShapesPanel" Classes="pill" IsVisible="False" Padding="6">
+        <StackPanel x:Name="ShapeChoices" Orientation="Horizontal" Spacing="2">
+          <Button Classes="tool" Tag="Line" Click="OnShapeChoice" ToolTip.Tip="{l:Tr 'Линия (Shift — шаг 45°)'}">
+            <Path Data="{StaticResource Icon.Line}"/>
+          </Button>
+          <Button Classes="tool" Tag="Arrow" Click="OnShapeChoice" ToolTip.Tip="{l:Tr 'Стрелка'}">
+            <Path Data="{StaticResource Icon.Arrow}"/>
+          </Button>
+          <Button Classes="tool" Tag="DoubleArrow" Click="OnShapeChoice" ToolTip.Tip="{l:Tr 'Двойная стрелка'}">
+            <Path Data="{StaticResource Icon.DoubleArrow}"/>
+          </Button>
+          <Button Classes="tool" Tag="Rectangle" Click="OnShapeChoice" ToolTip.Tip="{l:Tr 'Прямоугольник (Shift — квадрат)'}">
+            <Path Data="{StaticResource Icon.Rect}"/>
+          </Button>
+          <Button Classes="tool" Tag="Ellipse" Click="OnShapeChoice" ToolTip.Tip="{l:Tr 'Эллипс (Shift — круг)'}">
+            <Path Data="{StaticResource Icon.Ellipse}"/>
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <!-- Действия -->
+      <Border x:Name="ActionsBar" Classes="pill" IsVisible="False" Padding="6">
+        <StackPanel Spacing="2">
+          <Button Classes="tool" Click="OnCopyClick" ToolTip.Tip="{l:Tr 'Копировать (Ctrl+C). Если идёт серия — добавить и скопировать всю серию'}">
+            <Path Data="{StaticResource Icon.Copy}"/>
+          </Button>
+          <Button Classes="tool" Click="OnSaveClick" ToolTip.Tip="{l:Tr 'Сохранить как… (Ctrl+Shift+S). Быстрое сохранение — Ctrl+S'}">
+            <Path Data="{StaticResource Icon.Save}"/>
+          </Button>
+          <Button Classes="tool" Click="OnPrintClick" ToolTip.Tip="{l:Tr 'Печать (Ctrl+P)'}">
+            <Path Data="{StaticResource Icon.Print}"/>
+          </Button>
+          <Button Classes="tool" Click="OnSearchClick" ToolTip.Tip="{l:Tr 'Найти похожие в Google (Ctrl+G)'}">
+            <Path Data="{StaticResource Icon.Search}"/>
+          </Button>
+          <Border Classes="hsep tight"/>
+          <Button x:Name="SeriesButton" Classes="tool" Click="OnSeriesClick" ToolTip.Tip="{l:Tr 'Добавить в серию (Ctrl+D)'}">
+            <Path Data="{StaticResource Icon.SeriesAdd}"/>
+          </Button>
+          <Button Classes="tool" Click="OnRecordFromScreenshotClick" ToolTip.Tip="{l:Tr 'Записать видео этой области (Ctrl+R)'}">
+            <Path Data="{StaticResource Icon.Video}"/>
+          </Button>
+          <Border Classes="hsep tight"/>
+          <Button Classes="tool danger" Click="OnCloseClick" ToolTip.Tip="{l:Tr 'Закрыть (Esc)'}">
+            <Path Data="{StaticResource Icon.Close}"/>
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <!-- Контекстная панель выделенного объекта: свои цвет, шрифт, размер, рамка; дублировать / удалить -->
+      <Border x:Name="ObjectBar" Classes="pill" IsVisible="False" Padding="10,8">
+        <StackPanel x:Name="ContextContent" Spacing="6"/>
+      </Border>
+
+      <!-- Панель записи видео -->
+      <Border x:Name="VideoBar" Classes="pill" IsVisible="False">
+        <StackPanel Orientation="Horizontal" Spacing="4">
+          <Button x:Name="RecordButton" Classes="record" Click="OnRecordClick" ClickMode="Press" ToolTip.Tip="{l:Tr 'Начать запись (Enter)'}">
+            <StackPanel Orientation="Horizontal" Spacing="7">
+              <Ellipse Width="10" Height="10" Fill="White" VerticalAlignment="Center"/>
+              <TextBlock Text="{l:Tr 'Начать запись'}" VerticalAlignment="Center"/>
+            </StackPanel>
+          </Button>
+          <Button x:Name="MicButton" Classes="tool" Click="OnMicClick" ToolTip.Tip="{l:Tr 'Микрофон вкл/выкл'}">
+            <Path Data="{StaticResource Icon.Mic}"/>
+          </Button>
+          <Button x:Name="SpeakerButton" Classes="tool" Click="OnSpeakerClick" ToolTip.Tip="{l:Tr 'Звук компьютера вкл/выкл'}">
+            <Path Data="{StaticResource Icon.Speaker}"/>
+          </Button>
+          <Button x:Name="VideoOptionsButton" Classes="tool wide" Click="OnVideoOptionsClick"
+                  ToolTip.Tip="{l:Tr 'Формат, частота кадров и звук'}">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+              <TextBlock x:Name="VideoFormatText" FontSize="12.5" VerticalAlignment="Center"/>
+              <Path Data="{StaticResource Icon.Chevron}" Width="12" Height="20"/>
+            </StackPanel>
+          </Button>
+          <Button Classes="tool danger" Click="OnCloseClick" ToolTip.Tip="{l:Tr 'Отмена (Esc)'}">
+            <Path Data="{StaticResource Icon.Close}"/>
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <!-- Параметры записи: формат, частота кадров, звук, устройства -->
+      <Border x:Name="VideoOptionsPanel" Classes="pill" IsVisible="False" Width="360" Padding="14,12">
+        <StackPanel Spacing="8">
+          <TextBlock Classes="group" Text="{l:Tr 'ФОРМАТ'}" Margin="0"/>
+          <WrapPanel x:Name="VideoFormatChips">
+            <ToggleButton Classes="chip" Tag="Mp4" Content="MP4" Click="OnVideoFormatChip"/>
+            <ToggleButton Classes="chip" Tag="Mkv" Content="MKV" Click="OnVideoFormatChip"/>
+            <ToggleButton Classes="chip" Tag="WebM" Content="WebM" Click="OnVideoFormatChip"/>
+            <ToggleButton Classes="chip" Tag="Gif" Content="GIF" Click="OnVideoFormatChip"/>
+          </WrapPanel>
+          <TextBlock Classes="group" Text="{l:Tr 'ЧАСТОТА КАДРОВ'}"/>
+          <WrapPanel x:Name="VideoFpsChips">
+            <ToggleButton Classes="chip" Tag="15" Content="15 fps" Click="OnVideoFpsChip"/>
+            <ToggleButton Classes="chip" Tag="24" Content="24 fps" Click="OnVideoFpsChip"/>
+            <ToggleButton Classes="chip" Tag="30" Content="30 fps" Click="OnVideoFpsChip"/>
+            <ToggleButton Classes="chip" Tag="60" Content="60 fps" Click="OnVideoFpsChip"/>
+          </WrapPanel>
+          <TextBlock Classes="group" Text="{l:Tr 'ЗВУК'}"/>
+          <WrapPanel x:Name="VideoAudioChips">
+            <ToggleButton Classes="chip" Tag="None" Content="{l:Tr 'Без звука'}" Click="OnVideoAudioChip"/>
+            <ToggleButton Classes="chip" Tag="Microphone" Content="{l:Tr 'Микрофон'}" Click="OnVideoAudioChip"/>
+            <ToggleButton Classes="chip" Tag="System" Content="{l:Tr 'Звук компьютера'}" Click="OnVideoAudioChip"/>
+            <ToggleButton Classes="chip" Tag="MicrophoneAndSystem" Content="{l:Tr 'Микрофон + компьютер'}" Click="OnVideoAudioChip"/>
+          </WrapPanel>
+          <TextBlock x:Name="GifAudioNote" Classes="caption" IsVisible="False" Text="{l:Tr 'GIF не содержит звука — запись будет без него.'}"/>
+          <StackPanel x:Name="VideoDevicesBox" Spacing="6">
+            <TextBlock Classes="caption" Text="{l:Tr 'Микрофон'}"/>
+            <ComboBox x:Name="VideoMicCombo" HorizontalAlignment="Stretch"/>
+            <TextBlock Classes="caption" Text="{l:Tr 'Звук компьютера'}"/>
+            <ComboBox x:Name="VideoSystemCombo" HorizontalAlignment="Stretch"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+
+      <!-- Цвет, прозрачность, толщина, текст, метки, рамка -->
+      <Border x:Name="StylePanel" Classes="pill" IsVisible="False" Width="480" Padding="16,12,6,12">
+        <ScrollViewer MaxHeight="640" HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Spacing="8" Margin="0,0,16,0">
+            <StackPanel Spacing="1">
+              <TextBlock Classes="group" Text="{l:Tr 'ПО УМОЛЧАНИЮ ДЛЯ НОВЫХ ОБЪЕКТОВ · ЦВЕТ'}" Margin="0"/>
+              <TextBlock Classes="caption" Text="{l:Tr 'Значения по умолчанию для всего нового: пера, фигур, текста и меток. Уже нарисованный объект меняется в панели рядом с ним.'}"/>
+            </StackPanel>
+            <WrapPanel x:Name="Swatches"/>
+
+            <Border Classes="hsep tight"/>
+            <TextBlock Classes="group" Text="{l:Tr 'ПРОЗРАЧНОСТЬ, ТОЛЩИНА, ФИГУРЫ'}"/>
+
+            <Grid ColumnDefinitions="110,*,52">
+              <TextBlock Text="{l:Tr 'Прозрачность'}" VerticalAlignment="Center"/>
+              <Slider x:Name="OpacitySlider" Grid.Column="1" Minimum="10" Maximum="100" SmallChange="5"
+                      TickFrequency="5" IsSnapToTickEnabled="True"/>
+              <TextBlock x:Name="OpacityValue" Grid.Column="2" Classes="caption" VerticalAlignment="Center"
+                         HorizontalAlignment="Right"/>
+            </Grid>
+            <Grid ColumnDefinitions="110,*,52">
+              <TextBlock Text="{l:Tr 'Толщина'}" VerticalAlignment="Center"/>
+              <Slider x:Name="ThicknessSlider" Grid.Column="1" Minimum="1" Maximum="24" SmallChange="1"
+                      TickFrequency="1" IsSnapToTickEnabled="True"/>
+              <TextBlock x:Name="ThicknessValue" Grid.Column="2" Classes="caption" VerticalAlignment="Center"
+                         HorizontalAlignment="Right"/>
+            </Grid>
+            <WrapPanel>
+              <ToggleButton x:Name="DashToggle" Classes="chip" Content="{l:Tr 'Пунктир'}" Click="OnStyleToggle"/>
+              <ToggleButton x:Name="FillToggle" Classes="chip" Content="{l:Tr 'Заливка фигур'}" Click="OnStyleToggle" ToolTip.Tip="{l:Tr 'Залитые фигуры — например, чтобы скрыть данные'}"/>
+            </WrapPanel>
+
+            <Border Classes="hsep tight"/>
+            <TextBlock Classes="group" Text="{l:Tr 'ТЕКСТ И МЕТКИ'}"/>
+            <ComboBox x:Name="FontCombo" HorizontalAlignment="Stretch"/>
+            <WrapPanel x:Name="WeightChips">
+              <ToggleButton Classes="chip" Tag="300" Content="{l:Tr 'Тонкий'}" FontWeight="Light" Click="OnWeightClick"/>
+              <ToggleButton Classes="chip" Tag="400" Content="{l:Tr 'Обычный'}" Click="OnWeightClick"/>
+              <ToggleButton Classes="chip" Tag="600" Content="{l:Tr 'Полужирный'}" FontWeight="SemiBold" Click="OnWeightClick"/>
+              <ToggleButton Classes="chip" Tag="700" Content="{l:Tr 'Жирный'}" FontWeight="Bold" Click="OnWeightClick"/>
+              <ToggleButton Classes="chip" Tag="900" Content="{l:Tr 'Чёрный'}" FontWeight="Black" Click="OnWeightClick"/>
+              <ToggleButton x:Name="ItalicToggle" Classes="chip" Content="{l:Tr 'Курсив'}" FontStyle="Italic" Click="OnStyleToggle"/>
+            </WrapPanel>
+            <Grid ColumnDefinitions="110,*,52">
+              <TextBlock Text="{l:Tr 'Размер'}" VerticalAlignment="Center" ToolTip.Tip="{l:Tr 'Размер текста и меток'}"/>
+              <Slider x:Name="FontSizeSlider" Grid.Column="1" Minimum="10" Maximum="96" SmallChange="1"
+                      TickFrequency="1" IsSnapToTickEnabled="True"/>
+              <TextBlock x:Name="FontSizeValue" Grid.Column="2" Classes="caption" VerticalAlignment="Center"
+                         HorizontalAlignment="Right"/>
+            </Grid>
+            <WrapPanel x:Name="TextFrameChips">
+              <ToggleButton Classes="chip" Tag="None" Content="{l:Tr 'Без всего'}" Click="OnTextFrameClick"/>
+              <ToggleButton Classes="chip" Tag="Outline" Content="{l:Tr 'Рамка'}" Click="OnTextFrameClick"/>
+              <ToggleButton Classes="chip" Tag="Fill" Content="{l:Tr 'Подложка'}" Click="OnTextFrameClick"/>
+              <ToggleButton Classes="chip" Tag="FillOutline" Content="{l:Tr 'Рамка + подложка'}" Click="OnTextFrameClick"/>
+            </WrapPanel>
+            <StackPanel x:Name="TextFrameColors" Spacing="6"/>
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <ToggleButton x:Name="ShadowToggle" Classes="chip" Content="{l:Tr 'Тень'}" Margin="0" VerticalAlignment="Center"
+                            Click="OnShadowToggle" ToolTip.Tip="{l:Tr 'Тень под текстом (или под плашкой)'}"/>
+              <ToggleButton x:Name="ShadowAutoToggle" Classes="chip" Content="{l:Tr 'Авто'}" Margin="0" VerticalAlignment="Center"
+                            Click="OnShadowAutoClick" ToolTip.Tip="{l:Tr 'Тёмная тень под светлым текстом, светлая — под тёмным'}"/>
+              <WrapPanel x:Name="ShadowSwatches" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <Border Classes="hsep tight"/>
+            <TextBlock Classes="group" Text="{l:Tr 'ФОРМА И ОБОЗНАЧЕНИЕ МЕТОК'}"/>
+            <StackPanel Orientation="Horizontal" Spacing="2">
+              <StackPanel x:Name="MarkerShapeButtons" Orientation="Horizontal" Spacing="2">
+                <Button Classes="tool" Tag="Circle" Click="OnMarkerShapeClick" ToolTip.Tip="{l:Tr 'Круг'}">
+                  <Path Data="{StaticResource Icon.ShapeCircle}"/>
+                </Button>
+                <Button Classes="tool" Tag="RoundedSquare" Click="OnMarkerShapeClick" ToolTip.Tip="{l:Tr 'Скруглённый квадрат'}">
+                  <Path Data="{StaticResource Icon.ShapeRounded}"/>
+                </Button>
+                <Button Classes="tool" Tag="Diamond" Click="OnMarkerShapeClick" ToolTip.Tip="{l:Tr 'Ромб'}">
+                  <Path Data="{StaticResource Icon.ShapeDiamond}"/>
+                </Button>
+                <Button Classes="tool" Tag="Pin" Click="OnMarkerShapeClick" ToolTip.Tip="{l:Tr 'Булавка'}">
+                  <Path Data="{StaticResource Icon.ShapePin}"/>
+                </Button>
+              </StackPanel>
+              <Border Classes="vsep"/>
+              <ToggleButton x:Name="LettersToggle" Classes="chip" Content="A B C" Click="OnNumberingClick" Tag="Letters" Margin="0" VerticalAlignment="Center"/>
+              <ToggleButton x:Name="NumbersToggle" Classes="chip" Content="1 2 3" Click="OnNumberingClick" Tag="Numbers" Margin="4,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Classes="caption" Text="{l:Tr 'Форма и размер — для новых меток. Обозначение A B C / 1 2 3 сразу меняется у всех меток скриншота.'}"/>
+
+            <Border Classes="hsep tight"/>
+            <TextBlock Classes="group" Text="{l:Tr 'ЦВЕТ РАМКИ ВЫДЕЛЕНИЯ'}"/>
+            <WrapPanel x:Name="FrameSwatches"/>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <!-- Комментарии к меткам -->
+      <Border x:Name="CommentsPanel" Classes="pill" IsVisible="False" Width="300" Padding="12,10">
+        <StackPanel Spacing="8">
+          <Grid ColumnDefinitions="*,Auto,Auto">
+            <StackPanel Spacing="1" VerticalAlignment="Center">
+              <TextBlock Text="{l:Tr 'Комментарии к меткам'}" FontWeight="SemiBold"/>
+              <TextBlock x:Name="CommentsCaption" Classes="caption"/>
+            </StackPanel>
+            <ToggleButton x:Name="OnImageToggle" Grid.Column="1" Classes="chip" Content="{l:Tr 'На картинке'}" Margin="6,0,4,0"
+                          VerticalAlignment="Center" Click="OnOnImageClick"
+                          ToolTip.Tip="{l:Tr 'Рисовать комментарии рядом с метками прямо на скриншоте (текстом они копируются в любом случае)'}"/>
+            <Button Grid.Column="2" Classes="tool small" Click="OnCommentStyleClick" ToolTip.Tip="{l:Tr 'Шрифт, цвет и рамка подписей'}">
+              <TextBlock Text="Aa" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+          </Grid>
+
+          <!-- Оформление подписей на картинке -->
+          <StackPanel x:Name="CommentStyleBox" Spacing="8" IsVisible="False">
+            <ComboBox x:Name="CommentFontCombo" HorizontalAlignment="Stretch"/>
+            <WrapPanel x:Name="CommentWeightChips">
+              <ToggleButton Classes="chip" Tag="300" Content="{l:Tr 'Тонкий'}" FontWeight="Light" Click="OnCommentWeightClick"/>
+              <ToggleButton Classes="chip" Tag="400" Content="{l:Tr 'Обычный'}" Click="OnCommentWeightClick"/>
+              <ToggleButton Classes="chip" Tag="600" Content="{l:Tr 'Полужирный'}" FontWeight="SemiBold" Click="OnCommentWeightClick"/>
+              <ToggleButton Classes="chip" Tag="700" Content="{l:Tr 'Жирный'}" FontWeight="Bold" Click="OnCommentWeightClick"/>
+              <ToggleButton x:Name="CommentItalicToggle" Classes="chip" Content="{l:Tr 'Курсив'}" FontStyle="Italic" Click="OnCommentItalicClick"/>
+            </WrapPanel>
+            <Grid ColumnDefinitions="70,*,36">
+              <TextBlock Text="{l:Tr 'Размер'}" VerticalAlignment="Center"/>
+              <Slider x:Name="CommentSizeSlider" Grid.Column="1" Minimum="10" Maximum="72" SmallChange="1"
+                      TickFrequency="1" IsSnapToTickEnabled="True"/>
+              <TextBlock x:Name="CommentSizeValue" Grid.Column="2" Classes="caption" VerticalAlignment="Center"
+                         HorizontalAlignment="Right"/>
+            </Grid>
+            <WrapPanel x:Name="CommentColorSwatches"/>
+            <WrapPanel x:Name="CommentFrameChips">
+              <ToggleButton Classes="chip" Tag="None" Content="{l:Tr 'Без всего'}" Click="OnCommentFrameClick"/>
+              <ToggleButton Classes="chip" Tag="Outline" Content="{l:Tr 'Рамка'}" Click="OnCommentFrameClick"/>
+              <ToggleButton Classes="chip" Tag="Fill" Content="{l:Tr 'Подложка'}" Click="OnCommentFrameClick"/>
+              <ToggleButton Classes="chip" Tag="FillOutline" Content="{l:Tr 'Рамка + подложка'}" Click="OnCommentFrameClick"/>
+              <ToggleButton x:Name="CommentShadowToggle" Classes="chip" Content="{l:Tr 'Тень'}" Click="OnCommentShadowClick"/>
+            </WrapPanel>
+            <StackPanel x:Name="CommentFrameColors" Spacing="6"/>
+            <Border Classes="hsep tight"/>
+          </StackPanel>
+
+          <ScrollViewer MaxHeight="340" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="CommentsList" Spacing="6"/>
+          </ScrollViewer>
+        </StackPanel>
+      </Border>
+
+    </Canvas>
+  </Grid>
+</Window>

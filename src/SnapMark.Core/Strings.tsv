@@ -1,0 +1,334 @@
+# SnapMark UI strings: ru	en	de	fr	it	es
+Исправить	Fix	Beheben	Corriger	Correggi	Corregir
+Windows тоже реагирует на PrtSc. SnapMark перехватывает клавишу, но если откроются «Ножницы» — отключи их в настройках.	Windows also reacts to PrtSc. SnapMark intercepts the key, but if Snipping Tool opens, turn it off in settings.	Windows reagiert ebenfalls auf PrtSc. SnapMark fängt die Taste ab – öffnet sich trotzdem das Snipping Tool, schalte es in den Einstellungen aus.	Windows réagit aussi à Impr. écran. SnapMark intercepte la touche, mais si l’Outil Capture s’ouvre, désactive-le dans les paramètres.	Anche Windows reagisce a Stamp. SnapMark intercetta il tasto, ma se si apre lo Strumento di cattura, disattivalo nelle impostazioni.	Windows también responde a ImpPant. SnapMark intercepta la tecla, pero si se abre Recortes, desactívalo en la configuración.
+PrtSc и «Ножницы»	PrtSc and Snipping Tool	PrtSc und Snipping Tool	Impr. écran et Outil Capture	Stamp e Strumento di cattura	ImpPant y Recortes
+Настройки	Settings	Einstellungen	Paramètres	Impostazioni	Configuración
+Живу в трее. {0} — скриншот, клик по иконке в трее — тоже.	Living in the tray. {0} takes a screenshot, and so does clicking the tray icon.	Ich wohne im Infobereich. {0} macht einen Screenshot, ein Klick aufs Symbol ebenfalls.	Je vis dans la zone de notification. {0} prend une capture, un clic sur l’icône aussi.	Vivo nell’area di notifica. {0} fa uno screenshot, e anche un clic sull’icona.	Vivo en la bandeja del sistema. {0} hace una captura, y también un clic en el icono.
+SnapMark запущен	SnapMark is running	SnapMark läuft	SnapMark est lancé	SnapMark è in esecuzione	SnapMark está en marcha
+SnapMark — скриншоты с метками	SnapMark — screenshots with markers	SnapMark – Screenshots mit Markierungen	SnapMark — captures avec repères	SnapMark — screenshot con indicatori	SnapMark — capturas con marcadores
+Выход	Quit	Beenden	Quitter	Esci	Salir
+Настройки…	Settings…	Einstellungen…	Paramètres…	Impostazioni…	Configuración…
+Открыть папку скриншотов	Open screenshots folder	Screenshot-Ordner öffnen	Ouvrir le dossier des captures	Apri cartella screenshot	Abrir carpeta de capturas
+Серия скриншотов…	Screenshot series…	Screenshot-Serie…	Série de captures…	Serie di screenshot…	Serie de capturas…
+Записать видео…	Record video…	Video aufnehmen…	Enregistrer une vidéo…	Registra video…	Grabar vídeo…
+Весь экран\t{0}	Full screen\t{0}	Ganzer Bildschirm\t{0}	Plein écran\t{0}	Schermo intero\t{0}	Pantalla completa\t{0}
+Скриншот области\t{0}	Region screenshot\t{0}	Bereichs-Screenshot\t{0}	Capture d’une zone\t{0}	Screenshot di un’area\t{0}	Captura de área\t{0}
+Выдели область побольше (минимум 16×16).	Select a larger area (at least 16×16).	Wähle einen größeren Bereich (mindestens 16×16).	Sélectionne une zone plus grande (au moins 16×16).	Seleziona un’area più grande (almeno 16×16).	Selecciona un área más grande (mínimo 16×16).
+Запись видео	Video recording	Videoaufnahme	Enregistrement vidéo	Registrazione video	Grabación de vídeo
+Делай следующий скриншот. Ctrl+C в редакторе или «Копировать всё» на панели серии — скопировать всё.	Take the next screenshot. Press Ctrl+C in the editor or “Copy all” on the series panel to copy everything.	Mach den nächsten Screenshot. Strg+C im Editor oder „Alles kopieren“ im Serienfenster kopiert alles.	Prends la capture suivante. Ctrl+C dans l’éditeur ou « Tout copier » dans le panneau de série copie tout.	Fai il prossimo screenshot. Ctrl+C nell’editor o «Copia tutto» nel pannello della serie copia tutto.	Haz la siguiente captura. Ctrl+C en el editor o «Copiar todo» en el panel de la serie lo copia todo.
+Добавлено в серию · {0}	Added to series · {0}	Zur Serie hinzugefügt · {0}	Ajouté à la série · {0}	Aggiunto alla serie · {0}	Añadida a la serie · {0}
+Поиск не удался	Search failed	Suche fehlgeschlagen	La recherche a échoué	Ricerca non riuscita	La búsqueda falló
+Печать недоступна	Printing unavailable	Drucken nicht verfügbar	Impression indisponible	Stampa non disponibile	Impresión no disponible
+Не удалось сохранить	Couldn’t save	Speichern fehlgeschlagen	Échec de l’enregistrement	Impossibile salvare	No se pudo guardar
+Показать	Show	Anzeigen	Afficher	Mostra	Mostrar
+Сохранено	Saved	Gespeichert	Enregistré	Salvato	Guardado
+Сохранить скриншот	Save screenshot	Screenshot speichern	Enregistrer la capture	Salva screenshot	Guardar captura
+Не удалось скопировать	Couldn’t copy	Kopieren fehlgeschlagen	Échec de la copie	Impossibile copiare	No se pudo copiar
+Скриншот в буфере обмена.	Screenshot is on the clipboard.	Screenshot liegt in der Zwischenablage.	La capture est dans le presse-papiers.	Lo screenshot è negli appunti.	La captura está en el portapapeles.
+Скопировано	Copied	Kopiert	Copié	Copiato	Copiado
+Серия скопирована · {0}	Series copied · {0}	Serie kopiert · {0}	Série copiée · {0}	Serie copiata · {0}	Serie copiada · {0}
+Вставь в чат или документ.	Paste into a chat or document.	In einen Chat oder ein Dokument einfügen.	Colle-la dans un chat ou un document.	Incolla in una chat o in un documento.	Pégalo en un chat o documento.
+Ctrl+V вставит и картинки, и текст — в чат, мессенджер или Word.	Ctrl+V pastes both images and text — into a chat, messenger or Word.	Strg+V fügt Bilder und Text ein – in Chats, Messenger oder Word.	Ctrl+V colle les images et le texte — dans un chat, une messagerie ou Word.	Ctrl+V incolla immagini e testo — in chat, messenger o Word.	Ctrl+V pega imágenes y texto: en un chat, mensajería o Word.
+Добавить в серию (Ctrl+D). Сейчас в серии: {0}	Add to series (Ctrl+D). Currently in series: {0}	Zur Serie hinzufügen (Strg+D). Aktuell in der Serie: {0}	Ajouter à la série (Ctrl+D). Dans la série : {0}	Aggiungi alla serie (Ctrl+D). Ora nella serie: {0}	Añadir a la serie (Ctrl+D). En la serie: {0}
+Добавить в серию (Ctrl+D)	Add to series (Ctrl+D)	Zur Serie hinzufügen (Strg+D)	Ajouter à la série (Ctrl+D)	Aggiungi alla serie (Ctrl+D)	Añadir a la serie (Ctrl+D)
+Звук компьютера: выключен	Computer audio: off	Computerton: aus	Son de l’ordinateur : désactivé	Audio del computer: disattivato	Audio del equipo: desactivado
+Звук компьютера: включён	Computer audio: on	Computerton: an	Son de l’ordinateur : activé	Audio del computer: attivato	Audio del equipo: activado
+Микрофон: выключен	Microphone: off	Mikrofon: aus	Micro : désactivé	Microfono: disattivato	Micrófono: desactivado
+Микрофон: включён	Microphone: on	Mikrofon: an	Micro : activé	Microfono: attivato	Micrófono: activado
+Удалить метку {0}	Delete marker {0}	Markierung {0} löschen	Supprimer le repère {0}	Elimina indicatore {0}	Eliminar marcador {0}
+Комментарий к {0}…	Comment for {0}…	Kommentar zu {0}…	Commentaire pour {0}…	Commento per {0}…	Comentario para {0}…
+Цвет тени	Shadow color	Schattenfarbe	Couleur de l’ombre	Colore ombra	Color de la sombra
+Цвет метки	Marker color	Markierungsfarbe	Couleur du repère	Colore indicatore	Color del marcador
+Цвет текста	Text color	Textfarbe	Couleur du texte	Colore testo	Color del texto
+Копируются текстом. Enter — готово, × — удалить.	Copied as text. Enter — done, × — delete.	Werden als Text kopiert. Enter – fertig, × – löschen.	Copiés en texte. Entrée — terminé, × — supprimer.	Copiati come testo. Invio — fatto, × — elimina.	Se copian como texto. Intro — listo, × — eliminar.
+Рисуются на картинке и копируются текстом.	Drawn on the image and copied as text.	Werden aufs Bild gezeichnet und als Text kopiert.	Dessinés sur l’image et copiés en texte.	Disegnati sull’immagine e copiati come testo.	Se dibujan en la imagen y se copian como texto.
+Выдели область  ·  двойной клик — весь экран  ·  Esc — отмена	Select an area  ·  double-click — full screen  ·  Esc — cancel	Bereich auswählen  ·  Doppelklick – ganzer Bildschirm  ·  Esc – Abbrechen	Sélectionne une zone  ·  double-clic — plein écran  ·  Échap — annuler	Seleziona un’area  ·  doppio clic — schermo intero  ·  Esc — annulla	Selecciona un área  ·  doble clic — pantalla completa  ·  Esc — cancelar
+Выдели область для записи видео  ·  двойной клик — весь экран  ·  Esc — отмена	Select an area to record  ·  double-click — full screen  ·  Esc — cancel	Aufnahmebereich auswählen  ·  Doppelklick – ganzer Bildschirm  ·  Esc – Abbrechen	Sélectionne la zone à enregistrer  ·  double-clic — plein écran  ·  Échap — annuler	Seleziona l’area da registrare  ·  doppio clic — schermo intero  ·  Esc — annulla	Selecciona el área a grabar  ·  doble clic — pantalla completa  ·  Esc — cancelar
+Не удалось получить изображение экрана.	Couldn’t capture the screen image.	Bildschirminhalt konnte nicht erfasst werden.	Impossible de capturer l’image de l’écran.	Impossibile acquisire l’immagine dello schermo.	No se pudo capturar la imagen de la pantalla.
+Скриншот не удался	Screenshot failed	Screenshot fehlgeschlagen	Échec de la capture	Screenshot non riuscito	La captura falló
+Не удалось получить список мониторов.	Couldn’t get the list of monitors.	Monitorliste konnte nicht abgerufen werden.	Impossible d’obtenir la liste des écrans.	Impossibile ottenere l’elenco dei monitor.	No se pudo obtener la lista de monitores.
+Скриншот	Screenshot	Screenshot	Capture d’écran	Screenshot	Captura
+Удалить (Delete или правый клик по объекту)	Delete (Delete or right-click the object)	Löschen (Entf oder Rechtsklick auf das Objekt)	Supprimer (Suppr ou clic droit sur l’objet)	Elimina (Canc o clic destro sull’oggetto)	Eliminar (Supr o clic derecho en el objeto)
+Дублировать (Ctrl+J)	Duplicate (Ctrl+J)	Duplizieren (Strg+J)	Dupliquer (Ctrl+J)	Duplica (Ctrl+J)	Duplicar (Ctrl+J)
+Авто	Auto	Auto	Auto	Auto	Auto
+Белая под тёмным текстом, тёмная под светлым	White under dark text, dark under light text	Weiß unter dunklem Text, dunkel unter hellem	Blanc sous texte foncé, foncé sous texte clair	Bianco sotto testo scuro, scuro sotto testo chiaro	Blanco bajo texto oscuro, oscuro bajo texto claro
+Подложка	Plate	Hintergrund	Fond	Sfondo	Fondo
+Рамка	Border	Rahmen	Cadre	Bordo	Borde
+Рамка + подложка	Border + plate	Rahmen + Hintergrund	Cadre + fond	Bordo + sfondo	Borde + fondo
+Без всего	Plain	Ohne	Aucun	Nessuno	Nada
+Начертание	Weight	Schriftstärke	Graisse	Peso	Grosor
+Шрифт	Font	Schrift	Police	Carattere	Fuente
+Заливка	Fill	Füllung	Remplissage	Riempimento	Relleno
+Пунктир	Dashed	Gestrichelt	Pointillés	Tratteggiato	Discontinuo
+Толщина	Thickness	Stärke	Épaisseur	Spessore	Grosor
+Вид	Style	Stil	Style	Stile	Estilo
+Цвет	Color	Farbe	Couleur	Colore	Color
+Подпись	Label	Beschriftung	Légende	Didascalia	Leyenda
+Размер подписи	Label size	Beschriftungsgröße	Taille de la légende	Dimensione didascalia	Tamaño de la leyenda
+Курсив	Italic	Kursiv	Italique	Corsivo	Cursiva
+Размер метки	Marker size	Markierungsgröße	Taille du repère	Dimensione indicatore	Tamaño del marcador
+Булавка	Pin	Stecknadel	Épingle	Spillo	Chincheta
+Ромб	Diamond	Raute	Losange	Rombo	Rombo
+Скруглённый квадрат	Rounded square	Abgerundetes Quadrat	Carré arrondi	Quadrato arrotondato	Cuadrado redondeado
+Круг	Circle	Kreis	Cercle	Cerchio	Círculo
+Буква	Letter	Buchstabe	Lettre	Lettera	Letra
+Цифра	Digit	Ziffer	Chiffre	Cifra	Número
+Белый на тёмном, тёмный на светлом	White on dark, dark on light	Weiß auf dunkel, dunkel auf hell	Blanc sur foncé, foncé sur clair	Bianco su scuro, scuro su chiaro	Blanco sobre oscuro, oscuro sobre claro
+Фон	Background	Hintergrund	Fond	Sfondo	Fondo
+Тень	Shadow	Schatten	Ombre	Ombra	Sombra
+Тёмная под светлым текстом, светлая под тёмным	Dark under light text, light under dark text	Dunkel unter hellem Text, hell unter dunklem	Foncée sous texte clair, claire sous texte foncé	Scura sotto testo chiaro, chiara sotto testo scuro	Oscura bajo texto claro, clara bajo texto oscuro
+Тень под текстом (или под плашкой)	Shadow under text (or under the plate)	Schatten unter dem Text (oder unter dem Hintergrund)	Ombre sous le texte (ou sous le fond)	Ombra sotto il testo (o sotto lo sfondo)	Sombra bajo el texto (o bajo el fondo)
+Размер текста	Text size	Textgröße	Taille du texte	Dimensione testo	Tamaño del texto
+Чёрный	Black	Black	Black	Black	Black
+Жирный	Bold	Fett	Gras	Grassetto	Negrita
+Полужирный	Semibold	Halbfett	Demi-gras	Semigrassetto	Seminegrita
+Обычный	Regular	Normal	Normal	Normale	Normal
+Тонкий	Light	Dünn	Fin	Sottile	Fina
+По умолчанию (основные колонки/наушники)	Default (main speakers/headphones)	Standard (Hauptlautsprecher/Kopfhörer)	Par défaut (haut-parleurs/casque principaux)	Predefinito (altoparlanti/cuffie principali)	Predeterminado (altavoces/auriculares principales)
+По умолчанию (системный микрофон)	Default (system microphone)	Standard (Systemmikrofon)	Par défaut (micro du système)	Predefinito (microfono di sistema)	Predeterminado (micrófono del sistema)
+Буфер обмена занят другим приложением.	The clipboard is busy with another app.	Die Zwischenablage wird von einer anderen App verwendet.	Le presse-papiers est utilisé par une autre application.	Gli appunti sono occupati da un’altra app.	El portapapeles está ocupado por otra aplicación.
+{0}: перехват клавиатурным хуком	{0}: keyboard hook	{0}: über Tastatur-Hook	{0} : via hook clavier	{0}: tramite hook della tastiera	{0}: mediante hook de teclado
+{0}: не удалось установить хук клавиатуры	{0}: couldn’t install keyboard hook	{0}: Tastatur-Hook konnte nicht installiert werden	{0} : impossible d’installer le hook clavier	{0}: impossibile installare l’hook della tastiera	{0}: no se pudo instalar el hook de teclado
+{0}: системная регистрация	{0}: system registration	{0}: Systemregistrierung	{0} : enregistrement système	{0}: registrazione di sistema	{0}: registro del sistema
+Изображение открыто в просмотрщике — нажми Ctrl+P.	The image is open in the viewer — press Ctrl+P.	Das Bild ist im Viewer geöffnet – drücke Strg+P.	L’image est ouverte dans la visionneuse — appuie sur Ctrl+P.	L’immagine è aperta nel visualizzatore — premi Ctrl+P.	La imagen está abierta en el visor: pulsa Ctrl+P.
+Печать	Print	Drucken	Imprimer	Stampa	Imprimir
+Глобальные горячие клавиши на этой ОС пока не реализованы — используй меню в трее.	Global hotkeys aren’t implemented on this OS yet — use the tray menu.	Globale Tastenkürzel gibt es auf diesem System noch nicht – nutze das Menü im Infobereich.	Les raccourcis globaux ne sont pas encore disponibles sur ce système — utilise le menu de la zone de notification.	Le scorciatoie globali non sono ancora disponibili su questo sistema — usa il menu nell’area di notifica.	Los atajos globales aún no están disponibles en este sistema: usa el menú de la bandeja.
+Видео сохранено без звука: не удалось добавить звуковую дорожку.\n	Video saved without sound: couldn’t add the audio track.\n	Video ohne Ton gespeichert: Tonspur konnte nicht hinzugefügt werden.\n	Vidéo enregistrée sans son : impossible d’ajouter la piste audio.\n	Video salvato senza audio: impossibile aggiungere la traccia audio.\n	Vídeo guardado sin sonido: no se pudo añadir la pista de audio.\n
+ffmpeg завершился с ошибкой:\n	ffmpeg exited with an error:\n	ffmpeg wurde mit einem Fehler beendet:\n	ffmpeg s’est terminé avec une erreur :\n	ffmpeg è terminato con un errore:\n	ffmpeg terminó con un error:\n
+Не удалось открыть звуковое устройство: 	Couldn’t open the audio device: 	Audiogerät konnte nicht geöffnet werden: 	Impossible d’ouvrir le périphérique audio : 	Impossibile aprire il dispositivo audio: 	No se pudo abrir el dispositivo de audio: 
+Открываю Google Lens в браузере…	Opening Google Lens in the browser…	Google Lens wird im Browser geöffnet…	Ouverture de Google Lens dans le navigateur…	Apro Google Lens nel browser…	Abriendo Google Lens en el navegador…
+Поиск в Google	Google search	Google-Suche	Recherche Google	Ricerca Google	Búsqueda en Google
+Отправляю изображение в Google Lens…	Sending the image to Google Lens…	Bild wird an Google Lens gesendet…	Envoi de l’image à Google Lens…	Invio dell’immagine a Google Lens…	Enviando la imagen a Google Lens…
+Картинка в буфере обмена. Нажми на значок камеры и вставь её (Ctrl+V).	The image is on the clipboard. Click the camera icon and paste it (Ctrl+V).	Das Bild liegt in der Zwischenablage. Klicke auf das Kamerasymbol und füge es ein (Strg+V).	L’image est dans le presse-papiers. Clique sur l’icône appareil photo et colle-la (Ctrl+V).	L’immagine è negli appunti. Fai clic sull’icona della fotocamera e incollala (Ctrl+V).	La imagen está en el portapapeles. Haz clic en el icono de la cámara y pégala (Ctrl+V).
+В архиве нет ffmpeg.exe.	The archive doesn’t contain ffmpeg.exe.	Im Archiv ist keine ffmpeg.exe.	L’archive ne contient pas ffmpeg.exe.	L’archivio non contiene ffmpeg.exe.	El archivo no contiene ffmpeg.exe.
+Загрузка: {0:0.0} МБ	Downloading: {0:0.0} MB	Download: {0:0.0} MB	Téléchargement : {0:0.0} Mo	Download: {0:0.0} MB	Descargando: {0:0.0} MB
+Загрузка: {0:0.0} из {1:0.0} МБ	Downloading: {0:0.0} of {1:0.0} MB	Download: {0:0.0} von {1:0.0} MB	Téléchargement : {0:0.0} sur {1:0.0} Mo	Download: {0:0.0} di {1:0.0} MB	Descargando: {0:0.0} de {1:0.0} MB
+Не удалось скачать ffmpeg: 	Couldn’t download ffmpeg: 	ffmpeg konnte nicht heruntergeladen werden: 	Impossible de télécharger ffmpeg : 	Impossibile scaricare ffmpeg: 	No se pudo descargar ffmpeg: 
+Источник недоступен, пробую другой…	Source unavailable, trying another…	Quelle nicht erreichbar, versuche eine andere…	Source indisponible, essai d’une autre…	Sorgente non disponibile, ne provo un’altra…	Fuente no disponible, probando otra…
+Готово	Done	Fertig	Terminé	Fatto	Listo
+Распаковка…	Unpacking…	Entpacken…	Décompression…	Estrazione…	Descomprimiendo…
+Загрузка уже идёт.	Download already in progress.	Download läuft bereits.	Téléchargement déjà en cours.	Download già in corso.	La descarga ya está en curso.
+Автоустановка ffmpeg пока только для Windows.	Automatic ffmpeg installation is Windows-only for now.	Die automatische ffmpeg-Installation gibt es vorerst nur für Windows.	L’installation automatique de ffmpeg n’existe pour l’instant que sous Windows.	L’installazione automatica di ffmpeg per ora è solo per Windows.	La instalación automática de ffmpeg por ahora es solo para Windows.
+Нажми сочетание…	Press a shortcut…	Tastenkombination drücken…	Appuie sur un raccourci…	Premi una combinazione…	Pulsa un atajo…
+Открыть	Open	Öffnen	Ouvrir	Apri	Abrir
+Серия сохранена	Series saved	Serie gespeichert	Série enregistrée	Serie salvata	Serie guardada
+Куда сохранить серию	Where to save the series	Speicherort für die Serie	Où enregistrer la série	Dove salvare la serie	Dónde guardar la serie
+Серия скопирована	Series copied	Serie kopiert	Série copiée	Serie copiata	Serie copiada
+Удалить из серии	Remove from series	Aus der Serie entfernen	Retirer de la série	Rimuovi dalla serie	Quitar de la serie
+Без меток	No markers	Keine Markierungen	Aucun repère	Nessun indicatore	Sin marcadores
+Открыть в просмотрщике	Open in viewer	Im Viewer öffnen	Ouvrir dans la visionneuse	Apri nel visualizzatore	Abrir en el visor
+Скриншотов: {0}, меток: {1}. Комментарии копируются текстом, картинки — файлами.	Screenshots: {0}, markers: {1}. Comments are copied as text, images as files.	Screenshots: {0}, Markierungen: {1}. Kommentare werden als Text kopiert, Bilder als Dateien.	Captures : {0}, repères : {1}. Les commentaires sont copiés en texte, les images en fichiers.	Screenshot: {0}, indicatori: {1}. I commenti vengono copiati come testo, le immagini come file.	Capturas: {0}, marcadores: {1}. Los comentarios se copian como texto y las imágenes como archivos.
+Пусто. Сделай скриншот и нажми «Добавить в серию» (Ctrl+D).	Empty. Take a screenshot and press “Add to series” (Ctrl+D).	Leer. Mach einen Screenshot und klicke „Zur Serie hinzufügen“ (Strg+D).	Vide. Prends une capture et clique sur « Ajouter à la série » (Ctrl+D).	Vuota. Fai uno screenshot e premi «Aggiungi alla serie» (Ctrl+D).	Vacía. Haz una captura y pulsa «Añadir a la serie» (Ctrl+D).
+Копировать всё	Copy all	Alles kopieren	Tout copier	Copia tutto	Copiar todo
+Сохранить в папку…	Save to folder…	In Ordner speichern…	Enregistrer dans un dossier…	Salva in una cartella…	Guardar en carpeta…
+Очистить	Clear	Leeren	Vider	Svuota	Vaciar
+Серия скриншотов	Screenshot series	Screenshot-Serie	Série de captures	Serie di screenshot	Serie de capturas
+Серия скриншотов — SnapMark	Screenshot series — SnapMark	Screenshot-Serie – SnapMark	Série de captures — SnapMark	Serie di screenshot — SnapMark	Serie de capturas — SnapMark
+Серия: {0}	Series: {0}	Serie: {0}	Série : {0}	Serie: {0}	Serie: {0}
+Очистить серию	Clear series	Serie leeren	Vider la série	Svuota la serie	Vaciar la serie
+Зажми и перетащи в чат или папку — все скриншоты серии разом	Hold and drag into a chat or folder — all screenshots of the series at once	Gedrückt halten und in einen Chat oder Ordner ziehen – alle Screenshots der Serie auf einmal	Maintiens et fais glisser vers un chat ou un dossier — toutes les captures de la série d’un coup	Tieni premuto e trascina in una chat o cartella — tutti gli screenshot della serie insieme	Mantén pulsado y arrastra a un chat o carpeta: todas las capturas de la serie a la vez
+Перетащить файлы	Drag files	Dateien ziehen	Glisser les fichiers	Trascina i file	Arrastrar archivos
+SnapMark — серия	SnapMark — series	SnapMark – Serie	SnapMark — série	SnapMark — serie	SnapMark — serie
+Скажи что-нибудь — полоска должна двигаться	Say something — the bar should move	Sag etwas – der Balken sollte sich bewegen	Dis quelque chose — la barre doit bouger	Di’ qualcosa — la barra dovrebbe muoversi	Di algo: la barra debería moverse
+Проверить	Test	Testen	Tester	Prova	Probar
+Не удалось открыть микрофон: 	Couldn’t open the microphone: 	Mikrofon konnte nicht geöffnet werden: 	Impossible d’ouvrir le micro : 	Impossibile aprire il microfono: 	No se pudo abrir el micrófono: 
+Слушаю… скажи что-нибудь	Listening… say something	Ich höre zu… sag etwas	J’écoute… dis quelque chose	In ascolto… di’ qualcosa	Escuchando… di algo
+Стоп	Stop	Stopp	Arrêter	Stop	Detener
+Ошибка: 	Error: 	Fehler: 	Erreur : 	Errore: 	Error: 
+Запись видео готова к работе.	Video recording is ready to go.	Videoaufnahme ist einsatzbereit.	L’enregistrement vidéo est prêt.	La registrazione video è pronta.	La grabación de vídeo está lista.
+ffmpeg установлен	ffmpeg installed	ffmpeg installiert	ffmpeg installé	ffmpeg installato	ffmpeg instalado
+Готово! ffmpeg установлен: 	Done! ffmpeg installed: 	Fertig! ffmpeg installiert: 	Terminé ! ffmpeg installé : 	Fatto! ffmpeg installato: 	¡Listo! ffmpeg instalado: 
+Загрузка…	Downloading…	Wird heruntergeladen…	Téléchargement…	Download in corso…	Descargando…
+Обновить	Refresh	Aktualisieren	Actualiser	Aggiorna	Actualizar
+Скачать	Download	Herunterladen	Télécharger	Scarica	Descargar
+Найден: 	Found: 	Gefunden: 	Trouvé : 	Trovato: 	Encontrado: 
+Не найден — запись видео недоступна	Not found — video recording unavailable	Nicht gefunden – Videoaufnahme nicht verfügbar	Introuvable — enregistrement vidéo indisponible	Non trovato — registrazione video non disponibile	No encontrado: grabación de vídeo no disponible
+сдвинут отступ	indent is off	Einzug verschoben	retrait décalé	rientro sbagliato	sangría desplazada
+опечатка в заголовке	typo in the heading	Tippfehler in der Überschrift	faute de frappe dans le titre	refuso nel titolo	errata en el título
+кнопка не нажимается	button doesn’t respond	Schaltfläche reagiert nicht	le bouton ne répond pas	il pulsante non risponde	el botón no responde
+Горячие клавиши не назначены.	No hotkeys assigned.	Keine Tastenkürzel zugewiesen.	Aucun raccourci attribué.	Nessuna scorciatoia assegnata.	No hay atajos asignados.
+Папка для видео	Video folder	Video-Ordner	Dossier des vidéos	Cartella video	Carpeta de vídeos
+Где лежит ffmpeg	Where is ffmpeg	Wo liegt ffmpeg	Où se trouve ffmpeg	Dove si trova ffmpeg	Dónde está ffmpeg
+Папка для скриншотов	Screenshots folder	Screenshot-Ordner	Dossier des captures	Cartella screenshot	Carpeta de capturas
+Не получилось изменить настройку. Открой параметры Windows и выключи переключатель вручную.	Couldn’t change the setting. Open Windows Settings and turn the switch off manually.	Einstellung konnte nicht geändert werden. Öffne die Windows-Einstellungen und schalte den Schalter manuell aus.	Impossible de modifier le paramètre. Ouvre les Paramètres Windows et désactive l’option manuellement.	Impossibile modificare l’impostazione. Apri le Impostazioni di Windows e disattiva l’opzione manualmente.	No se pudo cambiar la opción. Abre Configuración de Windows y desactiva el interruptor manualmente.
+Готово. Если «Ножницы» всё ещё открываются — выйди из системы и войди снова.	Done. If Snipping Tool still opens, sign out and sign back in.	Fertig. Öffnet sich das Snipping Tool noch, melde dich ab und wieder an.	Terminé. Si l’Outil Capture s’ouvre encore, déconnecte-toi puis reconnecte-toi.	Fatto. Se lo Strumento di cattura si apre ancora, esci e accedi di nuovo.	Listo. Si Recortes se sigue abriendo, cierra sesión y vuelve a iniciarla.
+Перезапустить	Restart	Neu starten	Redémarrer	Riavvia	Reiniciar
+Перезапусти SnapMark, чтобы применить новый язык.	Restart SnapMark to apply the new language.	Starte SnapMark neu, um die neue Sprache zu übernehmen.	Redémarre SnapMark pour appliquer la nouvelle langue.	Riavvia SnapMark per applicare la nuova lingua.	Reinicia SnapMark para aplicar el nuevo idioma.
+Язык изменён	Language changed	Sprache geändert	Langue modifiée	Lingua cambiata	Idioma cambiado
+Версия 	Version 	Version 	Version 	Versione 	Versión 
+О программе	About	Über	À propos	Informazioni	Acerca de
+Видео	Video	Video	Vidéo	Video	Vídeo
+Серия и экспорт	Series & export	Serie & Export	Série et export	Serie ed esportazione	Serie y exportación
+Скриншоты	Screenshots	Screenshots	Captures	Screenshot	Capturas
+Горячие клавиши	Hotkeys	Tastenkürzel	Raccourcis	Scorciatoie	Atajos
+Основные	General	Allgemein	Général	Generale	General
+Пишется звук компьютера	Recording computer audio	Computerton wird aufgenommen	Enregistrement du son de l’ordinateur	Registrazione audio del computer	Grabando el audio del equipo
+Пишется микрофон	Recording microphone	Mikrofon wird aufgenommen	Enregistrement du micro	Registrazione del microfono	Grabando el micrófono
+Остановить запись (повторно нажми горячую клавишу записи)	Stop recording (or press the record hotkey again)	Aufnahme beenden (oder Aufnahme-Tastenkürzel erneut drücken)	Arrêter l’enregistrement (ou rappuie sur le raccourci d’enregistrement)	Interrompi la registrazione (o premi di nuovo la scorciatoia)	Detener la grabación (o vuelve a pulsar el atajo de grabación)
+SnapMark — запись	SnapMark — recording	SnapMark – Aufnahme	SnapMark — enregistrement	SnapMark — registrazione	SnapMark — grabación
+Запуск…	Starting…	Startet…	Démarrage…	Avvio…	Iniciando…
+SnapMark — область записи	SnapMark — recording area	SnapMark – Aufnahmebereich	SnapMark — zone d’enregistrement	SnapMark — area di registrazione	SnapMark — área de grabación
+Ошибка при остановке записи	Error while stopping the recording	Fehler beim Beenden der Aufnahme	Erreur à l’arrêt de l’enregistrement	Errore durante l’arresto della registrazione	Error al detener la grabación
+Видео сохранено, но без звука	Video saved, but without sound	Video gespeichert, aber ohne Ton	Vidéo enregistrée, mais sans son	Video salvato, ma senza audio	Vídeo guardado, pero sin sonido
+Видео не сохранилось	Video wasn’t saved	Video wurde nicht gespeichert	La vidéo n’a pas été enregistrée	Il video non è stato salvato	El vídeo no se guardó
+Видео сохранено	Video saved	Video gespeichert	Vidéo enregistrée	Video salvato	Vídeo guardado
+Сохраняю видео…	Saving video…	Video wird gespeichert…	Enregistrement de la vidéo…	Salvataggio del video…	Guardando el vídeo…
+Собираю GIF…	Building GIF…	GIF wird erstellt…	Création du GIF…	Creazione della GIF…	Creando el GIF…
+Запись остановлена	Recording stopped	Aufnahme beendet	Enregistrement arrêté	Registrazione interrotta	Grabación detenida
+Запись не запустилась	Recording didn’t start	Aufnahme konnte nicht gestartet werden	L’enregistrement n’a pas démarré	La registrazione non è partita	La grabación no se inició
+Установи ffmpeg (brew install ffmpeg / apt install ffmpeg) или укажи путь в настройках → Видео.	Install ffmpeg (brew install ffmpeg / apt install ffmpeg) or set its path in Settings → Video.	Installiere ffmpeg (brew install ffmpeg / apt install ffmpeg) oder gib den Pfad unter Einstellungen → Video an.	Installe ffmpeg (brew install ffmpeg / apt install ffmpeg) ou indique son chemin dans Paramètres → Vidéo.	Installa ffmpeg (brew install ffmpeg / apt install ffmpeg) o indica il percorso in Impostazioni → Video.	Instala ffmpeg (brew install ffmpeg / apt install ffmpeg) o indica su ruta en Configuración → Vídeo.
+Для записи видео нужен ffmpeg	Video recording needs ffmpeg	Für Videoaufnahmen wird ffmpeg benötigt	L’enregistrement vidéo nécessite ffmpeg	Per registrare video serve ffmpeg	Para grabar vídeo hace falta ffmpeg
+Это бесплатный видеокодер. SnapMark скачает его сам (~90 МБ, один раз).	It’s a free video encoder. SnapMark will download it for you (~90 MB, once).	Das ist ein kostenloser Video-Encoder. SnapMark lädt ihn selbst herunter (~90 MB, einmalig).	C’est un encodeur vidéo gratuit. SnapMark le télécharge pour toi (~90 Mo, une seule fois).	È un codificatore video gratuito. SnapMark lo scarica da solo (~90 MB, una volta).	Es un codificador de vídeo gratuito. SnapMark lo descarga por ti (~90 MB, una sola vez).
+Останови текущую запись кнопкой «Стоп» или горячей клавишей записи.	Stop the current recording with the Stop button or the record hotkey.	Beende die laufende Aufnahme mit „Stopp“ oder dem Aufnahme-Tastenkürzel.	Arrête l’enregistrement en cours avec le bouton Arrêter ou le raccourci d’enregistrement.	Interrompi la registrazione in corso con il pulsante Stop o la scorciatoia di registrazione.	Detén la grabación actual con el botón Detener o el atajo de grabación.
+Запись уже идёт	Already recording	Aufnahme läuft bereits	Enregistrement déjà en cours	Registrazione già in corso	Ya se está grabando
+Не удалось преобразовать изображение.	Couldn’t convert the image.	Bild konnte nicht konvertiert werden.	Impossible de convertir l’image.	Impossibile convertire l’immagine.	No se pudo convertir la imagen.
+Не удалось декодировать изображение.	Couldn’t decode the image.	Bild konnte nicht dekodiert werden.	Impossible de décoder l’image.	Impossibile decodificare l’immagine.	No se pudo decodificar la imagen.
+Русский	Русский	Русский	Русский	Русский	Русский
+Не задано	Not set	Nicht festgelegt	Non défini	Non impostato	Sin asignar
+Выбор, перемещение и удаление объектов (V)	Select, move and delete objects (V)	Objekte auswählen, verschieben und löschen (V)	Sélectionner, déplacer et supprimer des objets (V)	Seleziona, sposta ed elimina oggetti (V)	Seleccionar, mover y eliminar objetos (V)
+Перо (P): толщина зависит от скорости и нажима. Задержи в конце — станет ровной фигурой	Pen (P): width follows speed and pressure. Hold at the end to turn it into a clean shape	Stift (P): Strichstärke folgt Tempo und Druck. Am Ende kurz halten – wird zur sauberen Form	Stylo (P) : l’épaisseur suit la vitesse et la pression. Maintiens à la fin pour obtenir une forme nette	Penna (P): lo spessore segue velocità e pressione. Tieni fermo alla fine per ottenere una forma pulita	Pluma (P): el grosor depende de la velocidad y la presión. Mantén al final para convertirlo en una forma limpia
+Карандаш (C)	Pencil (C)	Bleistift (C)	Crayon (C)	Matita (C)	Lápiz (C)
+Маркер-выделитель (H)	Highlighter (H)	Textmarker (H)	Surligneur (H)	Evidenziatore (H)	Resaltador (H)
+Ластик (E): проведи по объекту, чтобы удалить	Eraser (E): drag over an object to delete it	Radierer (E): über ein Objekt ziehen, um es zu löschen	Gomme (E) : passe sur un objet pour le supprimer	Gomma (E): passa sopra un oggetto per eliminarlo	Borrador (E): pasa sobre un objeto para eliminarlo
+Фигура (S)	Shape (S)	Form (S)	Forme (S)	Forma (S)	Forma (S)
+Выбрать фигуру	Choose shape	Form wählen	Choisir une forme	Scegli forma	Elegir forma
+Текст (T)	Text (T)	Text (T)	Texte (T)	Testo (T)	Texto (T)
+Метка A, B, C… с комментарием (M)	Marker A, B, C… with a comment (M)	Markierung A, B, C… mit Kommentar (M)	Repère A, B, C… avec commentaire (M)	Indicatore A, B, C… con commento (M)	Marcador A, B, C… con comentario (M)
+Метка со стрелкой (N): нажми и тяни к цели	Marker with arrow (N): press and drag to the target	Markierung mit Pfeil (N): drücken und zum Ziel ziehen	Repère avec flèche (N) : appuie et fais glisser vers la cible	Indicatore con freccia (N): premi e trascina verso il punto	Marcador con flecha (N): pulsa y arrastra hacia el objetivo
+Цвет, прозрачность, толщина, шрифт	Color, opacity, thickness, font	Farbe, Deckkraft, Stärke, Schrift	Couleur, opacité, épaisseur, police	Colore, opacità, spessore, carattere	Color, opacidad, grosor, fuente
+Тонкая линия	Thin line	Dünne Linie	Trait fin	Linea sottile	Línea fina
+Средняя линия	Medium line	Mittlere Linie	Trait moyen	Linea media	Línea media
+Толстая линия	Thick line	Dicke Linie	Trait épais	Linea spessa	Línea gruesa
+Отменить (Ctrl+Z)	Undo (Ctrl+Z)	Rückgängig (Strg+Z)	Annuler (Ctrl+Z)	Annulla (Ctrl+Z)	Deshacer (Ctrl+Z)
+Повторить (Ctrl+Y)	Redo (Ctrl+Y)	Wiederholen (Strg+Y)	Rétablir (Ctrl+Y)	Ripeti (Ctrl+Y)	Rehacer (Ctrl+Y)
+Линия (Shift — шаг 45°)	Line (Shift — 45° steps)	Linie (Umschalt – 45°-Schritte)	Ligne (Maj — pas de 45°)	Linea (Maiusc — passi di 45°)	Línea (Mayús: pasos de 45°)
+Стрелка	Arrow	Pfeil	Flèche	Freccia	Flecha
+Двойная стрелка	Double arrow	Doppelpfeil	Double flèche	Doppia freccia	Flecha doble
+Прямоугольник (Shift — квадрат)	Rectangle (Shift — square)	Rechteck (Umschalt – Quadrat)	Rectangle (Maj — carré)	Rettangolo (Maiusc — quadrato)	Rectángulo (Mayús: cuadrado)
+Эллипс (Shift — круг)	Ellipse (Shift — circle)	Ellipse (Umschalt – Kreis)	Ellipse (Maj — cercle)	Ellisse (Maiusc — cerchio)	Elipse (Mayús: círculo)
+Копировать (Ctrl+C). Если идёт серия — добавить и скопировать всю серию	Copy (Ctrl+C). During a series — add and copy the whole series	Kopieren (Strg+C). Läuft eine Serie – hinzufügen und die ganze Serie kopieren	Copier (Ctrl+C). Pendant une série — ajouter et copier toute la série	Copia (Ctrl+C). Durante una serie — aggiungi e copia l’intera serie	Copiar (Ctrl+C). Durante una serie: añadir y copiar toda la serie
+Сохранить как… (Ctrl+Shift+S). Быстрое сохранение — Ctrl+S	Save as… (Ctrl+Shift+S). Quick save — Ctrl+S	Speichern unter… (Strg+Umschalt+S). Schnell speichern – Strg+S	Enregistrer sous… (Ctrl+Maj+S). Enregistrement rapide — Ctrl+S	Salva con nome… (Ctrl+Maiusc+S). Salvataggio rapido — Ctrl+S	Guardar como… (Ctrl+Mayús+S). Guardado rápido: Ctrl+S
+Печать (Ctrl+P)	Print (Ctrl+P)	Drucken (Strg+P)	Imprimer (Ctrl+P)	Stampa (Ctrl+P)	Imprimir (Ctrl+P)
+Найти похожие в Google (Ctrl+G)	Search similar on Google (Ctrl+G)	Ähnliche bei Google suchen (Strg+G)	Rechercher des images similaires sur Google (Ctrl+G)	Cerca simili su Google (Ctrl+G)	Buscar similares en Google (Ctrl+G)
+Записать видео этой области (Ctrl+R)	Record video of this area (Ctrl+R)	Video dieses Bereichs aufnehmen (Strg+R)	Enregistrer une vidéo de cette zone (Ctrl+R)	Registra un video di quest’area (Ctrl+R)	Grabar vídeo de esta área (Ctrl+R)
+Закрыть (Esc)	Close (Esc)	Schließen (Esc)	Fermer (Échap)	Chiudi (Esc)	Cerrar (Esc)
+Начать запись (Enter)	Start recording (Enter)	Aufnahme starten (Enter)	Démarrer l’enregistrement (Entrée)	Avvia registrazione (Invio)	Iniciar grabación (Intro)
+Начать запись	Start recording	Aufnahme starten	Enregistrer	Avvia registrazione	Iniciar grabación
+Микрофон вкл/выкл	Microphone on/off	Mikrofon an/aus	Micro activé/désactivé	Microfono sì/no	Micrófono sí/no
+Звук компьютера вкл/выкл	Computer audio on/off	Computerton an/aus	Son de l’ordinateur activé/désactivé	Audio del computer sì/no	Audio del equipo sí/no
+Формат, частота кадров и звук	Format, frame rate and audio	Format, Bildrate und Ton	Format, fréquence d’images et son	Formato, frequenza fotogrammi e audio	Formato, fotogramas por segundo y sonido
+Отмена (Esc)	Cancel (Esc)	Abbrechen (Esc)	Annuler (Échap)	Annulla (Esc)	Cancelar (Esc)
+ФОРМАТ	FORMAT	FORMAT	FORMAT	FORMATO	FORMATO
+ЧАСТОТА КАДРОВ	FRAME RATE	BILDRATE	IMAGES PAR SECONDE	FOTOGRAMMI AL SECONDO	FOTOGRAMAS POR SEGUNDO
+ЗВУК	AUDIO	TON	SON	AUDIO	SONIDO
+Без звука	No audio	Ohne Ton	Sans son	Senza audio	Sin sonido
+Микрофон	Microphone	Mikrofon	Micro	Microfono	Micrófono
+Звук компьютера	Computer audio	Computerton	Son de l’ordinateur	Audio del computer	Audio del equipo
+Микрофон + компьютер	Mic + computer	Mikrofon + Computer	Micro + ordinateur	Microfono + computer	Micrófono + equipo
+GIF не содержит звука — запись будет без него.	GIF has no sound — the recording will be silent.	GIF hat keinen Ton – die Aufnahme ist stumm.	Le GIF n’a pas de son — l’enregistrement sera muet.	La GIF non ha audio — la registrazione sarà muta.	El GIF no tiene sonido: la grabación será muda.
+ПО УМОЛЧАНИЮ ДЛЯ НОВЫХ ОБЪЕКТОВ · ЦВЕТ	DEFAULTS FOR NEW OBJECTS · COLOR	STANDARD FÜR NEUE OBJEKTE · FARBE	PAR DÉFAUT POUR LES NOUVEAUX OBJETS · COULEUR	PREDEFINITI PER NUOVI OGGETTI · COLORE	PREDETERMINADO PARA OBJETOS NUEVOS · COLOR
+Значения по умолчанию для всего нового: пера, фигур, текста и меток. Уже нарисованный объект меняется в панели рядом с ним.	Defaults for everything new: pen, shapes, text and markers. An object you’ve already drawn is changed in the panel next to it.	Standardwerte für alles Neue: Stift, Formen, Text und Markierungen. Bereits gezeichnete Objekte änderst du im Panel daneben.	Valeurs par défaut pour tout ce qui est nouveau : stylo, formes, texte et repères. Un objet déjà dessiné se modifie dans le panneau à côté.	Valori predefiniti per tutto ciò che è nuovo: penna, forme, testo e indicatori. Un oggetto già disegnato si modifica nel pannello accanto.	Valores predeterminados para todo lo nuevo: pluma, formas, texto y marcadores. Un objeto ya dibujado se cambia en el panel de al lado.
+ПРОЗРАЧНОСТЬ, ТОЛЩИНА, ФИГУРЫ	OPACITY, THICKNESS, SHAPES	DECKKRAFT, STÄRKE, FORMEN	OPACITÉ, ÉPAISSEUR, FORMES	OPACITÀ, SPESSORE, FORME	OPACIDAD, GROSOR, FORMAS
+Прозрачность	Opacity	Deckkraft	Opacité	Opacità	Opacidad
+Заливка фигур	Filled shapes	Gefüllte Formen	Formes pleines	Forme piene	Formas rellenas
+Залитые фигуры — например, чтобы скрыть данные	Filled shapes — e.g. to hide data	Gefüllte Formen – z. B. um Daten zu verdecken	Formes pleines — par ex. pour masquer des données	Forme piene — ad es. per nascondere dati	Formas rellenas: p. ej. para ocultar datos
+ТЕКСТ И МЕТКИ	TEXT & MARKERS	TEXT & MARKIERUNGEN	TEXTE ET REPÈRES	TESTO E INDICATORI	TEXTO Y MARCADORES
+Размер	Size	Größe	Taille	Dimensione	Tamaño
+Размер текста и меток	Text and marker size	Größe von Text und Markierungen	Taille du texte et des repères	Dimensione di testo e indicatori	Tamaño del texto y los marcadores
+Тёмная тень под светлым текстом, светлая — под тёмным	Dark shadow under light text, light under dark	Dunkler Schatten unter hellem Text, heller unter dunklem	Ombre foncée sous texte clair, claire sous texte foncé	Ombra scura sotto testo chiaro, chiara sotto testo scuro	Sombra oscura bajo texto claro, clara bajo texto oscuro
+ФОРМА И ОБОЗНАЧЕНИЕ МЕТОК	MARKER SHAPE & LABELS	FORM & BESCHRIFTUNG DER MARKIERUNGEN	FORME ET NUMÉROTATION DES REPÈRES	FORMA ED ETICHETTE DEGLI INDICATORI	FORMA Y ETIQUETAS DE LOS MARCADORES
+Форма и размер — для новых меток. Обозначение A B C / 1 2 3 сразу меняется у всех меток скриншота.	Shape and size apply to new markers. A B C / 1 2 3 labeling changes for all markers of the screenshot at once.	Form und Größe gelten für neue Markierungen. Die Beschriftung A B C / 1 2 3 ändert sich sofort für alle Markierungen des Screenshots.	La forme et la taille s’appliquent aux nouveaux repères. La numérotation A B C / 1 2 3 change aussitôt pour tous les repères de la capture.	Forma e dimensione valgono per i nuovi indicatori. L’etichetta A B C / 1 2 3 cambia subito per tutti gli indicatori dello screenshot.	La forma y el tamaño se aplican a los marcadores nuevos. La numeración A B C / 1 2 3 cambia al instante en todos los marcadores de la captura.
+ЦВЕТ РАМКИ ВЫДЕЛЕНИЯ	SELECTION FRAME COLOR	FARBE DES AUSWAHLRAHMENS	COULEUR DU CADRE DE SÉLECTION	COLORE DELLA CORNICE DI SELEZIONE	COLOR DEL MARCO DE SELECCIÓN
+Комментарии к меткам	Marker comments	Kommentare zu Markierungen	Commentaires des repères	Commenti agli indicatori	Comentarios de marcadores
+На картинке	On image	Im Bild	Sur l’image	Sull’immagine	En la imagen
+Рисовать комментарии рядом с метками прямо на скриншоте (текстом они копируются в любом случае)	Draw comments next to markers right on the screenshot (they’re copied as text either way)	Kommentare neben den Markierungen direkt ins Bild zeichnen (als Text werden sie immer kopiert)	Afficher les commentaires à côté des repères directement sur la capture (ils sont copiés en texte dans tous les cas)	Disegna i commenti accanto agli indicatori direttamente sullo screenshot (vengono comunque copiati come testo)	Dibujar los comentarios junto a los marcadores en la captura (se copian como texto de todos modos)
+Шрифт, цвет и рамка подписей	Label font, color and frame	Schrift, Farbe und Rahmen der Beschriftungen	Police, couleur et cadre des légendes	Carattere, colore e cornice delle didascalie	Fuente, color y marco de las leyendas
+Настройки SnapMark	SnapMark Settings	SnapMark-Einstellungen	Paramètres de SnapMark	Impostazioni di SnapMark	Configuración de SnapMark
+Внешний вид	Appearance	Darstellung	Apparence	Aspetto	Apariencia
+Язык	Language	Sprache	Langue	Lingua	Idioma
+Тема	Theme	Design	Thème	Tema	Tema
+Как в системе	System	System	Système	Sistema	Sistema
+Светлая	Light	Hell	Clair	Chiaro	Claro
+Тёмная	Dark	Dunkel	Sombre	Scuro	Oscuro
+Система	System	System	Système	Sistema	Sistema
+Запускать при входе в систему	Launch at sign-in	Beim Anmelden starten	Lancer à l’ouverture de session	Avvia all’accesso	Iniciar al iniciar sesión
+Показывать уведомления	Show notifications	Benachrichtigungen anzeigen	Afficher les notifications	Mostra notifiche	Mostrar notificaciones
+Сочетания	Shortcuts	Tastenkombinationen	Raccourcis	Combinazioni	Atajos
+Скриншот области	Region screenshot	Bereichs-Screenshot	Capture d’une zone	Screenshot di un’area	Captura de área
+Скриншот всего экрана	Full-screen screenshot	Screenshot des ganzen Bildschirms	Capture de tout l’écran	Screenshot dello schermo intero	Captura de pantalla completa
+Запись видео (старт / стоп)	Video recording (start / stop)	Videoaufnahme (Start / Stopp)	Enregistrement vidéo (démarrer / arrêter)	Registrazione video (avvia / ferma)	Grabación de vídeo (iniciar / detener)
+Нажми на поле и введи сочетание. Esc — отмена, Backspace — очистить.	Click a field and press a shortcut. Esc — cancel, Backspace — clear.	Klicke auf ein Feld und drücke eine Tastenkombination. Esc – Abbrechen, Rücktaste – Löschen.	Clique sur un champ et appuie sur un raccourci. Échap — annuler, Retour arrière — effacer.	Fai clic su un campo e premi una combinazione. Esc — annulla, Backspace — cancella.	Haz clic en un campo y pulsa un atajo. Esc: cancelar, Retroceso: borrar.
+PrtSc занят «Ножницами» Windows	PrtSc is taken by Windows Snipping Tool	PrtSc wird vom Windows Snipping Tool belegt	Impr. écran est utilisé par l’Outil Capture de Windows	Stamp è occupato dallo Strumento di cattura di Windows	ImpPant está ocupado por Recortes de Windows
+В Windows 11 по PrtSc открываются «Ножницы». SnapMark перехватывает клавишу сам (как ShareX и PowerToys), но если всё равно открываются «Ножницы» — отключи эту функцию Windows. После отключения может понадобиться перезапуск SnapMark или выход из системы.	In Windows 11, PrtSc opens Snipping Tool. SnapMark intercepts the key itself (like ShareX and PowerToys), but if Snipping Tool still opens, turn this Windows feature off. You may need to restart SnapMark or sign out afterwards.	In Windows 11 öffnet PrtSc das Snipping Tool. SnapMark fängt die Taste selbst ab (wie ShareX und PowerToys) – öffnet sich trotzdem das Snipping Tool, schalte diese Windows-Funktion aus. Danach ist eventuell ein Neustart von SnapMark oder eine Neuanmeldung nötig.	Sous Windows 11, Impr. écran ouvre l’Outil Capture. SnapMark intercepte la touche lui-même (comme ShareX et PowerToys), mais si l’Outil Capture s’ouvre quand même, désactive cette fonction de Windows. Un redémarrage de SnapMark ou une reconnexion peut ensuite être nécessaire.	In Windows 11 il tasto Stamp apre lo Strumento di cattura. SnapMark intercetta il tasto da solo (come ShareX e PowerToys), ma se lo Strumento di cattura si apre comunque, disattiva questa funzione di Windows. Potrebbe servire riavviare SnapMark o uscire e rientrare nell’account.	En Windows 11, ImpPant abre Recortes. SnapMark intercepta la tecla por sí mismo (como ShareX y PowerToys), pero si Recortes se sigue abriendo, desactiva esta función de Windows. Después puede que haga falta reiniciar SnapMark o cerrar sesión.
+Отключить автоматически	Turn off automatically	Automatisch ausschalten	Désactiver automatiquement	Disattiva automaticamente	Desactivar automáticamente
+Открыть параметры Windows	Open Windows Settings	Windows-Einstellungen öffnen	Ouvrir les Paramètres Windows	Apri Impostazioni di Windows	Abrir Configuración de Windows
+Состояние	Status	Status	État	Stato	Estado
+Формат	Format	Format	Format	Formato	Formato
+Формат файла	File format	Dateiformat	Format de fichier	Formato file	Formato de archivo
+PNG — без потерь	PNG — lossless	PNG – verlustfrei	PNG — sans perte	PNG — senza perdita	PNG: sin pérdida
+JPG — компактный	JPG — compact	JPG – kompakt	JPG — compact	JPG — compatto	JPG: compacto
+WebP — современный	WebP — modern	WebP – modern	WebP — moderne	WebP — moderno	WebP: moderno
+BMP — без сжатия	BMP — uncompressed	BMP – unkomprimiert	BMP — non compressé	BMP — non compresso	BMP: sin compresión
+Качество (JPG / WebP)	Quality (JPG / WebP)	Qualität (JPG / WebP)	Qualité (JPG / WebP)	Qualità (JPG / WebP)	Calidad (JPG / WebP)
+Рамка выделения	Selection frame	Auswahlrahmen	Cadre de sélection	Cornice di selezione	Marco de selección
+Цвет рамки	Frame color	Rahmenfarbe	Couleur du cadre	Colore della cornice	Color del marco
+Сохранение	Saving	Speichern	Enregistrement	Salvataggio	Guardado
+Папка	Folder	Ordner	Dossier	Cartella	Carpeta
+Выбрать…	Choose…	Auswählen…	Choisir…	Scegli…	Elegir…
+Имя файла	File name	Dateiname	Nom du fichier	Nome file	Nombre de archivo
+Автоматически сохранять копию при копировании	Automatically save a copy when copying	Beim Kopieren automatisch eine Kopie speichern	Enregistrer automatiquement une copie lors de la copie	Salva automaticamente una copia quando copi	Guardar una copia automáticamente al copiar
+Поиск по картинке	Image search	Bildersuche	Recherche par image	Ricerca per immagine	Búsqueda por imagen
+Способ поиска в Google	Google search method	Google-Suchmethode	Méthode de recherche Google	Metodo di ricerca Google	Método de búsqueda en Google
+Google Lens — автоматически	Google Lens — automatic	Google Lens – automatisch	Google Lens — automatique	Google Lens — automatico	Google Lens: automático
+Буфер обмена + Google Картинки	Clipboard + Google Images	Zwischenablage + Google Bilder	Presse-papiers + Google Images	Appunti + Google Immagini	Portapapeles + Google Imágenes
+Картинка отправляется прямо из твоего браузера в Google, без промежуточных серверов (LightShot сначала загружает её на prnt.sc).	The image is sent straight from your browser to Google, with no servers in between (LightShot uploads it to prnt.sc first).	Das Bild geht direkt aus deinem Browser an Google, ohne Zwischenserver (LightShot lädt es zuerst auf prnt.sc hoch).	L’image est envoyée directement de ton navigateur à Google, sans serveur intermédiaire (LightShot la téléverse d’abord sur prnt.sc).	L’immagine viene inviata direttamente dal tuo browser a Google, senza server intermedi (LightShot la carica prima su prnt.sc).	La imagen se envía directamente desde tu navegador a Google, sin servidores intermedios (LightShot primero la sube a prnt.sc).
+Текст комментариев	Comment text	Kommentartext	Texte des commentaires	Testo dei commenti	Texto de los comentarios
+Строка метки	Marker line	Markierungszeile	Ligne de repère	Riga dell’indicatore	Línea de marcador
+Заголовок перед каждым скриншотом	Heading before each screenshot	Überschrift vor jedem Screenshot	Titre avant chaque capture	Intestazione prima di ogni screenshot	Encabezado antes de cada captura
+Шаблон заголовка	Heading template	Überschriftsvorlage	Modèle de titre	Modello di intestazione	Plantilla de encabezado
+Вставка	Pasting	Einfügen	Collage	Incolla	Pegado
+Умная вставка	Smart paste	Intelligentes Einfügen	Collage intelligent	Incolla intelligente	Pegado inteligente
+Одно нажатие Ctrl+V: в браузер и мессенджер — картинки, а следом текст; в Word, Outlook, WordPad — картинки вместе с подписями; в Проводник — файлы.	One Ctrl+V: into browsers and messengers — images, then text; into Word, Outlook, WordPad — images with captions; into Explorer — files.	Ein Strg+V: in Browser und Messenger – Bilder, danach Text; in Word, Outlook, WordPad – Bilder mit Beschriftungen; in den Explorer – Dateien.	Un seul Ctrl+V : dans le navigateur et les messageries — les images puis le texte ; dans Word, Outlook, WordPad — les images avec légendes ; dans l’Explorateur — les fichiers.	Un solo Ctrl+V: nel browser e nei messenger — immagini e poi testo; in Word, Outlook, WordPad — immagini con didascalie; in Esplora file — file.	Un solo Ctrl+V: en navegadores y mensajería, imágenes y luego texto; en Word, Outlook y WordPad, imágenes con leyendas; en el Explorador, archivos.
+Без умной вставки класть в буфер	Without smart paste, put on the clipboard	Ohne intelligentes Einfügen in die Zwischenablage legen	Sans collage intelligent, mettre dans le presse-papiers	Senza incolla intelligente, mettere negli appunti	Sin pegado inteligente, poner en el portapapeles
+Всё сразу: текст + картинки + файлы	Everything: text + images + files	Alles: Text + Bilder + Dateien	Tout : texte + images + fichiers	Tutto: testo + immagini + file	Todo: texto + imágenes + archivos
+Только текст комментариев	Comment text only	Nur Kommentartext	Texte des commentaires uniquement	Solo testo dei commenti	Solo texto de los comentarios
+Файлы картинок + текст	Image files + text	Bilddateien + Text	Fichiers images + texte	File immagine + testo	Archivos de imagen + texto
+Без умной вставки каждое приложение само выбирает один формат: веб-чаты берут только картинки, Блокнот — только текст. Умная вставка работает в Windows.	Without smart paste, each app picks one format itself: web chats take only images, Notepad only text. Smart paste works on Windows.	Ohne intelligentes Einfügen wählt jede App selbst ein Format: Web-Chats nehmen nur Bilder, Editor nur Text. Intelligentes Einfügen funktioniert unter Windows.	Sans collage intelligent, chaque application choisit un seul format : les chats web ne prennent que les images, le Bloc-notes que le texte. Le collage intelligent fonctionne sous Windows.	Senza incolla intelligente ogni app sceglie un solo formato: le chat web prendono solo le immagini, il Blocco note solo il testo. L’incolla intelligente funziona su Windows.	Sin pegado inteligente, cada aplicación elige un solo formato: los chats web solo toman imágenes y el Bloc de notas solo texto. El pegado inteligente funciona en Windows.
+Пример	Example	Beispiel	Exemple	Esempio	Ejemplo
+Запись	Recording	Aufnahme	Enregistrement	Registrazione	Grabación
+MP4 (H.264) — везде открывается	MP4 (H.264) — plays everywhere	MP4 (H.264) – läuft überall	MP4 (H.264) — lisible partout	MP4 (H.264) — si apre ovunque	MP4 (H.264): se abre en todas partes
+MKV (H.264) — устойчив к сбоям	MKV (H.264) — crash-resistant	MKV (H.264) – robust bei Abstürzen	MKV (H.264) — résistant aux plantages	MKV (H.264) — resistente ai crash	MKV (H.264): resistente a fallos
+WebM (VP9) — для веба	WebM (VP9) — for the web	WebM (VP9) – fürs Web	WebM (VP9) — pour le web	WebM (VP9) — per il web	WebM (VP9): para la web
+GIF — без звука	GIF — no sound	GIF – ohne Ton	GIF — sans son	GIF — senza audio	GIF: sin sonido
+Кадров в секунду	Frames per second	Bilder pro Sekunde	Images par seconde	Fotogrammi al secondo	Fotogramas por segundo
+Показывать рамку вокруг области	Show a frame around the area	Rahmen um den Bereich anzeigen	Afficher un cadre autour de la zone	Mostra una cornice attorno all’area	Mostrar un marco alrededor del área
+Звук	Audio	Ton	Son	Audio	Sonido
+Источник по умолчанию	Default source	Standardquelle	Source par défaut	Sorgente predefinita	Fuente predeterminada
+Микрофон + звук компьютера	Microphone + computer audio	Mikrofon + Computerton	Micro + son de l’ordinateur	Microfono + audio del computer	Micrófono + audio del equipo
+Проверка микрофона	Microphone test	Mikrofontest	Test du micro	Test del microfono	Prueba del micrófono
+Что записывать: колонки или наушники	What to record: speakers or headphones	Was aufnehmen: Lautsprecher oder Kopfhörer	Quoi enregistrer : haut-parleurs ou casque	Cosa registrare: altoparlanti o cuffie	Qué grabar: altavoces o auriculares
+ffmpeg и папка	ffmpeg & folder	ffmpeg & Ordner	ffmpeg et dossier	ffmpeg e cartella	ffmpeg y carpeta
+Путь к ffmpeg	ffmpeg path	ffmpeg-Pfad	Chemin de ffmpeg	Percorso di ffmpeg	Ruta de ffmpeg
+Авто: рядом с exe или в PATH	Auto: next to the exe or in PATH	Auto: neben der exe oder im PATH	Auto : à côté de l’exe ou dans le PATH	Auto: accanto all’exe o nel PATH	Auto: junto al exe o en el PATH
+Установить ffmpeg автоматически	Install ffmpeg automatically	ffmpeg automatisch installieren	Installer ffmpeg automatiquement	Installa ffmpeg automaticamente	Instalar ffmpeg automáticamente
+Бесплатный видеокодер, ~90 МБ, ставится один раз в папку пользователя без прав администратора.	Free video encoder, ~90 MB, installed once into your user folder without admin rights.	Kostenloser Video-Encoder, ~90 MB, wird einmalig ohne Administratorrechte in deinen Benutzerordner installiert.	Encodeur vidéo gratuit, ~90 Mo, installé une seule fois dans ton dossier utilisateur sans droits d’administrateur.	Codificatore video gratuito, ~90 MB, installato una sola volta nella cartella utente senza diritti di amministratore.	Codificador de vídeo gratuito, ~90 MB, se instala una sola vez en tu carpeta de usuario sin permisos de administrador.
+Или вручную: winget install Gyan.FFmpeg, либо положи ffmpeg.exe рядом с SnapMark.exe.	Or manually: winget install Gyan.FFmpeg, or put ffmpeg.exe next to SnapMark.exe.	Oder manuell: winget install Gyan.FFmpeg, oder lege ffmpeg.exe neben SnapMark.exe.	Ou manuellement : winget install Gyan.FFmpeg, ou place ffmpeg.exe à côté de SnapMark.exe.	Oppure manualmente: winget install Gyan.FFmpeg, o metti ffmpeg.exe accanto a SnapMark.exe.	O manualmente: winget install Gyan.FFmpeg, o coloca ffmpeg.exe junto a SnapMark.exe.
+Скриншоты с метками и комментариями, серии для отчётов и запись экрана.	Screenshots with markers and comments, series for reports and screen recording.	Screenshots mit Markierungen und Kommentaren, Serien für Berichte und Bildschirmaufnahmen.	Captures avec repères et commentaires, séries pour les rapports et enregistrement d’écran.	Screenshot con indicatori e commenti, serie per i report e registrazione dello schermo.	Capturas con marcadores y comentarios, series para informes y grabación de pantalla.
+Разработчик	Developer	Entwickler	Développeur	Sviluppatore	Desarrollador
+Файлы	Files	Dateien	Fichiers	File	Archivos
+Файл настроек	Settings file	Einstellungsdatei	Fichier de paramètres	File delle impostazioni	Archivo de configuración
+Открыть папку	Open folder	Ordner öffnen	Ouvrir le dossier	Apri cartella	Abrir carpeta
+Запись прервалась	Recording interrupted	Aufnahme abgebrochen	Enregistrement interrompu	Registrazione interrotta	Grabación interrumpida
+ffmpeg неожиданно завершился. Сохраняю то, что успело записаться.	ffmpeg stopped unexpectedly. Saving what was recorded so far.	ffmpeg wurde unerwartet beendet. Das bisher Aufgenommene wird gespeichert.	ffmpeg s’est arrêté de façon inattendue. J’enregistre ce qui a déjà été capturé.	ffmpeg si è chiuso inaspettatamente. Salvo ciò che è stato registrato finora.	ffmpeg se cerró inesperadamente. Guardando lo que se ha grabado hasta ahora.
+Что-то пошло не так	Something went wrong	Etwas ist schiefgelaufen	Un problème est survenu	Qualcosa è andato storto	Algo salió mal
+Нужно разрешение «Запись экрана»	Screen Recording permission needed	Berechtigung „Bildschirmaufnahme“ erforderlich	Autorisation « Enregistrement de l’écran » requise	Serve il permesso «Registrazione schermo»	Se necesita el permiso «Grabación de pantalla»
+Системные настройки → Конфиденциальность и безопасность → Запись экрана: включи SnapMark и перезапусти его.	System Settings → Privacy & Security → Screen Recording: turn on SnapMark and restart it.	Systemeinstellungen → Datenschutz & Sicherheit → Bildschirmaufnahme: SnapMark aktivieren und neu starten.	Réglages Système → Confidentialité et sécurité → Enregistrement de l’écran : active SnapMark et redémarre-le.	Impostazioni di Sistema → Privacy e sicurezza → Registrazione schermo: attiva SnapMark e riavvialo.	Ajustes del Sistema → Privacidad y seguridad → Grabación de pantalla: activa SnapMark y reinícialo.
+Открыть настройки	Open Settings	Einstellungen öffnen	Ouvrir les réglages	Apri impostazioni	Abrir ajustes
+В сеансе Wayland программы не могут перехватывать клавиши. Назначь сочетание в настройках системы на команду: snapmark --region (или --full, --record).	In a Wayland session apps can’t capture global keys. Assign a shortcut in your system settings to the command: snapmark --region (or --full, --record).	In einer Wayland-Sitzung dürfen Programme keine globalen Tasten abfangen. Lege in den Systemeinstellungen ein Kürzel für den Befehl an: snapmark --region (oder --full, --record).	Dans une session Wayland, les applications ne peuvent pas intercepter les touches. Attribue un raccourci dans les paramètres du système à la commande : snapmark --region (ou --full, --record).	In una sessione Wayland le app non possono intercettare i tasti. Assegna una scorciatoia nelle impostazioni di sistema al comando: snapmark --region (o --full, --record).	En una sesión Wayland las aplicaciones no pueden capturar teclas globales. Asigna un atajo en la configuración del sistema al comando: snapmark --region (o --full, --record).
+Не удалось подключиться к X-серверу.	Couldn’t connect to the X server.	Verbindung zum X-Server fehlgeschlagen.	Impossible de se connecter au serveur X.	Impossibile connettersi al server X.	No se pudo conectar al servidor X.
+{0}: клавиша не поддерживается	{0}: key not supported	{0}: Taste wird nicht unterstützt	{0} : touche non prise en charge	{0}: tasto non supportato	{0}: tecla no compatible
+{0}: сочетание занято другой программой (например, встроенными скриншотами системы)	{0}: shortcut is taken by another app (e.g. the system’s built-in screenshots)	{0}: Kürzel wird von einer anderen App verwendet (z. B. den Systemscreenshots)	{0} : raccourci déjà utilisé par une autre application (par ex. les captures intégrées du système)	{0}: scorciatoia già usata da un’altra app (ad es. gli screenshot di sistema)	{0}: el atajo lo usa otra aplicación (p. ej. las capturas integradas del sistema)
+Не удалось записать в буфер обмена: 	Couldn’t write to the clipboard: 	Schreiben in die Zwischenablage fehlgeschlagen: 	Impossible d’écrire dans le presse-papiers : 	Impossibile scrivere negli appunti: 	No se pudo escribir en el portapapeles: 
+{0}: клавиша не поддерживается на Mac	{0}: key not supported on Mac	{0}: Taste wird auf dem Mac nicht unterstützt	{0} : touche non prise en charge sur Mac	{0}: tasto non supportato su Mac	{0}: tecla no compatible en Mac
+{0}: сочетание занято другой программой	{0}: shortcut is taken by another app	{0}: Kürzel wird von einer anderen App verwendet	{0} : raccourci déjà utilisé par une autre application	{0}: scorciatoia già usata da un’altra app	{0}: el atajo lo usa otra aplicación
+Запись видео в Linux пока работает только в сеансе X11 (Xorg). На экране входа выбери «Ubuntu на Xorg» / «Plasma (X11)».	On Linux, video recording currently works only in an X11 (Xorg) session. On the login screen choose “Ubuntu on Xorg” / “Plasma (X11)”.	Unter Linux funktioniert die Videoaufnahme derzeit nur in einer X11-Sitzung (Xorg). Wähle im Anmeldebildschirm „Ubuntu auf Xorg“ / „Plasma (X11)“.	Sous Linux, l’enregistrement vidéo ne fonctionne pour l’instant qu’en session X11 (Xorg). À l’écran de connexion, choisis « Ubuntu sur Xorg » / « Plasma (X11) ».	Su Linux la registrazione video per ora funziona solo in una sessione X11 (Xorg). Nella schermata di accesso scegli «Ubuntu su Xorg» / «Plasma (X11)».	En Linux, la grabación de vídeo por ahora solo funciona en una sesión X11 (Xorg). En la pantalla de inicio elige «Ubuntu en Xorg» / «Plasma (X11)».

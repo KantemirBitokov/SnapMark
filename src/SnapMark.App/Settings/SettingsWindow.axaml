@@ -1,0 +1,473 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:l="using:SnapMark.Localization"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="using:SnapMark.UI"
+        x:Class="SnapMark.Settings.SettingsWindow"
+        Classes="sm"
+        Title="{l:Tr 'Настройки SnapMark'}"
+        Width="820" Height="600" MinWidth="680" MinHeight="460"
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="True"
+        Icon="avares://SnapMark/Assets/snapmark.ico">
+
+  <Grid ColumnDefinitions="220,*">
+
+    <!-- ═══════════ Боковое меню ═══════════ -->
+    <Border Classes="sidebar">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="18,44,18,14">
+          <Image Source="avares://SnapMark/Assets/snapmark.png" Width="30" Height="30"/>
+          <StackPanel VerticalAlignment="Center">
+            <TextBlock Text="SnapMark" FontWeight="SemiBold" FontSize="15" Foreground="{DynamicResource Sm.TextPrimary}"/>
+            <TextBlock x:Name="VersionText" Classes="caption"/>
+          </StackPanel>
+        </StackPanel>
+
+        <ListBox x:Name="Nav" Classes="sidebar" SelectedIndex="0">
+          <ListBoxItem>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Classes="navicon" Background="#8E8E93"><Path Data="{StaticResource Icon.Settings}"/></Border>
+              <TextBlock Text="{l:Tr 'Основные'}"/>
+            </StackPanel>
+          </ListBoxItem>
+          <ListBoxItem>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Classes="navicon" Background="#FF9500"><Path Data="{StaticResource Icon.Keyboard}"/></Border>
+              <TextBlock Text="{l:Tr 'Горячие клавиши'}"/>
+            </StackPanel>
+          </ListBoxItem>
+          <ListBoxItem>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Classes="navicon" Background="#0A84FF"><Path Data="{StaticResource Icon.Camera}"/></Border>
+              <TextBlock Text="{l:Tr 'Скриншоты'}"/>
+            </StackPanel>
+          </ListBoxItem>
+          <ListBoxItem>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Classes="navicon" Background="#34C759"><Path Data="{StaticResource Icon.Series}"/></Border>
+              <TextBlock Text="{l:Tr 'Серия и экспорт'}"/>
+            </StackPanel>
+          </ListBoxItem>
+          <ListBoxItem>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Classes="navicon" Background="#FF3B30"><Path Data="{StaticResource Icon.Video}"/></Border>
+              <TextBlock Text="{l:Tr 'Видео'}"/>
+            </StackPanel>
+          </ListBoxItem>
+          <ListBoxItem>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <Border Classes="navicon" Background="#AF52DE"><Path Data="{StaticResource Icon.Info}"/></Border>
+              <TextBlock Text="{l:Tr 'О программе'}"/>
+            </StackPanel>
+          </ListBoxItem>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- ═══════════ Содержимое ═══════════ -->
+    <DockPanel Grid.Column="1">
+      <TextBlock x:Name="PageTitle" DockPanel.Dock="Top" Classes="pagetitle" Margin="30,40,30,10" Text="{l:Tr 'Основные'}"/>
+
+      <!-- Отступы — у содержимого, а не у ScrollViewer: Padding у ScrollViewer «съедает» низ страницы. -->
+      <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <Panel Margin="30,4,30,40">
+
+          <!-- ── Основные ── -->
+          <StackPanel x:Name="PageGeneral" Spacing="20">
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Внешний вид'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Язык'}"/>
+                    <ComboBox x:Name="LanguageCombo" Grid.Column="1" Width="210"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Тема'}"/>
+                    <ComboBox x:Name="ThemeCombo" Grid.Column="1" Width="210">
+                      <ComboBoxItem Content="{l:Tr 'Как в системе'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Светлая'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Тёмная'}"/>
+                    </ComboBox>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Система'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Запускать при входе в систему'}"/>
+                    <ToggleSwitch x:Name="AutostartToggle" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Показывать уведомления'}"/>
+                    <ToggleSwitch x:Name="NotifyToggle" Grid.Column="1"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- ── Горячие клавиши ── -->
+          <StackPanel x:Name="PageHotkeys" Spacing="20" IsVisible="False">
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Сочетания'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Скриншот области'}"/>
+                    <ui:HotkeyBox x:Name="HkRegion" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Скриншот всего экрана'}"/>
+                    <ui:HotkeyBox x:Name="HkFull" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Запись видео (старт / стоп)'}"/>
+                    <ui:HotkeyBox x:Name="HkVideo" Grid.Column="1"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+              <TextBlock Classes="caption" Margin="4,8,4,0"
+                         Text="{l:Tr 'Нажми на поле и введи сочетание. Esc — отмена, Backspace — очистить.'}"/>
+            </StackPanel>
+
+            <Border x:Name="PrtScCard" Classes="card" IsVisible="False">
+              <StackPanel Margin="16,14" Spacing="10">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                  <Border Classes="navicon" Background="#FF9500"><Path Data="{StaticResource Icon.Keyboard}"/></Border>
+                  <TextBlock Text="{l:Tr 'PrtSc занят «Ножницами» Windows'}" FontWeight="SemiBold" VerticalAlignment="Center"
+                             Foreground="{DynamicResource Sm.TextPrimary}"/>
+                </StackPanel>
+                <TextBlock Classes="caption" FontSize="12.5"
+                           Text="{l:Tr 'В Windows 11 по PrtSc открываются «Ножницы». SnapMark перехватывает клавишу сам (как ShareX и PowerToys), но если всё равно открываются «Ножницы» — отключи эту функцию Windows. После отключения может понадобиться перезапуск SnapMark или выход из системы.'}"/>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Button x:Name="DisableSnippingButton" Classes="primary" Content="{l:Tr 'Отключить автоматически'}"/>
+                  <Button x:Name="OpenWinSettingsButton" Classes="soft" Content="{l:Tr 'Открыть параметры Windows'}"/>
+                </StackPanel>
+                <TextBlock x:Name="PrtScStatus" Classes="caption"/>
+              </StackPanel>
+            </Border>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Состояние'}"/>
+              <Border Classes="card">
+                <TextBlock x:Name="HotkeyStatus" Classes="caption" Margin="16,12" FontSize="12.5"/>
+              </Border>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- ── Скриншоты ── -->
+          <StackPanel x:Name="PageScreens" Spacing="20" IsVisible="False">
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Формат'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Формат файла'}"/>
+                    <ComboBox x:Name="FormatCombo" Grid.Column="1" Width="210">
+                      <ComboBoxItem Content="{l:Tr 'PNG — без потерь'}"/>
+                      <ComboBoxItem Content="{l:Tr 'JPG — компактный'}"/>
+                      <ComboBoxItem Content="{l:Tr 'WebP — современный'}"/>
+                      <ComboBoxItem Content="{l:Tr 'BMP — без сжатия'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid x:Name="QualityRow" Classes="row" ColumnDefinitions="*,200,40">
+                    <TextBlock Text="{l:Tr 'Качество (JPG / WebP)'}"/>
+                    <Slider x:Name="QualitySlider" Grid.Column="1" Minimum="10" Maximum="100" TickFrequency="5"
+                            IsSnapToTickEnabled="True"/>
+                    <TextBlock x:Name="QualityValue" Grid.Column="2" HorizontalAlignment="Right"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Рамка выделения'}"/>
+              <Border Classes="card">
+                <Grid Classes="row" ColumnDefinitions="*,Auto">
+                  <TextBlock Text="{l:Tr 'Цвет рамки'}"/>
+                  <WrapPanel x:Name="FrameColors" Grid.Column="1" Orientation="Horizontal"/>
+                </Grid>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Сохранение'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Папка'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock x:Name="FolderText" Classes="caption" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                      <Button x:Name="OpenFolderButton" Classes="soft" Content="{l:Tr 'Открыть'}"/>
+                      <Button x:Name="ChooseFolderButton" Classes="soft" Content="{l:Tr 'Выбрать…'}"/>
+                    </StackPanel>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,250">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Имя файла'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" Text="{}{date} {time} {n}"/>
+                    </StackPanel>
+                    <TextBox x:Name="NameTemplateBox" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Автоматически сохранять копию при копировании'}"/>
+                    <ToggleSwitch x:Name="AutoSaveToggle" Grid.Column="1"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Поиск по картинке'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Способ поиска в Google'}"/>
+                    <ComboBox x:Name="SearchCombo" Grid.Column="1" Width="250">
+                      <ComboBoxItem Content="{l:Tr 'Google Lens — автоматически'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Буфер обмена + Google Картинки'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <TextBlock Classes="caption" Margin="14,0,14,12"
+                             Text="{l:Tr 'Картинка отправляется прямо из твоего браузера в Google, без промежуточных серверов (LightShot сначала загружает её на prnt.sc).'}"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- ── Серия и экспорт ── -->
+          <StackPanel x:Name="PageSeries" Spacing="20" IsVisible="False">
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Текст комментариев'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,290">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Строка метки'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" Text="{}{n} {label} {comment} {file}"/>
+                    </StackPanel>
+                    <TextBox x:Name="LineTemplateBox" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Заголовок перед каждым скриншотом'}"/>
+                    <ToggleSwitch x:Name="HeadersToggle" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,290">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Шаблон заголовка'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" Text="{}{n} {file} {count}"/>
+                    </StackPanel>
+                    <TextBox x:Name="HeaderTemplateBox" Grid.Column="1"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Вставка'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Умная вставка'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" MaxWidth="420"
+                                 Text="{l:Tr 'Одно нажатие Ctrl+V: в браузер и мессенджер — картинки, а следом текст; в Word, Outlook, WordPad — картинки вместе с подписями; в Проводник — файлы.'}"/>
+                    </StackPanel>
+                    <ToggleSwitch x:Name="SmartPasteToggle" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Без умной вставки класть в буфер'}"/>
+                    <ComboBox x:Name="ClipModeCombo" Grid.Column="1" Width="270">
+                      <ComboBoxItem Content="{l:Tr 'Всё сразу: текст + картинки + файлы'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Только текст комментариев'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Файлы картинок + текст'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <TextBlock Classes="caption" Margin="14,0,14,12"
+                             Text="{l:Tr 'Без умной вставки каждое приложение само выбирает один формат: веб-чаты берут только картинки, Блокнот — только текст. Умная вставка работает в Windows.'}"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Пример'}"/>
+              <Border Classes="card">
+                <SelectableTextBlock x:Name="PreviewText" Margin="16,12" FontSize="12.5"
+                                     FontFamily="Cascadia Mono, Consolas, SF Mono, Menlo, monospace"
+                                     Foreground="{DynamicResource Sm.TextPrimary}"/>
+              </Border>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- ── Видео ── -->
+          <StackPanel x:Name="PageVideo" Spacing="20" IsVisible="False">
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Запись'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Формат'}"/>
+                    <ComboBox x:Name="VideoFormatCombo" Grid.Column="1" Width="230">
+                      <ComboBoxItem Content="{l:Tr 'MP4 (H.264) — везде открывается'}"/>
+                      <ComboBoxItem Content="{l:Tr 'MKV (H.264) — устойчив к сбоям'}"/>
+                      <ComboBoxItem Content="{l:Tr 'WebM (VP9) — для веба'}"/>
+                      <ComboBoxItem Content="{l:Tr 'GIF — без звука'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Кадров в секунду'}"/>
+                    <ComboBox x:Name="FpsCombo" Grid.Column="1" Width="230">
+                      <ComboBoxItem Content="15"/>
+                      <ComboBoxItem Content="24"/>
+                      <ComboBoxItem Content="30"/>
+                      <ComboBoxItem Content="60"/>
+                    </ComboBox>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Показывать рамку вокруг области'}"/>
+                    <ToggleSwitch x:Name="FrameToggle" Grid.Column="1"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Звук'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Источник по умолчанию'}"/>
+                    <ComboBox x:Name="AudioCombo" Grid.Column="1" Width="230">
+                      <ComboBoxItem Content="{l:Tr 'Без звука'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Микрофон'}"/>
+                      <ComboBoxItem x:Name="SystemAudioItem" Content="{l:Tr 'Звук компьютера'}"/>
+                      <ComboBoxItem x:Name="BothAudioItem" Content="{l:Tr 'Микрофон + звук компьютера'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto,Auto">
+                    <TextBlock Text="{l:Tr 'Микрофон'}"/>
+                    <ComboBox x:Name="MicCombo" Grid.Column="1" Width="300"/>
+                    <Button x:Name="RefreshMicsButton" Grid.Column="2" Classes="soft" Content="{l:Tr 'Обновить'}" Margin="6,0,0,0"/>
+                  </Grid>
+                  <Grid x:Name="MicTestRow" Classes="row" ColumnDefinitions="*,Auto,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Проверка микрофона'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock x:Name="MicTestHint" Classes="caption" Text="{l:Tr 'Скажи что-нибудь — полоска должна двигаться'}"/>
+                    </StackPanel>
+                    <ProgressBar x:Name="MicLevel" Grid.Column="1" Width="200" Height="8" Minimum="0" Maximum="1"
+                                 VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Button x:Name="MicTestButton" Grid.Column="2" Classes="soft" Content="{l:Tr 'Проверить'}"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid x:Name="SystemDeviceRow" Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Звук компьютера'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'Что записывать: колонки или наушники'}"/>
+                    </StackPanel>
+                    <ComboBox x:Name="SystemDeviceCombo" Grid.Column="1" Width="300"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'ffmpeg и папка'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,250,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Путь к ffmpeg'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock x:Name="FfmpegStatus" Classes="caption"/>
+                    </StackPanel>
+                    <TextBox x:Name="FfmpegBox" Grid.Column="1" Watermark="{l:Tr 'Авто: рядом с exe или в PATH'}"/>
+                    <Button x:Name="BrowseFfmpegButton" Grid.Column="2" Classes="soft" Content="…" Margin="6,0,0,0"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Папка для видео'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock x:Name="VideoFolderText" Classes="caption" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                      <Button x:Name="OpenVideoFolderButton" Classes="soft" Content="{l:Tr 'Открыть'}"/>
+                      <Button x:Name="ChooseVideoFolderButton" Classes="soft" Content="{l:Tr 'Выбрать…'}"/>
+                    </StackPanel>
+                  </Grid>
+                </StackPanel>
+              </Border>
+              <Border x:Name="FfmpegInstallCard" Classes="card" Margin="0,10,0,0">
+                <StackPanel Margin="14,12" Spacing="8">
+                  <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                      <TextBlock Text="{l:Tr 'Установить ffmpeg автоматически'}" FontWeight="SemiBold" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'Бесплатный видеокодер, ~90 МБ, ставится один раз в папку пользователя без прав администратора.'}"/>
+                    </StackPanel>
+                    <Button x:Name="DownloadFfmpegButton" Grid.Column="1" Classes="primary" Content="{l:Tr 'Скачать'}" Margin="12,0,0,0"/>
+                  </Grid>
+                  <ProgressBar x:Name="FfmpegProgress" Minimum="0" Maximum="1" Height="6" IsVisible="False"/>
+                  <TextBlock x:Name="FfmpegDownloadStatus" Classes="caption" IsVisible="False"/>
+                </StackPanel>
+              </Border>
+              <TextBlock Classes="caption" Margin="4,8,4,0"
+                         Text="{l:Tr 'Или вручную: winget install Gyan.FFmpeg, либо положи ffmpeg.exe рядом с SnapMark.exe.'}"/>
+            </StackPanel>
+          </StackPanel>
+
+          <!-- ── О программе ── -->
+          <StackPanel x:Name="PageAbout" Spacing="20" IsVisible="False">
+            <Border Classes="card">
+              <StackPanel Margin="24" Spacing="14" HorizontalAlignment="Center">
+                <Image Source="avares://SnapMark/Assets/snapmark.png" Width="96" Height="96"/>
+                <TextBlock Text="SnapMark" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"
+                           Foreground="{DynamicResource Sm.TextPrimary}"/>
+                <TextBlock x:Name="AboutVersion" Classes="caption" HorizontalAlignment="Center"/>
+                <TextBlock Classes="caption" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="420"
+                           Text="{l:Tr 'Скриншоты с метками и комментариями, серии для отчётов и запись экрана.'}"/>
+                <StackPanel HorizontalAlignment="Center" Spacing="2" Margin="0,4,0,0">
+                  <TextBlock Classes="caption" Text="{l:Tr 'Разработчик'}" HorizontalAlignment="Center"/>
+                  <TextBlock Text="Kantemir Bitokov" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"
+                             Foreground="{DynamicResource Sm.TextPrimary}"/>
+                </StackPanel>
+                <Button x:Name="SiteLink" Classes="link" Content="SadlyBear.pro" HorizontalAlignment="Center"
+                        ToolTip.Tip="https://sadlybear.pro"/>
+              </StackPanel>
+            </Border>
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Файлы'}"/>
+              <Border Classes="card">
+                <Grid Classes="row" ColumnDefinitions="*,Auto">
+                  <StackPanel VerticalAlignment="Center" Spacing="1">
+                    <TextBlock Text="{l:Tr 'Файл настроек'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                    <TextBlock x:Name="SettingsPathText" Classes="caption" TextTrimming="CharacterEllipsis"/>
+                  </StackPanel>
+                  <Button x:Name="OpenSettingsFolderButton" Grid.Column="1" Classes="soft" Content="{l:Tr 'Открыть папку'}"/>
+                </Grid>
+              </Border>
+            </StackPanel>
+          </StackPanel>
+
+        </Panel>
+      </ScrollViewer>
+    </DockPanel>
+  </Grid>
+</Window>
