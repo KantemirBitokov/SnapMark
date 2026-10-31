@@ -38,6 +38,15 @@ for ARCH in $ARCHS; do
   sed "s/__VERSION__/$VERSION/g" packaging/macos/Info.plist > "$APP/Contents/Info.plist"
   chmod +x "$APP/Contents/MacOS/SnapMark"
 
+  # Помощник для записи звука компьютера (macOS 13+, ScreenCaptureKit) — нужен Xcode Command Line Tools.
+  SWIFT_ARCH=$([ "$ARCH" = "x64" ] && echo x86_64 || echo arm64)
+  if command -v swiftc >/dev/null; then
+    swiftc -O -target "$SWIFT_ARCH-apple-macos13" packaging/macos/snapmark-audio.swift \
+      -o "$APP/Contents/MacOS/snapmark-audio"
+  else
+    echo "   (swiftc не найден — звук компьютера будет доступен только через BlackHole)"
+  fi
+
   # Подпись: сначала все библиотеки, потом сам бандл (Hardened Runtime нужен для нотаризации).
   if [ "$SIGN_IDENTITY" = "-" ]; then
     codesign --force --deep --sign - "$APP"

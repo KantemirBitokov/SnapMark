@@ -115,8 +115,7 @@ public partial class SettingsWindow : Window
         FpsCombo.SelectedIndex = Math.Max(0, Array.IndexOf(FpsValues, S.VideoFps));
         FrameToggle.IsChecked = S.ShowRecordingFrame;
         AudioCombo.SelectedIndex = (int)S.Audio;
-        // Звук компьютера: Windows — WASAPI, Linux — PulseAudio monitor; на macOS пока нет.
-        SystemAudioItem.IsEnabled = BothAudioItem.IsEnabled = !OperatingSystem.IsMacOS();
+        // Звук компьютера: Windows — WASAPI, Linux — PulseAudio, macOS 13+ — ScreenCaptureKit (11–12 — BlackHole).
         SystemDeviceRow.IsVisible = OperatingSystem.IsWindows();
         FfmpegBox.Text = S.FfmpegPath;
         VideoFolderText.Text = S.VideoFolder;

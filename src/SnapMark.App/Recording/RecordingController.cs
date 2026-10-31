@@ -84,6 +84,12 @@ public static class RecordingController
             if (s.ShowRecordingFrame) ShowFrame(rect, scaling);
             await recorder.StartAsync(ffmpeg, rect, s, withMic, withSystem, output);
             _hud?.SetRecording();
+            if (recorder.SystemAudioProblem == "blackhole")
+                Toast.Show(L.T("Звук компьютера: нужен BlackHole"),
+                    L.T("На macOS 12 и старше звук компьютера записывается через бесплатный драйвер BlackHole. Установи его и выбери «BlackHole 2ch» как микрофон в настройках записи. Сейчас запись идёт без звука компьютера."),
+                    L.T("Скачать"), () => ShellOpen.Open(Platform.Mac.MacSystemAudio.BlackHoleUrl));
+            else if (recorder.SystemAudioProblem is { } problem)
+                Toast.Show(L.T("Запись без звука компьютера"), problem);
         }
         catch (Exception ex)
         {
