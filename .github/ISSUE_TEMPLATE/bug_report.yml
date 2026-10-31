@@ -1,0 +1,28 @@
+name: Bug report / Ошибка
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened? / Что случилось?
+      description: A SnapMark screenshot with markers is very welcome here 🙂
+    validations: { required: true }
+  - type: textarea
+    attributes:
+      label: Steps to reproduce / Как повторить
+      placeholder: "1. Press PrtSc\n2. …"
+  - type: input
+    attributes:
+      label: SnapMark version / Версия
+      placeholder: "1.0.1 (Settings → About)"
+    validations: { required: true }
+  - type: dropdown
+    attributes:
+      label: System / Система
+      options: [Windows 11, Windows 10, macOS (Apple Silicon), macOS (Intel), Linux X11, Linux Wayland]
+    validations: { required: true }
+  - type: textarea
+    attributes:
+      label: Error log / Журнал ошибок
+      description: "If present: Windows %AppData%\\SnapMark\\error.log, macOS/Linux ~/.config/SnapMark/error.log"
+      render: text

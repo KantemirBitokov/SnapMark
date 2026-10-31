@@ -88,6 +88,7 @@ public partial class SettingsWindow : Window
         AutostartToggle.IsChecked = S.LaunchAtStartup;
         AutostartToggle.IsEnabled = PlatformServices.Autostart.IsSupported;
         NotifyToggle.IsChecked = S.ShowNotifications;
+        UpdatesToggle.IsChecked = S.CheckForUpdates;
 
         HkRegion.Value = S.CaptureRegionHotkey.Clone();
         HkFull.Value = S.CaptureFullHotkey.Clone();
@@ -279,6 +280,23 @@ public partial class SettingsWindow : Window
         // О программе
         OpenSettingsFolderButton.Click += (_, _) => ShellOpen.OpenFolder(SettingsStore.Folder);
         SiteLink.Click += (_, _) => ShellOpen.Open("https://sadlybear.pro");
+        UpdatesToggle.IsCheckedChanged += (_, _) => Change(() => S.CheckForUpdates = UpdatesToggle.IsChecked == true);
+        CheckUpdatesButton.Click += async (_, _) =>
+        {
+            CheckUpdatesButton.IsEnabled = false;
+            UpdateStatusText.Text = L.T("Проверяю…");
+            var r = await UpdateChecker.CheckAsync();
+            CheckUpdatesButton.IsEnabled = true;
+            if (!r.Ok)
+                UpdateStatusText.Text = L.T("Не удалось проверить: нет связи с GitHub.");
+            else if (r.IsNewer)
+            {
+                UpdateStatusText.Text = L.F("Доступна версия {0}", r.Latest);
+                UpdateChecker.ShowAvailable(r);
+            }
+            else
+                UpdateStatusText.Text = L.F("У тебя последняя версия ({0}).", UpdateChecker.CurrentVersion);
+        };
     }
 
     static readonly string[] FrameColorChoices =

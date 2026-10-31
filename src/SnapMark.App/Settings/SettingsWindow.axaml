@@ -453,6 +453,23 @@
               </StackPanel>
             </Border>
             <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Обновления'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Проверять обновления автоматически'}"/>
+                    <ToggleSwitch x:Name="UpdatesToggle" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock x:Name="UpdateStatusText" Classes="caption" VerticalAlignment="Center" TextWrapping="Wrap"
+                               Text="{l:Tr 'Раз в сутки SnapMark смотрит на GitHub, не вышла ли новая версия. Ничего не скачивается без тебя.'}"/>
+                    <Button x:Name="CheckUpdatesButton" Grid.Column="1" Classes="soft" Margin="12,0,0,0" Content="{l:Tr 'Проверить сейчас'}"/>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+            <StackPanel>
               <TextBlock Classes="section" Text="{l:Tr 'Файлы'}"/>
               <Border Classes="card">
                 <Grid Classes="row" ColumnDefinitions="*,Auto">
