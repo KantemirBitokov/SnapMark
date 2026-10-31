@@ -32,6 +32,12 @@ public sealed class FfmpegRecorder
     PixelRect _macCrop;
     bool _macLiveAudio;
 
+    /// <summary>Звук компьютера не удалось подключить: «blackhole» — нужен драйвер (macOS 11–12), иначе текст ошибки.</summary>
+    public string? SystemAudioProblem { get; private set; }
+
+    /// <summary>ffmpeg пишет звук прямо в видео (микрофон на macOS, PulseAudio в Linux).</summary>
+    bool _liveAudioInVideo;
+
     public string OutputPath => _outputPath;
     public bool IsRunning => _process is { HasExited: false };
 
@@ -154,6 +160,33 @@ public sealed class FfmpegRecorder
                 throw new InvalidOperationException(L.T("Не удалось открыть звуковое устройство: ") + ex.Message, ex);
             }
         }
+        // ── Звук компьютера (macOS 13+): встроенный помощник на ScreenCaptureKit ──
+        if (wantAudio && withSystem && OperatingSystem.IsMacOS())
+        {
+            if (Mac.MacSystemAudio.IsAvailable)
+            {
+                try
+                {
+                    var path = Path.Combine(Path.GetTempPath(), $"snapmark_system_{Guid.NewGuid():N}.pcm");
+                    var rec = await Mac.MacSystemAudio.StartAsync(path);
+                    _audioHandles.Add(rec);
+                    _audioTracks.Add((path, () => rec.HasData, rec.Stop, () =>
+                    {
+                        var (fmt, rate, ch) = rec.RawInfo;
+                        return new[] { "-f", fmt, "-ar", rate.ToString(), "-ac", ch.ToString(), "-i", path };
+                    }));
+                    _armAudio += rec.Arm;
+                }
+                catch (Exception ex)
+                {
+                    SystemAudioProblem = ex.Message;
+                }
+            }
+            else
+            {
+                SystemAudioProblem = "blackhole";
+            }
+        }
         bool separateAudio = _audioTracks.Count > 0;
 
         // Куда пишет ffmpeg. MP4, отдельный звук и GIF — сначала во временный MKV, потом склейка/перепаковка.
@@ -220,6 +253,7 @@ public sealed class FfmpegRecorder
             if (liveAudio == 2)
                 args.AddRange(new[] { "-filter_complex", "[1:a][2:a]amix=inputs=2:duration=longest:normalize=0[aout]", "-map", "0:v", "-map", "[aout]" });
         }
+        _liveAudioInVideo = liveAudio > 0;
 
         if (OperatingSystem.IsMacOS())
             args.AddRange(new[] { "-vf", $"crop={_macCrop.Width}:{_macCrop.Height}:{_macCrop.X}:{_macCrop.Y}" });
@@ -398,25 +432,29 @@ public sealed class FfmpegRecorder
         var args = new List<string> { "-hide_banner", "-y", "-i", video };
         foreach (var a in audio) args.AddRange(a);
 
+        // Звук, который уже есть во временном видео (микрофон на macOS/Linux пишется вместе с картинкой).
+        bool videoHasAudio = _liveAudioInVideo;
         if (audio.Count == 0)
         {
-            args.AddRange(new[] { "-map", "0:v" });
-        }
-        else if (audio.Count == 1)
-        {
-            args.AddRange(new[] { "-map", "0:v", "-map", "1:a" });
+            args.AddRange(new[] { "-map", "0" }); // просто перепаковка: все дорожки как есть
+            args.AddRange(new[] { "-c", "copy" });
         }
         else
         {
-            var inputs = string.Concat(Enumerable.Range(1, audio.Count).Select(i => $"[{i}:a]"));
-            args.AddRange(new[]
-            {
-                "-filter_complex", $"{inputs}amix=inputs={audio.Count}:duration=longest:normalize=0[aout]",
-                "-map", "0:v", "-map", "[aout]",
-            });
+            var labels = new List<string>();
+            if (videoHasAudio) labels.Add("[0:a]");
+            labels.AddRange(Enumerable.Range(1, audio.Count).Select(i => $"[{i}:a]"));
+            if (labels.Count == 1)
+                args.AddRange(new[] { "-map", "0:v", "-map", "1:a" });
+            else
+                args.AddRange(new[]
+                {
+                    "-filter_complex", $"{string.Concat(labels)}amix=inputs={labels.Count}:duration=longest:normalize=0[aout]",
+                    "-map", "0:v", "-map", "[aout]",
+                });
+            args.AddRange(new[] { "-c:v", "copy" });
         }
 
-        args.AddRange(new[] { "-c:v", "copy" });
         if (audio.Count > 0)
             args.AddRange(_format == VideoFileFormat.WebM
             ? new[] { "-c:a", "libopus", "-b:a", "160k" }

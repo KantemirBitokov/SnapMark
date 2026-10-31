@@ -38,14 +38,6 @@ public partial class OverlayWindow
         };
         // Выбор устройств есть только там, где мы сами пишем звук (Windows/WASAPI).
         VideoDevicesBox.IsVisible = OperatingSystem.IsWindows();
-        if (OperatingSystem.IsMacOS())
-        {
-            // macOS не отдаёт программам системный звук без стороннего драйвера (BlackHole и т. п.).
-            _withSystem = false;
-            SpeakerButton.IsVisible = false;
-            foreach (var chip in VideoAudioChips.Children.OfType<ToggleButton>())
-                if (chip.Tag is "System" or "MicrophoneAndSystem") chip.IsVisible = false;
-        }
         SyncVideoOptions();
     }
 
