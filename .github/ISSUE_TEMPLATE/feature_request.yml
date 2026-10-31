@@ -1,0 +1,11 @@
+name: Idea / Идея
+description: Suggest a feature or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: What would you like? / Что хотелось бы?
+    validations: { required: true }
+  - type: textarea
+    attributes:
+      label: Why — what task does it solve? / Какую задачу это решает?

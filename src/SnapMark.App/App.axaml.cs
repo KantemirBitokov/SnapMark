@@ -56,6 +56,7 @@ public partial class App : Application
             };
 
             CommandLine.StartServer();
+            DispatcherTimer.RunOnce(() => _ = UpdateChecker.CheckOnStartupAsync(), TimeSpan.FromSeconds(20));
             if (CommandLine.StartupCommand is { } startup)
                 DispatcherTimer.RunOnce(() => CommandLine.Execute(startup), TimeSpan.FromMilliseconds(400));
             else

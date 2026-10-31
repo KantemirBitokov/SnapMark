@@ -57,6 +57,9 @@ public sealed class AppSettings
     public bool LaunchAtStartup { get; set; }
     public bool ShowNotifications { get; set; } = true;
     public bool FirstRunDone { get; set; }
+    /// <summary>Раз в сутки проверять, не вышла ли новая версия (только запрос к GitHub, ничего не скачивается).</summary>
+    public bool CheckForUpdates { get; set; } = true;
+    public DateTime LastUpdateCheckUtc { get; set; }
 
     // ── Скриншоты ────────────────────────────────────────────────────
     public ImageFileFormat ImageFormat { get; set; } = ImageFileFormat.Png;

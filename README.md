@@ -1,128 +1,123 @@
-# SnapMark
+<p align="center">
+  <img src="docs/icon.png" width="128" height="128" alt="SnapMark icon">
+</p>
 
-Скриншоты с метками A-B-C и комментариями, серии скриншотов для отчётов, запись экрана.
-Windows 10/11 — основная платформа; архитектура готова к порту на macOS и Linux.
+<h1 align="center">SnapMark</h1>
 
-## Сборка
+<p align="center">
+  <b>Screenshots that explain themselves.</b><br>
+  Mark up a screenshot with A-B-C markers and comments, copy a whole series with one Ctrl+C,
+  paste images <i>and</i> text into any chat — and record your screen with sound.
+</p>
 
-Нужно: **Visual Studio 2022** (17.8+) с нагрузкой «Разработка классических приложений .NET» или **.NET 8 SDK**.
+<p align="center">
+  <a href="https://github.com/KantemirBitokov/SnapMark/releases/latest"><b>⬇ Download</b></a> ·
+  Windows · macOS · Linux · free &amp; open source ·
+  <a href="README.ru.md">Русский</a>
+</p>
+
+<!--
+  Media to record (see docs/media/README.md) — uncomment when the files are in place:
+  <p align="center"><img src="docs/media/hero.gif" width="800" alt="SnapMark in action"></p>
+-->
+
+---
+
+## Why SnapMark
+
+Writing a bug report, explaining a UI change, or giving feedback usually means: take a screenshot,
+draw arrows somewhere, then type “the button on the left… no, the other one”.
+SnapMark puts **lettered markers right on the screenshot** and turns your comments into text:
 
 ```
-dotnet restore
-dotnet run --project src/SnapMark.App
+Screenshot_1_A — Button doesn't respond
+Screenshot_1_B — Typo in the heading
+Screenshot_2_A — Wrong indent
 ```
 
-В Visual Studio: открыть `SnapMark.sln` → стартовый проект **SnapMark.App** → F5.
-Для красивой правки XAML поставь расширение **Avalonia for Visual Studio** (необязательно).
+Press **Ctrl+C** once — and **Ctrl+V** pastes the screenshots *and* this text into Slack, Telegram,
+ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separately.
 
-Публикация одним exe:
+## Features
 
-```
-dotnet publish src/SnapMark.App -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o publish
-```
+**Capture**
+- Region or full screen on <kbd>PrtSc</kbd> (customizable hotkeys); works across multiple monitors with different scaling
+- Clean macOS-style selection frame with your color of choice
 
-Для записи видео положи `ffmpeg.exe` рядом с `SnapMark.exe` (сборки: gyan.dev/ffmpeg/builds, release essentials)
-или укажи путь в Настройки → Видео.
+**Annotate**
+- **Markers** A, B, C… or 1, 2, 3 — circle, rounded square, diamond or pin, with or without an arrow; per-marker colors
+- **Comments** for each marker — copied as text, optionally drawn on the image with their own font and frame
+- Pen with pressure/speed-sensitive width, pencil, highlighter, eraser
+- Hold the stroke to snap it into a clean line, arrow, rectangle or ellipse
+- Lines, arrows, double arrows, rectangles, ellipses (filled — e.g. to hide private data)
+- Text with any font, weight, size, color, frame/plate and shadow
+- Every object has its own little style panel; undo/redo, duplicate, delete
 
-## Релиз: установщик и портативная версия
+**Share**
+- **Series mode** — collect several screenshots with comments and copy everything at once
+- **Smart paste** (Windows) — one Ctrl+V gives each app what it understands: images then text in chats, images with captions in Word/Outlook, files in Explorer
+- Save as PNG / JPG / WebP / BMP, print, search the image on Google Lens
 
-Один раз: `winget install JRSoftware.InnoSetup`. Потом из корня репозитория:
+**Record**
+- Record a region or the full screen to MP4, MKV, WebM or GIF, 15–60 fps
+- Microphone, computer audio or both — with device selection and a mic level test
+- No time limit; crash-safe recording (nothing is lost if the PC freezes)
 
-```
-powershell -ExecutionPolicy Bypass -File .\build-release.ps1
-```
+**Everywhere**
+- Windows 10/11, macOS 11+ (Apple Silicon & Intel), Linux (X11; Wayland with limitations)
+- English, Русский, Deutsch, Français, Italiano, Español
+- Lives quietly in the tray / menu bar
 
-В папке `release\` появятся `SnapMark-<версия>-Setup.exe` (установщик, без прав администратора,
-6 языков, ярлыки, автозапуск по желанию) и `SnapMark-<версия>-portable.zip`.
-Версия берётся из `<Version>` в `src/SnapMark.App/SnapMark.App.csproj`. Скрипт установщика — `installer/SnapMark.iss`.
+## Download
 
-## macOS и Linux
+Get the latest version from **[Releases](https://github.com/KantemirBitokov/SnapMark/releases/latest)**:
 
-| | Windows | macOS | Linux (X11) | Linux (Wayland) |
-|---|---|---|---|---|
-| Скриншоты и редактор | ✓ | ✓ (нужно разрешение «Запись экрана») | ✓ | ✓ через grim / gnome-screenshot / spectacle |
-| Глобальные клавиши | ✓ PrtSc | ✓ ⌘⇧1 / ⌘⇧2 / ⌘⇧9 | ✓ (если PrtSc не занят системой) | системное сочетание → `snapmark --region` |
-| Копирование картинка + текст | ✓ умная вставка | ✓ | ✓ | ✓ |
-| Видео | ✓ звук ПК + микрофон | ✓ микрофон + звук ПК (macOS 13+ встроенно, 11–12 — через BlackHole) | ✓ | — (только X11) |
-| Автозапуск | ✓ | ✓ LaunchAgent | ✓ ~/.config/autostart | ✓ |
-
-Команды (для системных сочетаний на Mac/Wayland и для скриптов): `snapmark --region`, `--full`, `--record`, `--series`, `--settings`.
-Если SnapMark уже запущен, команда передаётся ему.
-
-Сборка:
-- **macOS** — `./build-macos.sh` на Mac → `release/SnapMark-<версия>-macOS-arm64.dmg` и `-x64.dmg`.
-- **Linux** — `./build-linux.sh` на Linux или в WSL2 → AppImage, .deb, .tar.gz.
-- **Всё сразу без своих Mac/Linux** — GitHub Actions (`.github/workflows/release.yml`): Actions → Build SnapMark → Run workflow,
-  или `git tag v1.0.0 && git push --tags` — файлы появятся в GitHub Release.
-
-ffmpeg на Mac/Linux: `brew install ffmpeg` / `sudo apt install ffmpeg`.
-
-## Языки интерфейса
-
-English (по умолчанию), Русский, Deutsch, Français, Italiano, Español — Настройки → Основные → Язык (после смены — перезапуск).
-
-Как устроено: ключ перевода — исходная русская строка. В C# — `L.T("Текст")` / `L.F("Серия: {0}", n)`,
-в XAML — `Text="{l:Tr 'Текст'}"`. Переводы — `src/SnapMark.Core/Strings.tsv` (колонки ru, en, de, fr, it, es).
-Новая строка без перевода показывается по-английски, а если нет и его — как есть.
-
-## Что умеет каркас
-
-| Функция | Где в коде |
+| System | File |
 |---|---|
-| PrtSc / свои сочетания, глобально | `Platform/Windows/WinHotkeys.cs` |
-| Выделение области, весь экран (двойной клик или Shift+PrtSc), несколько мониторов | `Capture/CaptureSurface.cs`, `CaptureController.cs` |
-| Markup-инструменты: перо (толщина по скорости/нажиму), карандаш, маркер, ластик; фигуры; текст | `Annotations/Annotations.cs` |
-| Распознавание фигур: нарисуй от руки и задержи — станет ровной линией, прямоугольником или эллипсом | `Annotations/ShapeRecognizer.cs` |
-| Метки A, B, C… с хвостом-стрелкой и без, комментарии к меткам | `MarkerAnnotation`, панель в `OverlayWindow` |
-| Цвет, толщина, размер, жирный/курсив, подложка, пунктир, заливка | панель стиля в `OverlayWindow` |
-| Undo/Redo, перемещение, дублирование и удаление объектов (Delete, ПКМ, ластик, × у метки) | `AnnotationDocument.cs` |
-| Умная вставка: одно Ctrl+V — картинки и текст в чат/мессенджер, картинки с подписями в Word | `Services/SmartPaste.cs` |
-| Копировать, сохранить, сохранить как (PNG/JPG/WebP/BMP), печать, поиск в Google Lens | `OverlayWindow.axaml.cs` |
-| Серия скриншотов → копирование: картинки + текст `Screenshot_1_A — комментарий` | `Series/SeriesService.cs`, `UI/SeriesWindows.cs` |
-| Запись видео области: MP4/MKV/WebM/GIF, микрофон | `Recording/`, `Platform/Common/FfmpegRecorder.cs` |
-| Настройки в стиле macOS | `Settings/SettingsWindow.axaml` |
+| Windows 10/11 | `SnapMark-…-Setup.exe` (installer, no admin rights needed) or `…-portable.zip` |
+| macOS — Apple Silicon (M1–M4) | `SnapMark-…-macOS-arm64.dmg` |
+| macOS — Intel | `SnapMark-…-macOS-x64.dmg` |
+| Linux — any distro | `SnapMark-…-linux-x64.AppImage` |
+| Ubuntu / Debian / Mint | `snapmark_…_amd64.deb` |
 
-### Горячие клавиши в редакторе
+Video recording uses the free **ffmpeg** encoder. On Windows SnapMark downloads it for you in one click;
+on macOS run `brew install ffmpeg`, on Linux `sudo apt install ffmpeg`.
 
-`V` выбор · `P` перо · `C` карандаш · `H` маркер · `E` ластик · `S` фигура · `L` линия · `A` стрелка ·
-`D` двойная стрелка · `R` прямоугольник · `O` эллипс · `T` текст · `M` метка · `N` метка со стрелкой ·
-`Shift` — шаг 45° / квадрат · ПКМ по объекту — удалить ·
-`Ctrl+C` копировать · `Ctrl+S` быстро сохранить · `Ctrl+Shift+S` сохранить как · `Ctrl+P` печать ·
-`Ctrl+G` Google · `Ctrl+D` в серию · `Ctrl+R` видео области · `Ctrl+J` дублировать · `Ctrl+Z/Y` · `Del` · `Esc`.
-Сочетания с Ctrl работают и когда курсор стоит в поле комментария.
+### First launch
 
-### Как работает серия
+SnapMark is free and not (yet) signed with a paid certificate, so the system asks once:
 
-1. Скриншот → метки → комментарии в панели справа → `Ctrl+D` («в серию»).
-2. Повторить сколько нужно. Внизу экрана — панель серии (в скриншоты не попадает).
-3. `Ctrl+C` в редакторе (или «Копировать всё» на панели).
-4. Одно `Ctrl+V` куда угодно — **умная вставка** подстроит буфер под приложение:
-   браузер/мессенджер — сначала картинки, следом текст; Word/Outlook/WordPad — RTF с картинками и подписями;
-   Проводник — файлы; Блокнот — текст. Если буфер перезаписать чем-то другим, умная вставка отключается сама.
+- **Windows** — “Windows protected your PC” → **More info** → **Run anyway**.
+- **macOS** — right-click SnapMark.app → **Open** → **Open**. If macOS says the app is “damaged”, run
+  `xattr -cr /Applications/SnapMark.app` once in Terminal. Then allow **Screen Recording** in
+  System Settings → Privacy & Security.
+- **Linux AppImage** — `chmod +x SnapMark-*.AppImage` and run it.
 
-## PrtSc и «Ножницы» Windows 11
+## Hotkeys
 
-LightShot ничего особого не делает: он просто регистрирует PrtSc, а на Windows 11 пользователь должен сам
-отключить «Использовать PrtSc для открытия ножниц». SnapMark перехватывает PrtSc низкоуровневым хуком
-клавиатуры (как ShareX/PowerToys), а если «Ножницы» всё равно открываются — сам находит конфликт и в
-Настройки → Горячие клавиши предлагает отключить его одной кнопкой.
-
-## Порт на macOS / Linux
-
-Всё зависящее от ОС — за интерфейсами в `Platform/IPlatform.cs`. Сейчас в `Platform/Unix` упрощённые реализации:
-
-| Что | macOS | Linux |
+| Action | Windows / Linux | macOS |
 |---|---|---|
-| Захват | `screencapture` → ScreenCaptureKit | `grim` / `import` → xdg-desktop-portal |
-| Глобальные клавиши | TODO: Carbon `RegisterEventHotKey` | TODO: portal GlobalShortcuts / X11 |
-| Буфер обмена | только текст → TODO: NSPasteboard | только текст → TODO: wl-copy / xclip |
-| Видео | ffmpeg avfoundation | ffmpeg x11grab / pulse |
+| Region screenshot | <kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>1</kbd> |
+| Full screen | <kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>2</kbd> |
+| Record video (start/stop) | <kbd>Ctrl</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>9</kbd> |
 
-UI (Avalonia) общий для всех ОС, его переписывать не нужно.
+In the editor: <kbd>Ctrl+C</kbd> copy · <kbd>Ctrl+S</kbd> save · <kbd>Ctrl+D</kbd> add to series ·
+<kbd>Ctrl+Z</kbd> undo · <kbd>M</kbd> marker · <kbd>T</kbd> text · <kbd>P</kbd> pen · <kbd>A</kbd> arrow · <kbd>Esc</kbd> close.
 
-## Дальше по плану
+On Wayland (and anywhere you prefer system shortcuts) bind a key to a command:
+`snapmark --region`, `--full`, `--record`, `--series`, `--settings`.
 
-- Системный звук в записи (WASAPI loopback) и захват через `ddagrab` для 60 fps.
-- Размытие/пикселизация области, «лупа» при выделении, выделение окна под курсором.
-- Повторное редактирование кадра из серии.
-- Установщик (MSIX / Inno Setup), автообновление.
+## Building from source
+
+.NET 8 + Avalonia UI. Open `SnapMark.sln` in Visual Studio 2022 or run
+`dotnet run --project src/SnapMark.App`. Details, release scripts and architecture: **[docs/BUILDING.md](docs/BUILDING.md)**.
+
+## Feedback
+
+Found a bug or have an idea? [Open an issue](https://github.com/KantemirBitokov/SnapMark/issues/new/choose) —
+a SnapMark screenshot with markers is the perfect bug report 🙂
+Translations into more languages are welcome: all texts live in [`Strings.tsv`](src/SnapMark.Core/Strings.tsv).
+
+## License
+
+[MIT](LICENSE) © Kantemir Bitokov · [SadlyBear.pro](https://sadlybear.pro)
