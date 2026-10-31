@@ -1,0 +1,379 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- ═══════════ Базовое ═══════════ -->
+  <Style Selector="Window">
+    <Setter Property="FontFamily" Value="{StaticResource Sm.Font}"/>
+    <Setter Property="FontSize" Value="13"/>
+  </Style>
+
+  <Style Selector="Window.sm">
+    <Setter Property="Background" Value="{DynamicResource Sm.WindowBg}"/>
+  </Style>
+
+  <Style Selector="TextBlock.caption">
+    <Setter Property="FontSize" Value="11.5"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+  <Style Selector="TextBlock.section">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
+    <Setter Property="Margin" Value="4,0,0,6"/>
+  </Style>
+  <Style Selector="TextBlock.pagetitle">
+    <Setter Property="FontSize" Value="22"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+
+  <!-- ═══════════ Плавающие «пилюли» (тулбары, HUD, уведомления) ═══════════ -->
+  <Style Selector="Border.pill">
+    <Setter Property="Background" Value="{DynamicResource Sm.PillBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.PillBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="13"/>
+    <Setter Property="Padding" Value="5"/>
+    <Setter Property="BoxShadow" Value="0 12 32 0 #40000000, 0 1 4 0 #26000000"/>
+  </Style>
+  <Style Selector="Border.pill TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="Border.pill TextBlock.caption">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
+  </Style>
+
+  <Style Selector="Border.hud">
+    <Setter Property="Background" Value="{DynamicResource Sm.HudBg}"/>
+    <Setter Property="CornerRadius" Value="10"/>
+    <Setter Property="Padding" Value="14,8"/>
+    <Setter Property="BoxShadow" Value="0 8 24 0 #50000000"/>
+  </Style>
+  <Style Selector="Border.hud TextBlock">
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="FontSize" Value="13"/>
+  </Style>
+
+  <Style Selector="Border.vsep">
+    <Setter Property="Width" Value="1"/>
+    <Setter Property="Height" Value="22"/>
+    <Setter Property="Margin" Value="4,0"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.Separator}"/>
+  </Style>
+  <Style Selector="Border.hsep">
+    <Setter Property="Height" Value="1"/>
+    <Setter Property="Margin" Value="14,0"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.Separator}"/>
+  </Style>
+  <Style Selector="Border.hsep.tight">
+    <Setter Property="Margin" Value="4,2"/>
+  </Style>
+
+  <!-- ═══════════ Кнопки инструментов (иконки) ═══════════ -->
+  <Style Selector="Button.tool">
+    <Setter Property="Width" Value="34"/>
+    <Setter Property="Height" Value="34"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Cursor" Value="Hand"/>
+  </Style>
+  <Style Selector="Button.tool /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="Button.tool:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.HoverBg}"/>
+  </Style>
+  <Style Selector="Button.tool:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.PressedBg}"/>
+  </Style>
+  <Style Selector="Button.tool.selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.Accent}"/>
+  </Style>
+  <Style Selector="Button.tool.small">
+    <Setter Property="Width" Value="26"/>
+    <Setter Property="Height" Value="26"/>
+    <Setter Property="CornerRadius" Value="7"/>
+  </Style>
+  <Style Selector="Button.tool.wide">
+    <Setter Property="Width" Value="NaN"/>
+    <Setter Property="Padding" Value="8,0"/>
+  </Style>
+  <Style Selector="Button.tool.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#33FF3B30"/>
+  </Style>
+
+  <Style Selector="Button.tool Path">
+    <Setter Property="Width" Value="20"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Stretch" Value="None"/>
+    <Setter Property="Stroke" Value="{DynamicResource Sm.TextPrimary}"/>
+    <Setter Property="StrokeThickness" Value="1.6"/>
+    <Setter Property="StrokeLineCap" Value="Round"/>
+    <Setter Property="StrokeJoin" Value="Round"/>
+  </Style>
+  <Style Selector="Button.tool.selected Path">
+    <Setter Property="Stroke" Value="White"/>
+  </Style>
+  <Style Selector="Button.tool Path.filled">
+    <Setter Property="Fill" Value="{DynamicResource Sm.Red}"/>
+    <Setter Property="StrokeThickness" Value="0"/>
+  </Style>
+  <Style Selector="Button.tool TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="Button.tool.selected TextBlock">
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+  <Style Selector="Button.tool.off Path">
+    <Setter Property="Opacity" Value="0.35"/>
+  </Style>
+
+  <!-- ═══════════ Кнопки с текстом ═══════════ -->
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="Padding" Value="14,6"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#409CFF"/>
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+  <Style Selector="Button.primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#0071E3"/>
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+
+  <Style Selector="Button.record">
+    <Setter Property="Background" Value="{DynamicResource Sm.Red}"/>
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="Padding" Value="12,7"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style Selector="Button.record:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#FF5A50"/>
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+
+  <!-- Ссылка: выглядит как текст акцентного цвета, подчёркивается при наведении. -->
+  <Style Selector="Button.link">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding" Value="4,2"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="FontSize" Value="14"/>
+  </Style>
+  <Style Selector="Button.link /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="Button.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.Accent}"/>
+  </Style>
+  <Style Selector="Button.link TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.Accent}"/>
+  </Style>
+  <Style Selector="Button.link:pointerover TextBlock">
+    <Setter Property="TextDecorations" Value="Underline"/>
+  </Style>
+
+  <Style Selector="Button.soft">
+    <Setter Property="Background" Value="{DynamicResource Sm.FieldBg}"/>
+    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="Padding" Value="12,6"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+
+  <!-- Пресеты толщины: точка, выделенная — с акцентной подложкой. -->
+  <Style Selector="Button.tool Ellipse.dot">
+    <Setter Property="Fill" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="Button.tool.selected Ellipse.dot">
+    <Setter Property="Fill" Value="White"/>
+  </Style>
+
+  <!-- Подзаголовок секции во всплывающих панелях. -->
+  <Style Selector="TextBlock.group">
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
+    <Setter Property="Margin" Value="0,4,0,0"/>
+  </Style>
+  <Style Selector="Border.pill TextBlock.group">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
+  </Style>
+
+
+  <!-- Цветные кружки палитры. -->
+  <Style Selector="Button.swatch">
+    <Setter Property="Width" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="CornerRadius" Value="12"/>
+    <Setter Property="Margin" Value="2"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="BorderBrush" Value="#33000000"/>
+    <Setter Property="Cursor" Value="Hand"/>
+  </Style>
+  <!-- Маленькие кружки — ПОСЛЕ обычных, иначе их размер перебивается (из-за этого кружки переносились на новую строку). -->
+  <Style Selector="Button.swatch.mini">
+    <Setter Property="Width" Value="20"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="CornerRadius" Value="10"/>
+    <Setter Property="Margin" Value="1.5"/>
+  </Style>
+  <Style Selector="Button.swatch.current">
+    <Setter Property="BorderThickness" Value="2.5"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
+  </Style>
+
+  <!-- Маленькие переключатели (B, I, Подложка…). -->
+  <Style Selector="ToggleButton.chip">
+    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="Padding" Value="9,4"/>
+    <Setter Property="MinWidth" Value="30"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="Margin" Value="0,0,4,4"/>
+  </Style>
+
+  <!-- Текст внутри цветных кнопок должен оставаться белым даже внутри Border.pill. -->
+  <Style Selector="Button.primary TextBlock, Button.record TextBlock">
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+  <Style Selector="ToggleButton.chip:checked TextBlock">
+    <Setter Property="Foreground" Value="White"/>
+  </Style>
+
+  <!-- ═══════════ Встроенный редактор текста на скриншоте ═══════════ -->
+  <Style Selector="TextBox.inline">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="Padding" Value="2,0"/>
+    <Setter Property="MinHeight" Value="0"/>
+    <Setter Property="CornerRadius" Value="3"/>
+  </Style>
+  <Style Selector="TextBox.inline /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
+  </Style>
+  <Style Selector="TextBox.inline:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
+  </Style>
+  <Style Selector="TextBox.inline:focus /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+  </Style>
+
+  <!-- Поле комментария в панели меток. -->
+  <Style Selector="TextBox.comment">
+    <Setter Property="MinHeight" Value="30"/>
+    <Setter Property="Padding" Value="8,5"/>
+    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="FontSize" Value="12.5"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+
+  <!-- ═══════════ Карточки настроек (как в «Системных настройках» macOS) ═══════════ -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource Sm.CardBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.CardBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="11"/>
+  </Style>
+  <Style Selector="Grid.row">
+    <Setter Property="Margin" Value="14,9"/>
+    <Setter Property="MinHeight" Value="32"/>
+  </Style>
+  <Style Selector="Grid.row > TextBlock">
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="ToggleSwitch">
+    <Setter Property="OnContent" Value=""/>
+    <Setter Property="OffContent" Value=""/>
+    <Setter Property="MinWidth" Value="0"/>
+  </Style>
+
+  <!-- ═══════════ Боковое меню настроек ═══════════ -->
+  <Style Selector="Border.sidebar">
+    <Setter Property="Background" Value="{DynamicResource Sm.SidebarBg}"/>
+  </Style>
+  <Style Selector="ListBox.sidebar">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Padding" Value="8,0"/>
+  </Style>
+  <Style Selector="ListBox.sidebar ListBoxItem">
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="Margin" Value="0,1"/>
+    <Setter Property="CornerRadius" Value="7"/>
+  </Style>
+  <Style Selector="ListBox.sidebar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.NavSelected}"/>
+  </Style>
+  <Style Selector="ListBox.sidebar ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.NavSelected}"/>
+  </Style>
+  <Style Selector="ListBox.sidebar ListBoxItem TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
+  <Style Selector="Border.navicon">
+    <Setter Property="Width" Value="24"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="CornerRadius" Value="6"/>
+  </Style>
+  <Style Selector="Border.navicon Path">
+    <Setter Property="Width" Value="20"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Stretch" Value="None"/>
+    <Setter Property="Stroke" Value="White"/>
+    <Setter Property="StrokeThickness" Value="1.6"/>
+    <Setter Property="StrokeLineCap" Value="Round"/>
+    <Setter Property="StrokeJoin" Value="Round"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
+
+  <!-- Кнопка записи горячей клавиши. -->
+  <Style Selector="Button.hotkey">
+    <Setter Property="MinWidth" Value="180"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="FontFamily" Value="Cascadia Mono, Consolas, SF Mono, Menlo, monospace"/>
+  </Style>
+  <Style Selector="Button.hotkey.listening">
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="BorderThickness" Value="2"/>
+  </Style>
+
+  <!-- Бейдж метки (A, B, C…) в списках комментариев. -->
+  <Style Selector="Border.badge">
+    <Setter Property="MinWidth" Value="26"/>
+    <Setter Property="Height" Value="26"/>
+    <Setter Property="CornerRadius" Value="13"/>
+    <Setter Property="Padding" Value="5,0"/>
+    <Setter Property="VerticalAlignment" Value="Top"/>
+    <Setter Property="Margin" Value="0,2,0,0"/>
+  </Style>
+  <Style Selector="Border.badge TextBlock">
+    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
+
+</Styles>

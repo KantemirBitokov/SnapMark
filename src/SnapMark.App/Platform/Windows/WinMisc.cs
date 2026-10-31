@@ -1,0 +1,153 @@
+using SnapMark.Core;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.Versioning;
+using Avalonia;
+using Avalonia.Controls;
+using Microsoft.Win32;
+using SnapMark.Services;
+using static SnapMark.Platform.Windows.Native;
+
+namespace SnapMark.Platform.Windows;
+
+/// <summary>
+/// Печать через системный глагол "print": на Windows для картинок открывается мастер
+/// «Печать изображений» — выбор принтера, размера и раскладки. Если глагол не зарегистрирован,
+/// открываем файл в просмотрщике и просим нажать Ctrl+P.
+/// </summary>
+[SupportedOSPlatform("windows")]
+internal sealed class WinPrint : IPrintService
+{
+    public Task PrintAsync(string imagePath)
+    {
+        try
+        {
+            Process.Start(new ProcessStartInfo(imagePath) { UseShellExecute = true, Verb = "print" });
+        }
+        catch (Win32Exception)
+        {
+            ShellOpen.Open(imagePath);
+            UI.Toast.Show(L.T("Печать"), L.T("Изображение открыто в просмотрщике — нажми Ctrl+P."));
+        }
+        return Task.CompletedTask;
+    }
+}
+
+[SupportedOSPlatform("windows")]
+internal sealed class WinAutostart : IAutostart
+{
+    const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    const string ValueName = "SnapMark";
+
+    public bool IsSupported => true;
+
+    public void Set(bool enabled)
+    {
+        using var key = Registry.CurrentUser.CreateSubKey(RunKey);
+        if (enabled)
+        {
+            var exe = Environment.ProcessPath;
+            if (!string.IsNullOrEmpty(exe)) key.SetValue(ValueName, $"\"{exe}\" --tray");
+        }
+        else
+        {
+            key.DeleteValue(ValueName, false);
+        }
+    }
+}
+
+/// <summary>
+/// Windows 11: «Использовать PrtSc для открытия инструмента создания снимков экрана».
+/// Значение HKCU\Control Panel\Keyboard\PrintScreenKeyForSnippingEnabled (1 = включено).
+/// На новых сборках при отсутствии значения функция включена по умолчанию.
+/// </summary>
+[SupportedOSPlatform("windows")]
+internal sealed class WinPrintScreenConflict : IPrintScreenConflict
+{
+    const string KeyPath = @"Control Panel\Keyboard";
+    const string ValueName = "PrintScreenKeyForSnippingEnabled";
+
+    public bool IsSupported => Environment.OSVersion.Version.Build >= 22000;
+
+    public bool IsSystemToolBoundToPrintScreen()
+    {
+        if (!IsSupported) return false;
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(KeyPath);
+            var value = key?.GetValue(ValueName);
+            if (value is int i) return i == 1;
+            return Environment.OSVersion.Version.Build >= 22621; // 22H2+: включено по умолчанию
+        }
+        catch { return false; }
+    }
+
+    public void OpenSystemSettings() => ShellOpen.Open("ms-settings:easeofaccess-keyboard");
+
+    public bool TryDisableSystemBinding()
+    {
+        try
+        {
+            bool wasEnabled = IsSystemToolBoundToPrintScreen();
+            using var key = Registry.CurrentUser.CreateSubKey(KeyPath);
+            key.SetValue(ValueName, 0, RegistryValueKind.DWord);
+            // Запоминаем, что это сделал SnapMark: при удалении программы установщик вернёт настройку Windows.
+            if (wasEnabled)
+            {
+                using var own = Registry.CurrentUser.CreateSubKey(@"Software\SnapMark");
+                own.SetValue("RestorePrintScreenSnipping", 1, RegistryValueKind.DWord);
+            }
+            return true;
+        }
+        catch { return false; }
+    }
+}
+
+[SupportedOSPlatform("windows")]
+internal sealed class WinWindowHelper : IWindowHelper
+{
+    static IntPtr Hwnd(Window w) => w.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
+
+    /// <summary>
+    /// Windows не даёт фоновому процессу просто так забрать фокус. Временно «пристёгиваемся»
+    /// к потоку активного окна — стандартный обход для оверлеев скриншотеров.
+    /// </summary>
+    public void ForceForeground(Window window)
+    {
+        var hwnd = Hwnd(window);
+        if (hwnd == IntPtr.Zero) return;
+
+        var fg = GetForegroundWindow();
+        uint fgThread = GetWindowThreadProcessId(fg, out _);
+        uint current = GetCurrentThreadId();
+
+        if (fgThread != 0 && fgThread != current)
+        {
+            AttachThreadInput(current, fgThread, true);
+            SetForegroundWindow(hwnd);
+            BringWindowToTop(hwnd);
+            AttachThreadInput(current, fgThread, false);
+        }
+        else
+        {
+            SetForegroundWindow(hwnd);
+        }
+        window.Activate();
+    }
+
+    public void ExcludeFromCapture(Window window)
+    {
+        var hwnd = Hwnd(window);
+        if (hwnd != IntPtr.Zero) SetWindowDisplayAffinity(hwnd, WDA_EXCLUDEFROMCAPTURE); // Win10 2004+
+    }
+
+    public PixelPoint? GetCursorPosition() =>
+        GetCursorPos(out var p) ? new PixelPoint(p.X, p.Y) : null;
+
+    public void SetPixelBounds(Window window, PixelRect b)
+    {
+        var hwnd = Hwnd(window);
+        if (hwnd == IntPtr.Zero) return;
+        SetWindowPos(hwnd, HWND_TOPMOST, b.X, b.Y, b.Width, b.Height, SWP_NOACTIVATE);
+    }
+}

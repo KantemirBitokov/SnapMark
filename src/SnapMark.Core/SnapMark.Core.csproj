@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Платформонезависимая логика: настройки, шаблоны имён и текста серии. Без UI. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SnapMark.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Переводы интерфейса: ru → en, de, fr, it, es -->
+    <EmbeddedResource Include="Strings.tsv" LogicalName="SnapMark.Core.Strings.tsv" />
+  </ItemGroup>
+
+</Project>

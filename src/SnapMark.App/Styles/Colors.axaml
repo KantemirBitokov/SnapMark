@@ -1,0 +1,56 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Палитра в духе macOS Sonoma/Sequoia. Префикс Sm. — чтобы не пересекаться с ресурсами Fluent. -->
+  <ResourceDictionary.ThemeDictionaries>
+
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="Sm.WindowBg" Color="#F5F5F7"/>
+      <SolidColorBrush x:Key="Sm.SidebarBg" Color="#E8E8ED"/>
+      <SolidColorBrush x:Key="Sm.CardBg" Color="#FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.CardBorder" Color="#14000000"/>
+      <SolidColorBrush x:Key="Sm.TextPrimary" Color="#1D1D1F"/>
+      <SolidColorBrush x:Key="Sm.TextSecondary" Color="#6E6E73"/>
+      <SolidColorBrush x:Key="Sm.Separator" Color="#1A000000"/>
+      <SolidColorBrush x:Key="Sm.PillBg" Color="#F7FBFBFD"/>
+      <SolidColorBrush x:Key="Sm.PillBorder" Color="#24000000"/>
+      <SolidColorBrush x:Key="Sm.HoverBg" Color="#12000000"/>
+      <SolidColorBrush x:Key="Sm.PressedBg" Color="#22000000"/>
+      <SolidColorBrush x:Key="Sm.FieldBg" Color="#0A000000"/>
+      <SolidColorBrush x:Key="Sm.NavSelected" Color="#1F000000"/>
+    </ResourceDictionary>
+
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="Sm.WindowBg" Color="#1E1E20"/>
+      <SolidColorBrush x:Key="Sm.SidebarBg" Color="#2A2A2D"/>
+      <SolidColorBrush x:Key="Sm.CardBg" Color="#2C2C2E"/>
+      <SolidColorBrush x:Key="Sm.CardBorder" Color="#1FFFFFFF"/>
+      <SolidColorBrush x:Key="Sm.TextPrimary" Color="#F5F5F7"/>
+      <SolidColorBrush x:Key="Sm.TextSecondary" Color="#98989D"/>
+      <SolidColorBrush x:Key="Sm.Separator" Color="#24FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.PillBg" Color="#F2262628"/>
+      <SolidColorBrush x:Key="Sm.PillBorder" Color="#33FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.HoverBg" Color="#1FFFFFFF"/>
+      <SolidColorBrush x:Key="Sm.PressedBg" Color="#33FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.FieldBg" Color="#14FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.NavSelected" Color="#2EFFFFFF"/>
+    </ResourceDictionary>
+
+  </ResourceDictionary.ThemeDictionaries>
+
+  <!-- Системный синий macOS как акцент Fluent (слайдеры, переключатели, выделение). -->
+  <Color x:Key="SystemAccentColor">#0A84FF</Color>
+  <Color x:Key="SystemAccentColorLight1">#409CFF</Color>
+  <Color x:Key="SystemAccentColorLight2">#66B0FF</Color>
+  <Color x:Key="SystemAccentColorLight3">#8CC4FF</Color>
+  <Color x:Key="SystemAccentColorDark1">#0071E3</Color>
+  <Color x:Key="SystemAccentColorDark2">#0062C4</Color>
+  <Color x:Key="SystemAccentColorDark3">#0053A6</Color>
+
+  <SolidColorBrush x:Key="Sm.Accent" Color="#0A84FF"/>
+  <SolidColorBrush x:Key="Sm.Red" Color="#FF3B30"/>
+  <SolidColorBrush x:Key="Sm.HudBg" Color="#D91C1C1E"/>
+
+  <FontFamily x:Key="Sm.Font">Segoe UI Variable Text, Segoe UI, SF Pro Text, Helvetica Neue, Ubuntu, Cantarell, Arial</FontFamily>
+
+</ResourceDictionary>

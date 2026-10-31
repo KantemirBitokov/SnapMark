@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>SnapMark</AssemblyName>
+    <RootNamespace>SnapMark</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\snapmark.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Платформенный код защищён проверками OperatingSystem.IsWindows() и т.п. -->
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+    <Version>1.0.0</Version>
+    <Product>SnapMark</Product>
+    <Company>SadlyBear.pro</Company>
+    <Copyright>© SadlyBear.pro</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.3" />
+    <!-- Захват звука компьютера (WASAPI loopback) и микрофона — только Windows. -->
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SnapMark.Core\SnapMark.Core.csproj" />
+  </ItemGroup>
+
+</Project>
