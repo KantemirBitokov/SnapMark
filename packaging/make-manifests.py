@@ -2,7 +2,9 @@
 """
 Манифесты для winget, Homebrew и AUR под конкретную версию.
 
-    python3 packaging/make-manifests.py 1.0.1 [папка-с-файлами-релиза]
+    python3 packaging/make-manifests.py 1.0.7 [папка-с-файлами-релиза]
+
+Если файлов в папке нет, контрольные суммы берутся с GitHub (файлы релиза уже опубликованы).
 
 Берёт файлы релиза (по умолчанию из release/), считает SHA-256 и пишет:
   packaging/winget/manifests/s/SadlyBear/SnapMark/<версия>/*.yaml
@@ -26,6 +28,20 @@ def sha(path: pathlib.Path) -> str:
     return h.hexdigest()
 
 
+def github_digests(ver: str, names) -> dict:
+    import json, urllib.request
+    api = REPO.replace("https://github.com/", "https://api.github.com/repos/")
+    with urllib.request.urlopen(f"{api}/releases/tags/v{ver}") as r:
+        assets = {a["name"]: a.get("digest") or "" for a in json.load(r)["assets"]}
+    out = {}
+    for n in names:
+        d = assets.get(n, "")
+        if not d.startswith("sha256:"):
+            sys.exit(f"No file or GitHub digest for {n}")
+        out[n] = d.split(":", 1)[1]
+    return out
+
+
 def main() -> None:
     if len(sys.argv) < 2:
         sys.exit(__doc__)
@@ -37,7 +53,12 @@ def main() -> None:
     dmg_arm = f"SnapMark-{ver}-macOS-arm64.dmg"
     dmg_x64 = f"SnapMark-{ver}-macOS-x64.dmg"
     appimage = f"SnapMark-{ver}-linux-x64.AppImage"
-    h = {n: sha(rel / n) for n in (setup, dmg_arm, dmg_x64, appimage)}
+    names = (setup, dmg_arm, dmg_x64, appimage)
+    if all((rel / n).exists() for n in names):
+        h = {n: sha(rel / n) for n in names}
+    else:
+        # Файлов нет локально — берём SHA-256, который GitHub сам считает для файлов релиза.
+        h = github_digests(ver, names)
 
     # ── winget ──
     w = ROOT / "winget" / "manifests" / "s" / "SadlyBear" / "SnapMark" / ver
@@ -134,7 +155,7 @@ end
     # ── AUR (snapmark-bin, из AppImage) ──
     a = ROOT / "aur"
     a.mkdir(parents=True, exist_ok=True)
-    (a / "PKGBUILD").write_text(f'''# Maintainer: Kantemir Bitokov <https://sadlybear.pro>
+    (a / "PKGBUILD").write_text(f'''# Maintainer: Kantemir Bitokov <119302116+KantemirBitokov@users.noreply.github.com>
 pkgname=snapmark-bin
 pkgver={ver}
 pkgrel=1

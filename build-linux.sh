@@ -40,7 +40,10 @@ for ARCH in $ARCHS; do
   dotnet publish "$PROJ" -c Release -r "linux-$ARCH" --self-contained true \
     -p:DebugType=None -p:DebugSymbols=false \
     -o "$OUT/publish"
-  chmod +x "$OUT/publish/SnapMark"
+  # Обычные права: файлы 644, исполняемые 755 (иначе у других пользователей «Permission denied»).
+  find "$OUT/publish" -type d -exec chmod 755 {} +
+  find "$OUT/publish" -type f -exec chmod 644 {} +
+  for x in SnapMark createdump; do [ -f "$OUT/publish/$x" ] && chmod 755 "$OUT/publish/$x"; done
 
   # ── tar.gz ──
   tar -C "$OUT/publish" -czf "release/SnapMark-$VERSION-linux-$ARCH.tar.gz" .
@@ -59,8 +62,8 @@ Version: $VERSION
 Section: graphics
 Priority: optional
 Architecture: $DEB_ARCH
-Maintainer: Kantemir Bitokov <https://sadlybear.pro>
-Homepage: https://sadlybear.pro
+Maintainer: Kantemir Bitokov <119302116+KantemirBitokov@users.noreply.github.com>
+Homepage: https://github.com/KantemirBitokov/SnapMark
 Depends: libx11-6, libice6, libsm6, libfontconfig1
 Recommends: ffmpeg, xclip
 Suggests: wl-clipboard, gnome-screenshot

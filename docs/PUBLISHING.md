@@ -74,6 +74,11 @@ Settings → **Pages** → Source: *Deploy from a branch* → Branch: `main`, п
 ## Шаг 6. Поддерживать интерес
 
 - Отвечай на issues и комментарии — живой автор сильно повышает доверие к неподписанной программе.
-- Выпускай обновления: поменять `<Version>` в `src/SnapMark.App/SnapMark.App.csproj`, дописать
-  `CHANGELOG.md`, Actions → **Build SnapMark** → **Run workflow**. У пользователей появится уведомление.
+- Выпускай обновления: поменять `<Version>` в `src/SnapMark.App/SnapMark.App.csproj`, дописать раздел
+  `## X.Y.Z` в `CHANGELOG.md`, Actions → **Build SnapMark** → **Run workflow**. Описание релиза (что нового +
+  таблица загрузок) соберётся из CHANGELOG само. У пользователей появится уведомление.
+  - Поправил CHANGELOG задним числом → Actions → **Update release notes** → Run workflow (пустое поле = все релизы).
+  - Homebrew: `python3 packaging/make-manifests.py X.Y.Z` (суммы возьмёт с GitHub) → скопировать
+    `packaging/homebrew/Casks/snapmark.rb` в репозиторий `homebrew-tap` (`Casks/snapmark.rb`).
+  - winget (после того как первую версию примут): `wingetcreate update SadlyBear.SnapMark --version X.Y.Z --urls <ссылка на Setup.exe> --submit`.
 - Каждый заметный релиз — повод для нового поста.

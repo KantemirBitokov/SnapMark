@@ -24,6 +24,7 @@ public sealed class SeriesHud : Window
     readonly TextBlock _count = new() { FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center };
     List<IStorageItem> _dragItems = new();
     bool _settingPosition;
+    DispatcherTimer? _saveTimer; // позицию пишем на диск один раз, когда панель остановилась
 
     public static void Sync()
     {
@@ -118,7 +119,10 @@ public sealed class SeriesHud : Window
         {
             if (_settingPosition || Opacity == 0) return;
             AppServices.Settings.SeriesHudPosition = $"{Position.X},{Position.Y}";
-            AppServices.SaveSettings();
+            _saveTimer ??= new DispatcherTimer(TimeSpan.FromMilliseconds(500), DispatcherPriority.Background,
+                (_, _) => { _saveTimer!.Stop(); AppServices.SaveSettings(); });
+            _saveTimer.Stop();
+            _saveTimer.Start();
         };
 
         Opened += (_, _) =>
@@ -217,6 +221,7 @@ public sealed class SeriesHud : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        if (_saveTimer is { IsEnabled: true }) { _saveTimer.Stop(); AppServices.SaveSettings(); }
         base.OnClosed(e);
         if (ReferenceEquals(_instance, this)) _instance = null;
     }

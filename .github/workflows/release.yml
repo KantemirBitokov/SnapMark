@@ -85,10 +85,12 @@ jobs:
         run: echo "v=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/SnapMark.App/SnapMark.App.csproj | head -1)" >> $GITHUB_OUTPUT
       - uses: actions/download-artifact@v4
         with: { path: dist, merge-multiple: true }
+      - name: Release notes
+        run: bash packaging/release-notes.sh ${{ steps.ver.outputs.v }} > release-notes.md
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.ver.outputs.v }}
           name: SnapMark ${{ steps.ver.outputs.v }}
           target_commitish: ${{ github.sha }}
           files: dist/*
-          generate_release_notes: true
+          body_path: release-notes.md

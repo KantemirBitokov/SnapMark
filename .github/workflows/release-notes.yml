@@ -1,0 +1,32 @@
+# Перезаписывает описания всех (или одного) релизов текстом из CHANGELOG.md + таблицей загрузок.
+# Actions → Update release notes → Run workflow.
+name: Update release notes
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag (e.g. v1.0.7). Empty = all releases"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          tags="$TAG"
+          [ -n "$tags" ] || tags=$(gh release list --limit 100 --json tagName --jq '.[].tagName')
+          for t in $tags; do
+            bash packaging/release-notes.sh "${t#v}" > notes.md
+            gh release edit "$t" --title "SnapMark ${t#v}" --notes-file notes.md
+            echo "updated $t"
+          done
