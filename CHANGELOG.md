@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+- Marker comments drawn on the image no longer cover the marker's arrow, other markers or other comments — the best free spot around the marker is chosen automatically.
+- The style panel next to an object no longer covers the editor's side panels (actions, comments, tools).
+- The series panel can be moved: drag it by the ⋮⋮ grip or any free spot; the position is remembered. Double-click the grip to put it back.
+
 ## 1.0.1
 - In-app update check: SnapMark tells you when a new version is out (Settings → About, can be turned off).
 

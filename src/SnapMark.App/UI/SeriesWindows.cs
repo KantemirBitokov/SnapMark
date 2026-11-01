@@ -23,6 +23,7 @@ public sealed class SeriesHud : Window
 
     readonly TextBlock _count = new() { FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center };
     List<IStorageItem> _dragItems = new();
+    bool _settingPosition;
 
     public static void Sync()
     {
@@ -69,7 +70,25 @@ public sealed class SeriesHud : Window
         ToolTip.SetTip(dragHandle, L.T("Зажми и перетащи в чат или папку — все скриншоты серии разом"));
         dragHandle.PointerPressed += OnDragPressed;
 
+        // Ручка для перемещения панели: тянуть за неё (или за свободное место панели).
+        // Двойной щелчок — вернуть панель на место по умолчанию.
+        var moveGrip = new Border
+        {
+            Background = Brushes.Transparent,
+            Width = 18,
+            Cursor = new Cursor(StandardCursorType.SizeAll),
+            VerticalAlignment = VerticalAlignment.Stretch,
+            Child = new TextBlock
+            {
+                Text = "⋮⋮", FontSize = 14, Opacity = 0.45, FontWeight = FontWeight.Bold,
+                HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
+            },
+        };
+        ToolTip.SetTip(moveGrip, L.T("Перетащи, чтобы переместить панель. Двойной щелчок — вернуть вниз по центру"));
+        moveGrip.DoubleTapped += (_, _) => ResetPosition();
+
         var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
+        stack.Children.Add(moveGrip);
         stack.Children.Add(new Border
         {
             Width = 10, Height = 10, CornerRadius = new CornerRadius(5),
@@ -87,6 +106,20 @@ public sealed class SeriesHud : Window
         var card = new Border { Margin = new Thickness(16), Padding = new Thickness(6), Child = stack };
         card.Classes.Add("pill");
         Content = card;
+
+        // Перемещение: нажатие на ручку или на пустое место панели (кнопки нажатие забирают себе).
+        card.PointerPressed += (_, e) =>
+        {
+            if (e.Handled || !e.GetCurrentPoint(this).Properties.IsLeftButtonPressed || e.ClickCount > 1) return;
+            BeginMoveDrag(e);
+        };
+        // Любое перемещение, кроме нашего собственного (Reposition), — это пользователь двигает панель.
+        PositionChanged += (_, _) =>
+        {
+            if (_settingPosition || Opacity == 0) return;
+            AppServices.Settings.SeriesHudPosition = $"{Position.X},{Position.Y}";
+            AppServices.SaveSettings();
+        };
 
         Opened += (_, _) =>
         {
@@ -136,6 +169,7 @@ public sealed class SeriesHud : Window
 
     async void OnDragPressed(object? sender, PointerPressedEventArgs e)
     {
+        e.Handled = true; // это перетаскивание файлов, а не самой панели
         if (_dragItems.Count == 0) return;
         var data = new DataObject();
         data.Set(DataFormats.Files, _dragItems);
@@ -145,14 +179,40 @@ public sealed class SeriesHud : Window
         catch { /* перетаскивание отменено или цель не приняла данные */ }
     }
 
+    void ResetPosition()
+    {
+        AppServices.Settings.SeriesHudPosition = "";
+        AppServices.SaveSettings();
+        Reposition();
+    }
+
     void Reposition()
     {
+        // Пользователь перетащил панель — держим её там, пока это место есть на каком-то мониторе.
+        var saved = AppServices.Settings.SeriesHudPosition.Split(',');
+        if (saved.Length == 2 && int.TryParse(saved[0], out var sx) && int.TryParse(saved[1], out var sy))
+        {
+            var p = new PixelPoint(sx, sy);
+            if (Screens.All.Any(sc => sc.WorkingArea.Contains(p)))
+            {
+                SetPosition(p);
+                return;
+            }
+        }
+
         var screen = Screens.Primary ?? Screens.All.FirstOrDefault();
         if (screen is null) return;
         var wa = screen.WorkingArea;
         int w = (int)Math.Ceiling(ClientSize.Width * screen.Scaling);
         int h = (int)Math.Ceiling(ClientSize.Height * screen.Scaling);
-        Position = new PixelPoint(wa.X + (wa.Width - w) / 2, wa.Bottom - h - (int)(8 * screen.Scaling));
+        SetPosition(new PixelPoint(wa.X + (wa.Width - w) / 2, wa.Bottom - h - (int)(8 * screen.Scaling)));
+    }
+
+    void SetPosition(PixelPoint p)
+    {
+        _settingPosition = true;
+        Position = p;
+        _settingPosition = false;
     }
 
     protected override void OnClosed(EventArgs e)

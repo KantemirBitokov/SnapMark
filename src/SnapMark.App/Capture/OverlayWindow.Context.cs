@@ -70,20 +70,65 @@ public partial class OverlayWindow
         var actual = ObjectBar.Bounds.Size;
         var size = new Size(Math.Max(measured.Width, actual.Width), Math.Max(measured.Height, actual.Height));
 
-        // Над объектом, иначе под ним, иначе сбоку — лишь бы не закрывать сам объект.
-        double x = Clamp(r.Center.X - size.Width / 2, 8, W - size.Width - 8);
-        double y = r.Top - size.Height - 12;
-        if (y < 8) y = r.Bottom + 12;
-        if (y + size.Height > H - 8)
+        // Перебираем места вокруг объекта (над, под, справа, слева, со сдвигами) и берём то,
+        // где панель меньше всего закрывает сам объект и другие панели редактора (инструменты, действия,
+        // комментарии), — раньше у правого края она наезжала на боковую панель действий.
+        var obstacles = new List<Rect>();
+        foreach (var c in new Control[] { ToolsBar, ActionsBar, CommentsPanel, StylePanel, ShapesPanel })
         {
-            y = Clamp(r.Center.Y - size.Height / 2, 8, H - size.Height - 8);
-            x = r.Right + 12 + size.Width < W ? r.Right + 12 : Math.Max(8, r.Left - size.Width - 12);
+            if (!c.IsVisible) continue;
+            double l = Canvas.GetLeft(c), t = Canvas.GetTop(c);
+            if (double.IsNaN(l) || double.IsNaN(t)) continue;
+            obstacles.Add(new Rect(l, t, c.Bounds.Width, c.Bounds.Height).Inflate(6));
+        }
+
+        double w = size.Width, h = size.Height;
+        var xs = new List<double> { r.Center.X - w / 2, r.Left, r.Right - w };
+        var ys = new List<double> { r.Center.Y - h / 2, r.Top, r.Bottom - h };
+        foreach (var o in obstacles)
+        {
+            xs.Add(o.Left - w - 4);
+            xs.Add(o.Right + 4);
+            ys.Add(o.Top - h - 4);
+            ys.Add(o.Bottom + 4);
+        }
+
+        var candidates = new List<(double X, double Y, int Order)>();
+        foreach (var cx in xs) candidates.Add((cx, r.Top - h - 12, 0));      // над объектом
+        foreach (var cx in xs) candidates.Add((cx, r.Bottom + 12, 1));       // под объектом
+        foreach (var cy in ys) candidates.Add((r.Right + 12, cy, 2));        // справа
+        foreach (var cy in ys) candidates.Add((r.Left - w - 12, cy, 3));     // слева
+
+        double bestScore = double.MaxValue;
+        double x = 8, y = 8;
+        var objectRect = r.Inflate(6);
+        foreach (var (cx0, cy0, order) in candidates)
+        {
+            double cx = Clamp(cx0, 8, W - w - 8), cy = Clamp(cy0, 8, H - h - 8);
+            var rect = new Rect(cx, cy, w, h);
+            double score = Overlap(rect, objectRect) * 4 + order * 50
+                           + Math.Abs(cx - cx0) + Math.Abs(cy - cy0); // сдвиг из-за края экрана — мелкий штраф
+            foreach (var o in obstacles) score += Overlap(rect, o) * 3;
+            // Ближе к объекту — лучше.
+            score += Math.Abs(rect.Center.X - r.Center.X) * 0.05 + Math.Abs(rect.Center.Y - r.Center.Y) * 0.05;
+            if (score < bestScore)
+            {
+                bestScore = score;
+                x = cx;
+                y = cy;
+            }
         }
         x = Math.Round(x);
         y = Math.Round(y);
         double cl = Canvas.GetLeft(ObjectBar), ct = Canvas.GetTop(ObjectBar);
         if (double.IsNaN(cl) || double.IsNaN(ct) || Math.Abs(cl - x) > 0.5 || Math.Abs(ct - y) > 0.5)
             Place(ObjectBar, x, y);
+    }
+
+    static double Overlap(Rect a, Rect b)
+    {
+        var i = a.Intersect(b);
+        return i.Width > 0 && i.Height > 0 ? i.Width * i.Height : 0;
     }
 
     Size _lastObjectBarSize;

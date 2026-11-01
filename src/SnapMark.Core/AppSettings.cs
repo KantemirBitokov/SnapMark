@@ -59,6 +59,8 @@ public sealed class AppSettings
     public bool FirstRunDone { get; set; }
     /// <summary>Раз в сутки проверять, не вышла ли новая версия (только запрос к GitHub, ничего не скачивается).</summary>
     public bool CheckForUpdates { get; set; } = true;
+    /// <summary>Куда пользователь перетащил панель серии («x,y» в пикселях экрана; пусто — внизу по центру).</summary>
+    public string SeriesHudPosition { get; set; } = "";
     public DateTime LastUpdateCheckUtc { get; set; }
 
     // ── Скриншоты ────────────────────────────────────────────────────

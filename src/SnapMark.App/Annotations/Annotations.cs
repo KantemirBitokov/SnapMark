@@ -810,11 +810,98 @@ public sealed class CommentLabelStyle
 /// <summary>Подписи-комментарии рядом с метками (опция «Комментарии на картинке»). Стиль — у каждой метки свой.</summary>
 public static class CommentLabels
 {
+    /// <summary>
+    /// Где поставить подпись: перебираем места вокруг метки (сначала — со стороны, противоположной стрелке)
+    /// и берём первое, где подпись не пересекает стрелку, другие метки и уже поставленные подписи
+    /// и помещается в выделенную область. Если идеального места нет — место с наименьшими «штрафами».
+    /// </summary>
+    static Rect PlaceLabel(MarkerAnnotation m, double w, double h, double gap, Rect area,
+        List<Rect> placed, List<MarkerAnnotation> markers)
+    {
+        var c = m.Center;
+        double r = m.Radius;
+
+        // Направление «от стрелки»: подпись лучше ставить с противоположной стороны.
+        double ax = 1, ay = 0;
+        if (m.Tail is Point tail && Annotation.Distance(tail, c) > r)
+        {
+            double dx = tail.X - c.X, dy = tail.Y - c.Y, len = Math.Sqrt(dx * dx + dy * dy);
+            ax = -dx / len;
+            ay = -dy / len;
+        }
+
+        // 12 направлений по кругу, начиная с «от стрелки»; ближе к нему — раньше в очереди.
+        var candidates = new List<(Rect Rect, int Order)>();
+        double baseAngle = Math.Atan2(ay, ax);
+        for (int i = 0; i < 12; i++)
+        {
+            int step = (i + 1) / 2 * (i % 2 == 0 ? 1 : -1); // 0, -1, +1, -2, +2 …
+            double a = baseAngle + step * Math.PI / 6;
+            double ux = Math.Cos(a), uy = Math.Sin(a);
+            // Точка у края метки по направлению, от неё прямоугольник «растёт» в ту же сторону.
+            double px = c.X + ux * (r + gap), py = c.Y + uy * (r + gap);
+            double x = px + (ux >= 0 ? 0 : -w) + (Math.Abs(ux) < 0.35 ? (ux >= 0 ? -w / 2 : w / 2) : 0);
+            double y = py + (uy >= 0 ? 0 : -h) + (Math.Abs(uy) < 0.35 ? (uy >= 0 ? -h / 2 : h / 2) : 0);
+            candidates.Add((new Rect(x, y, w, h), i));
+        }
+
+        Rect best = candidates[0].Rect;
+        double bestScore = double.MaxValue;
+        foreach (var (rect, order) in candidates)
+        {
+            double score = order * 0.5;
+            var inflated = rect.Inflate(3);
+            if (m.Tail is Point t && SegmentHitsRect(c, t, inflated)) score += 100;
+            foreach (var other in markers)
+            {
+                if (ReferenceEquals(other, m)) continue;
+                var otherRect = new Rect(other.Center.X - other.Radius, other.Center.Y - other.Radius, other.Radius * 2, other.Radius * 2);
+                if (otherRect.Intersects(inflated)) score += 40;
+                if (other.Tail is Point ot && SegmentHitsRect(other.Center, ot, inflated)) score += 25;
+            }
+            foreach (var p in placed)
+                if (p.Intersects(inflated)) score += 60;
+            // Вылезание за выделенную область — штраф пропорционально «вылезшей» части.
+            var inside = rect.Intersect(area);
+            double outside = w * h - Math.Max(0, inside.Width) * Math.Max(0, inside.Height);
+            score += outside / Math.Max(1, w * h) * 80;
+
+            if (score < bestScore)
+            {
+                bestScore = score;
+                best = rect;
+            }
+        }
+
+        // Если всё-таки вылезает — сдвигаем внутрь области.
+        double bx = Math.Max(area.Left + 2, Math.Min(best.X, area.Right - w - 2));
+        double by = Math.Max(area.Top + 2, Math.Min(best.Y, area.Bottom - h - 2));
+        return new Rect(bx, by, w, h);
+    }
+
+    /// <summary>Пересекает ли отрезок прямоугольник (концы внутри или пересечение с любой стороной).</summary>
+    static bool SegmentHitsRect(Point a, Point b, Rect r)
+    {
+        if (r.Contains(a) || r.Contains(b)) return true;
+        var tl = r.TopLeft; var tr = r.TopRight; var bl = r.BottomLeft; var br = r.BottomRight;
+        return SegmentsCross(a, b, tl, tr) || SegmentsCross(a, b, tr, br) ||
+               SegmentsCross(a, b, br, bl) || SegmentsCross(a, b, bl, tl);
+    }
+
+    static bool SegmentsCross(Point p1, Point p2, Point p3, Point p4)
+    {
+        static double Cross(Point o, Point a, Point b) => (a.X - o.X) * (b.Y - o.Y) - (a.Y - o.Y) * (b.X - o.X);
+        double d1 = Cross(p3, p4, p1), d2 = Cross(p3, p4, p2), d3 = Cross(p1, p2, p3), d4 = Cross(p1, p2, p4);
+        return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
+    }
+
     /// <param name="area">Область выделения в пикселях снимка — подписи стараются не вылезать за неё.</param>
     public static void Render(DrawingContext ctx, AnnotationDocument doc, CommentLabelStyle st, Rect area)
     {
         if (!st.Enabled) return;
-        foreach (var m in doc.MarkersInOrder())
+        var placed = new List<Rect>();
+        var markers = doc.MarkersInOrder().ToList();
+        foreach (var m in markers)
         {
             var text = doc.GetComment(m).Trim();
             if (text.Length == 0) continue;
@@ -833,15 +920,10 @@ public static class CommentLabels
             double w = ft.Width + pad * 2, h = ft.Height + pad * 2;
             double gap = m.Radius * 0.5 + 4;
 
-            // Справа от метки; если стрелка уходит вправо или не помещается — слева.
-            bool left = m.Tail is Point t && t.X > m.Center.X + m.Radius;
-            double x = left ? m.Center.X - m.Radius - gap - w : m.Center.X + m.Radius + gap;
-            if (!left && x + w > area.Right) x = m.Center.X - m.Radius - gap - w;
-            if (left && x < area.Left) x = m.Center.X + m.Radius + gap;
-            double y = m.Center.Y - h / 2;
-            y = Math.Max(area.Top + 2, Math.Min(y, area.Bottom - h - 2));
+            var rect = PlaceLabel(m, w, h, gap, area, placed, markers);
+            placed.Add(rect);
 
-            TextPlate.Draw(ctx, Make, new Rect(x, y, w, h), m.CommentColor, m.CommentFrame, size, m.Color,
+            TextPlate.Draw(ctx, Make, rect, m.CommentColor, m.CommentFrame, size, m.Color,
                 m.CommentShadow, m.CommentShadowColor, m.CommentPlateColor, m.CommentBorderColor);
         }
     }
