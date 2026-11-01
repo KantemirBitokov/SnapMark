@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brewly — Checkout</title>
+<meta name="robots" content="noindex">
+<!--
+  Демо-страница для скриншотов SnapMark: вымышленный магазин кофе «Brewly» с четырьмя «багами».
+  Язык и тема — через адрес:   ?lang=ru   ?theme=dark   ?lang=ru&theme=dark
+  Спрятанные ошибки:
+    A — кнопка оплаты почти не видна (низкий контраст)
+    B — опечатка в заголовке
+    C — итог не совпадает с суммой позиций (сумма 30,50, а написано 34,50)
+    D — поле промокода вылезает за край карточки
+-->
+<style>
+  :root {
+    --bg: #f4f1ec; --card: #ffffff; --text: #2b2118; --muted: #8a7d70; --line: #ece5dc;
+    --brand: #6f4e37; --brand-soft: #f3ebe3; --field: #faf8f5; --ok: #2f9e44;
+    --pay-bg: #e9e3dc; --pay-text: #d8d0c7; /* B U G A: почти невидимая кнопка */
+    --shadow: 0 12px 32px rgba(60, 40, 20, .08);
+  }
+  :root[data-theme="dark"] {
+    --bg: #17120e; --card: #221b16; --text: #f4ece4; --muted: #a8998a; --line: #33291f;
+    --brand: #d9a27a; --brand-soft: #2c231c; --field: #1c1612;
+    --pay-bg: #2a221b; --pay-text: #3a3026;
+    --shadow: none;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font: 16px/1.5 "Segoe UI", -apple-system, BlinkMacSystemFont, Inter, Roboto, sans-serif;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1120px; margin: 0 auto; padding: 22px 24px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; letter-spacing: -.01em; }
+  .logo .cup {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--brand); color: #fff;
+    display: grid; place-items: center; font-size: 18px;
+  }
+  .steps { display: flex; gap: 22px; font-size: 14px; color: var(--muted); }
+  .steps b { color: var(--text); }
+  .steps span::before { content: "●"; margin-right: 6px; font-size: 9px; vertical-align: 2px; color: var(--line); }
+  .steps b::before { color: var(--brand); }
+
+  main {
+    max-width: 1120px; margin: 0 auto; padding: 8px 24px 40px;
+    display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: start;
+  }
+  h1 { grid-column: 1 / -1; margin: 6px 0 4px; font-size: 34px; letter-spacing: -.02em; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: var(--shadow); }
+  .card h2 { margin: 0 0 16px; font-size: 18px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .field {
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--line);
+    background: var(--field); color: var(--text); font: inherit;
+  }
+  .row { margin-bottom: 14px; }
+  .delivery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  .opt { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .opt.on { border-color: var(--brand); background: var(--brand-soft); }
+  .opt i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex: none; margin-top: 2px; }
+  .opt.on i { border: 5px solid var(--brand); }
+  .opt small { display: block; color: var(--muted); }
+
+  .item { display: grid; grid-template-columns: 56px 1fr auto; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .thumb { width: 56px; height: 56px; border-radius: 12px; display: grid; place-items: center; font-size: 26px; background: var(--brand-soft); }
+  .item small { display: block; color: var(--muted); font-size: 13px; }
+  .price { font-weight: 600; }
+  .sum { display: flex; justify-content: space-between; padding: 6px 0; color: var(--muted); font-size: 15px; }
+  .sum.total { color: var(--text); font-weight: 700; font-size: 20px; padding-top: 14px; border-top: 1px solid var(--line); margin-top: 8px; }
+  .promo { display: flex; gap: 10px; margin: 16px 0 6px; }
+  .promo .field { width: 104%; flex: none; }          /* B U G D: поле шире карточки */
+  .promo button { flex: none; }
+  .btn {
+    border: 0; border-radius: 12px; padding: 12px 18px; font: 600 15px/1 inherit; cursor: pointer;
+    background: var(--brand-soft); color: var(--brand);
+  }
+  .pay {
+    width: 100%; margin-top: 18px; padding: 16px; font-size: 17px;
+    background: var(--pay-bg); color: var(--pay-text);  /* B U G A */
+  }
+  .secure { margin-top: 12px; text-align: center; font-size: 13px; color: var(--muted); }
+  .secure span { color: var(--ok); }
+  .summary { overflow: visible; }
+  footer { max-width: 1120px; margin: 0 auto; padding: 0 24px 28px; color: var(--muted); font-size: 13px; }
+  @media (max-width: 860px) { main { grid-template-columns: 1fr; } .steps { display: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><div class="cup">☕</div>Brewly</div>
+  <nav class="steps">
+    <span data-t="s1">Cart</span><b><span data-t="s2">Checkout</span></b><span data-t="s3">Done</span>
+  </nav>
+</header>
+
+<main>
+  <h1 data-t="title">Chekcout</h1> <!-- B U G B: опечатка -->
+
+  <section class="card">
+    <h2 data-t="contact">Contact &amp; delivery</h2>
+    <div class="grid2">
+      <div class="row"><label data-t="name">Full name</label><input class="field" value="Alex Morgan"></div>
+      <div class="row"><label data-t="phone">Phone</label><input class="field" value="+1 415 555 0134"></div>
+    </div>
+    <div class="row"><label data-t="email">Email</label><input class="field" value="alex.morgan@example.com"></div>
+    <div class="row"><label data-t="address">Address</label><input class="field" data-tv="addrv" value="221 Market Street, apt. 14, San Francisco"></div>
+
+    <h2 style="margin-top:22px" data-t="method">Delivery method</h2>
+    <div class="delivery">
+      <div class="opt on"><i></i><div><b data-t="courier">Courier</b><small data-t="courierd">Today, 18:00–20:00 · $4.00</small></div></div>
+      <div class="opt"><i></i><div><b data-t="pickup">Pickup</b><small data-t="pickupd">From 2 hours · free</small></div></div>
+    </div>
+
+    <h2 data-t="payment">Payment</h2>
+    <div class="grid2">
+      <div class="row"><label data-t="card">Card number</label><input class="field" value="4242 4242 4242 4242"></div>
+      <div class="grid2">
+        <div class="row"><label data-t="exp">Expiry</label><input class="field" value="08/29"></div>
+        <div class="row"><label>CVC</label><input class="field" value="•••"></div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="card summary">
+    <h2 data-t="order">Your order</h2>
+    <div class="item"><div class="thumb">🫘</div><div><b data-t="i1">Ethiopia Yirgacheffe</b><small data-t="i1d">250 g · whole bean</small></div><div class="price">$14.50</div></div>
+    <div class="item"><div class="thumb">🥛</div><div><b data-t="i2">Oat milk</b><small data-t="i2d">1 l</small></div><div class="price">$3.50</div></div>
+    <div class="item"><div class="thumb">☕</div><div><b data-t="i3">Ceramic V60 dripper</b><small data-t="i3d">white</small></div><div class="price">$8.50</div></div>
+
+    <div class="promo">
+      <input class="field" data-tp="promoph" placeholder="Promo code">
+      <button class="btn" data-t="apply">Apply</button>
+    </div>
+
+    <div class="sum"><span data-t="subtotal">Subtotal</span><span>$26.50</span></div>
+    <div class="sum"><span data-t="delivery">Delivery</span><span>$4.00</span></div>
+    <div class="sum total"><span data-t="total">Total</span><span>$34.50</span></div> <!-- B U G C: должно быть $30.50 -->
+
+    <button class="btn pay" data-t="pay">Pay $34.50</button>
+    <div class="secure"><span>🔒</span> <span style="color:inherit" data-t="secure">Secure payment · Brewly is a fictional demo store</span></div>
+  </aside>
+</main>
+<footer data-t="foot">© Brewly Coffee Roasters · demo page for SnapMark screenshots</footer>
+
+<script>
+  const RU = {
+    s1: "Корзина", s2: "Оформление", s3: "Готово",
+    title: "Оформление закааза",
+    contact: "Контакты и доставка", name: "Имя и фамилия", phone: "Телефон", email: "Эл. почта", address: "Адрес",
+    method: "Способ доставки", courier: "Курьер", courierd: "Сегодня, 18:00–20:00 · 300 ₽",
+    pickup: "Самовывоз", pickupd: "Через 2 часа · бесплатно",
+    payment: "Оплата", card: "Номер карты", exp: "Срок",
+    order: "Ваш заказ", i1: "Эфиопия Иргачеффе", i1d: "250 г · в зёрнах", i2: "Овсяное молоко", i2d: "1 л",
+    i3: "Керамическая воронка V60", i3d: "белая", apply: "Применить",
+    subtotal: "Товары", delivery: "Доставка", total: "Итого", pay: "Оплатить 2 650 ₽",
+    secure: "Безопасная оплата · вымышленный демо-магазин",
+    foot: "© Brewly Coffee Roasters · демо-страница для скриншотов SnapMark",
+    promoph: "Промокод", addrv: "ул. Лесная, д. 14, кв. 7, Москва"
+  };
+  // Цены для русской версии: сумма товаров 1 950 ₽ + доставка 300 ₽ = 2 250 ₽, а написано 2 650 ₽ (баг C).
+  const RU_PRICES = ["1 090 ₽", "290 ₽", "570 ₽"], RU_SUMS = ["1 950 ₽", "300 ₽", "2 650 ₽"];
+  const RU_VALUES = ["Алексей Морозов", "+7 916 555-01-34", "alexey.morozov@example.com"];
+
+  const p = new URLSearchParams(location.search);
+  if (p.get("theme") === "dark") document.documentElement.dataset.theme = "dark";
+  if (p.get("lang") === "ru") {
+    document.documentElement.lang = "ru";
+    document.title = "Brewly — Оформление заказа";
+    document.querySelectorAll("[data-t]").forEach(el => { if (RU[el.dataset.t]) el.textContent = RU[el.dataset.t]; });
+    document.querySelectorAll("[data-tp]").forEach(el => el.placeholder = RU[el.dataset.tp]);
+    document.querySelectorAll("[data-tv]").forEach(el => el.value = RU[el.dataset.tv]);
+    document.querySelectorAll(".price").forEach((el, i) => el.textContent = RU_PRICES[i]);
+    document.querySelectorAll(".sum span:last-child").forEach((el, i) => el.textContent = RU_SUMS[i]);
+    const inputs = document.querySelectorAll("section .field");
+    RU_VALUES.forEach((v, i) => inputs[i].value = v);
+  }
+</script>
+</body>
+</html>
