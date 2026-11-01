@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.8
+- Moving the series panel no longer writes settings to disk on every pixel — the position is saved once the panel stops.
+- Linux: standard file permissions inside the AppImage and .deb (fixes 200+ packaging warnings); proper maintainer and homepage in the .deb.
+
 ## 1.0.7
 - Pin marker: smoother, symmetric teardrop shape (classic map-pin look).
 
