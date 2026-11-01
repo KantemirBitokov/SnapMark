@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.5
+- Marker tool icons: wider, iOS-style letter A.
+
 ## 1.0.4
 - Redesigned icon set in an iOS-like style: thin even strokes, rounded corners and caps, consistent 20-pt grid — tools, shapes, actions, recording and settings.
 
