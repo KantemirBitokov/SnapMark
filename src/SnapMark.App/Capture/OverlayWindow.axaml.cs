@@ -594,7 +594,7 @@ public partial class OverlayWindow : Window
             b.Classes.Set("current", string.Equals(b.Tag as string, hex, StringComparison.OrdinalIgnoreCase));
         CommentsCaption.Text = cs.Enabled
             ? L.T("Рисуются на картинке и копируются текстом.")
-            : L.T("Копируются текстом. Enter — готово, × — удалить.");
+            : L.T("Копируются текстом. Enter — готово, Shift+Enter — новая строка, × — удалить.");
         _syncingStyle = false;
     }
 
@@ -895,6 +895,8 @@ public partial class OverlayWindow : Window
                 Text = Surface.Document.GetComment(m),
                 Tag = id,
                 Margin = new Thickness(8, 0, 4, 0),
+                AcceptsReturn = true, // Shift+Enter — новая строка (см. обработчик ниже)
+                MaxHeight = 160,
             };
             box.Classes.Add("comment");
             box.PropertyChanged += (_, e) =>
@@ -903,14 +905,15 @@ public partial class OverlayWindow : Window
                 Surface.Document.Comments[id] = box.Text ?? "";
                 if (Surface.CommentStyle.Enabled) Surface.InvalidateVisual();
             };
-            box.KeyDown += (_, e) =>
+            // Перехватываем раньше самого поля (туннель): Enter — готово, Shift+Enter — перенос строки, Esc — выйти.
+            box.AddHandler(KeyDownEvent, (_, e) =>
             {
                 if ((e.Key == Key.Enter && !e.KeyModifiers.HasFlag(KeyModifiers.Shift)) || e.Key == Key.Escape)
                 {
                     Surface.Focus();
                     e.Handled = true;
                 }
-            };
+            }, RoutingStrategies.Tunnel);
 
             var delete = UiKit.ToolButton("Icon.Close", L.F("Удалить метку {0}", m.Label), () => Surface.DeleteMarker(id), "small", "danger");
             delete.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top;

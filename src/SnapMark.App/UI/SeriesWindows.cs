@@ -352,7 +352,11 @@ public sealed class SeriesWindow : Window
                 Child = new TextBlock { Text = m.Label },
             };
             badge.Classes.Add("badge");
-            var box = new TextBox { Text = m.Comment, Watermark = L.F("Комментарий к {0}…", m.Label), Margin = new Thickness(8, 0, 0, 0) };
+            var box = new TextBox
+            {
+                Text = m.Comment, Watermark = L.F("Комментарий к {0}…", m.Label), Margin = new Thickness(8, 0, 0, 0),
+                AcceptsReturn = true, MaxHeight = 160, // многострочные комментарии
+            };
             box.Classes.Add("comment");
             var marker = m;
             box.PropertyChanged += (_, e) =>

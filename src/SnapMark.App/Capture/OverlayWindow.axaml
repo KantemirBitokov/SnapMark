@@ -62,16 +62,12 @@
               <Path Data="{StaticResource Icon.Text}"/>
             </Button>
             <Button Classes="tool" Tag="Marker" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка A, B, C… с комментарием (M)'}">
-              <Grid Width="20" Height="20">
-                <Path Data="{StaticResource Icon.MarkerCircle}"/>
-                <TextBlock Text="A" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-              </Grid>
+              <Path Classes="solid" Data="{StaticResource Icon.MarkerBadge}"/>
             </Button>
             <Button Classes="tool" Tag="MarkerArrow" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка со стрелкой (N): нажми и тяни к цели'}">
               <Grid Width="20" Height="20">
-                <Path Data="{StaticResource Icon.MarkerArrow}"/>
-                <TextBlock Text="A" FontSize="6.5" FontWeight="Bold" Margin="4.6,3.2,0,0"
-                           HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <Path Classes="solid" Data="{StaticResource Icon.MarkerBadgeSmall}"/>
+                <Path Data="{StaticResource Icon.MarkerTail}"/>
               </Grid>
             </Button>
           </StackPanel>

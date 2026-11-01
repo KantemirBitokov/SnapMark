@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+- Multi-line marker comments: Shift+Enter starts a new line (Enter still finishes the comment). Line breaks are kept on the image and in the copied text.
+- New marker tool icons: a solid badge with a cut-out letter, perfectly centered and crisp at any scale.
+
 ## 1.0.2
 - Marker comments drawn on the image no longer cover the marker's arrow, other markers or other comments — the best free spot around the marker is chosen automatically.
 - The style panel next to an object no longer covers the editor's side panels (actions, comments, tools).

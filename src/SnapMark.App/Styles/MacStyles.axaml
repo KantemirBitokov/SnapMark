@@ -124,6 +124,14 @@
     <Setter Property="Fill" Value="{DynamicResource Sm.Red}"/>
     <Setter Property="StrokeThickness" Value="0"/>
   </Style>
+  <!-- Залитые значки (метки): цвет заливки как у обводки других иконок -->
+  <Style Selector="Button.tool Path.solid">
+    <Setter Property="Fill" Value="{DynamicResource Sm.TextPrimary}"/>
+    <Setter Property="StrokeThickness" Value="0"/>
+  </Style>
+  <Style Selector="Button.tool.selected Path.solid">
+    <Setter Property="Fill" Value="White"/>
+  </Style>
   <Style Selector="Button.tool TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
