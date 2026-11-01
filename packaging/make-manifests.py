@@ -71,7 +71,7 @@ PackageIdentifier: SadlyBear.SnapMark
 PackageVersion: {ver}
 PackageLocale: en-US
 Publisher: SadlyBear.pro
-PublisherUrl: https://sadlybear.pro
+PublisherUrl: https://github.com/KantemirBitokov
 Author: Kantemir Bitokov
 PackageName: SnapMark
 PackageUrl: {REPO}
