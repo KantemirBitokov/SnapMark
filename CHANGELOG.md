@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.6
+- Marker tool icons: letter A with rounded strokes, matching the Text tool icon.
+
 ## 1.0.5
 - Marker tool icons: wider, iOS-style letter A.
 
