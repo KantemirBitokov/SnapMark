@@ -70,6 +70,11 @@
   .paste .t { color: var(--muted); font-family: inherit; margin-bottom: 8px; }
   .paste b { color: var(--accent); font-weight: 600; }
 
+  .demo .shot-img { display: block; width: 100%; height: auto; }
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .gallery figure { margin: 0; }
+  .gallery img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: center top; border-radius: 14px; border: 1px solid var(--line); box-shadow: var(--shadow); display: block; }
+  .gallery figcaption { font-size: 14px; color: var(--muted); margin-top: 8px; text-align: center; }
   section { padding: 64px 0 8px; }
   h2 { font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.015em; margin: 0 0 10px; text-align: center; }
   .sub { text-align: center; color: var(--muted); margin: 0 auto 36px; max-width: 640px; }
@@ -121,18 +126,7 @@
 
     <div class="demo" aria-hidden="true">
       <div class="bar"><i></i><i></i><i></i></div>
-      <div class="body">
-        <div class="shot">
-          <div class="ui"><div class="l" style="width:70%"></div><div class="l" style="width:45%"></div><div class="l" style="width:58%"></div><div class="btn-fake"></div></div>
-          <div class="m a">A</div><div class="m b">B</div><div class="m c">C</div>
-        </div>
-        <div class="paste">
-          <div class="t" data-i18n="demo.pasted">Pasted with one Ctrl+V:</div>
-          <div><b>Screenshot_1_A</b> — <span data-i18n="demo.a">Button doesn't respond</span></div>
-          <div><b>Screenshot_1_B</b> — <span data-i18n="demo.b">Typo in the heading</span></div>
-          <div><b>Screenshot_1_C</b> — <span data-i18n="demo.c">Wrong indent</span></div>
-        </div>
-      </div>
+      <img class="shot-img" src="media/markers.png" alt="SnapMark: markers with comments on a screenshot">
     </div>
   </header>
 
@@ -146,6 +140,16 @@
       <div class="card"><div class="e">🔤</div><h3 data-i18n="f4.t">Text with style</h3><p data-i18n="f4.d">Any font and weight, frames, plates and shadows — each object has its own style panel.</p></div>
       <div class="card"><div class="e">🎬</div><h3 data-i18n="f5.t">Screen recording</h3><p data-i18n="f5.d">MP4, MKV, WebM or GIF, up to 60 fps, with microphone and computer audio. No time limit.</p></div>
       <div class="card"><div class="e">🌍</div><h3 data-i18n="f6.t">Everywhere</h3><p data-i18n="f6.d">Windows, macOS and Linux. English, Русский, Deutsch, Français, Italiano, Español.</p></div>
+    </div>
+  </section>
+
+  <section id="screens">
+    <h2 data-i18n="g.title">See it in action</h2>
+    <p class="sub" data-i18n="g.sub">Real screenshots, made with SnapMark itself.</p>
+    <div class="gallery">
+      <figure><img src="media/paste-chat.png" alt="" loading="lazy"><figcaption data-i18n="g1">One Ctrl+V — image and comments together</figcaption></figure>
+      <figure><img src="media/tools.png" alt="" loading="lazy"><figcaption data-i18n="g2">Every object has its own style panel</figcaption></figure>
+      <figure><img src="media/recording.png" alt="" loading="lazy"><figcaption data-i18n="g3">Screen recording with format, fps and audio</figcaption></figure>
     </div>
   </section>
 
@@ -189,6 +193,8 @@
     "f4.t": "Текст со стилем", "f4.d": "Любой шрифт и начертание, рамки, подложки и тени — у каждого объекта своя панель.",
     "f5.t": "Запись экрана", "f5.d": "MP4, MKV, WebM или GIF до 60 кадров, с микрофоном и звуком компьютера. Без ограничения длины.",
     "f6.t": "Везде", "f6.d": "Windows, macOS и Linux. English, Русский, Deutsch, Français, Italiano, Español.",
+    "g.title": "Как это выглядит", "g.sub": "Настоящие скриншоты, сделанные самим SnapMark.",
+    "g1": "Один Ctrl+V — картинка и комментарии вместе", "g2": "У каждого объекта своя панель стиля", "g3": "Запись экрана: формат, кадры, звук",
     "d.title": "Скачать", "d.sub": "Последняя версия с GitHub Releases.", "d.installer": "Установщик", "d.portable": "Портативная",
     "d.note": "<b>Первый запуск.</b> SnapMark пока не подписан платным сертификатом, поэтому система один раз переспросит. Windows: <i>Подробнее → Выполнить в любом случае</i>. macOS: правый клик по программе → <i>Открыть</i>, затем разреши <i>Запись экрана</i>. Для видео нужен бесплатный ffmpeg — на Windows SnapMark скачает его в один клик."
   };

@@ -16,10 +16,8 @@
   <a href="README.ru.md">Русский</a>
 </p>
 
-<!--
-  Media to record (see docs/media/README.md) — uncomment when the files are in place:
-  <p align="center"><img src="docs/media/hero.gif" width="800" alt="SnapMark in action"></p>
--->
+<p align="center"><img src="docs/media/markers.png" width="820" alt="Markers with comments right on the screenshot"></p>
+<p align="center"><sub>Markers with comments right on the screenshot</sub></p>
 
 ---
 
@@ -67,6 +65,15 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 - Windows 10/11, macOS 11+ (Apple Silicon & Intel), Linux (X11; Wayland with limitations)
 - English, Русский, Deutsch, Français, Italiano, Español
 - Lives quietly in the tray / menu bar
+
+## Screenshots
+
+| | |
+|---|---|
+| <img src="docs/media/paste-chat.png" alt="One Ctrl+V — the image and the comments arrive together"> | <img src="docs/media/tools.png" alt="Every object has its own style panel"> |
+| One Ctrl+V — the image and the comments arrive together | Every object has its own style panel |
+| <img src="docs/media/recording.png" alt="Screen recording: format, frame rate, audio and devices"> | |
+| Screen recording: format, frame rate, audio and devices | |
 
 ## Download
 
