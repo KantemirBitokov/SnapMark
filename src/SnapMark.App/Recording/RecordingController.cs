@@ -259,7 +259,7 @@ public sealed class RecordingHud : Window
             var icon = UiKit.Icon(key);
             icon.Width = icon.Height = 20;
             icon.Stretch = Stretch.None;
-            icon.StrokeThickness = 1.6;
+            icon.StrokeThickness = 1.5;
             icon.Stroke = new SolidColorBrush(Color.Parse("#8E8E93"));
             icon.StrokeLineCap = PenLineCap.Round;
             icon.StrokeJoin = PenLineJoin.Round;

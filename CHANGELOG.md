@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.4
+- Redesigned icon set in an iOS-like style: thin even strokes, rounded corners and caps, consistent 20-pt grid — tools, shapes, actions, recording and settings.
+
 ## 1.0.3
 - Multi-line marker comments: Shift+Enter starts a new line (Enter still finishes the comment). Line breaks are kept on the image and in the copied text.
 - New marker tool icons: a solid badge with a cut-out letter, perfectly centered and crisp at any scale.
