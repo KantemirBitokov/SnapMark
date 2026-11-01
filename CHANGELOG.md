@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.7
+- Pin marker: smoother, symmetric teardrop shape (classic map-pin look).
+
 ## 1.0.6
 - Marker tool icons: letter A with rounded strokes, matching the Text tool icon.
 

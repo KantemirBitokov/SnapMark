@@ -670,7 +670,7 @@ public sealed class MarkerAnnotation : Annotation
         {
             double r = Radius * (Shape == MarkerShape.Diamond ? 1.25 : 1.05);
             var rect = new Rect(Center.X - r, Center.Y - r, r * 2, r * 2).Inflate(3);
-            if (Shape == MarkerShape.Pin) rect = rect.Union(new Rect(Center.X - 2, Center.Y, 4, Radius * 1.9));
+            if (Shape == MarkerShape.Pin) rect = rect.Union(new Rect(Center.X - 2, Center.Y, 4, Radius * 2.15 + 6));
             if (Tail is Point t) rect = rect.Union(new Rect(t.X - 8, t.Y - 8, 16, 16));
             return rect;
         }
@@ -726,11 +726,19 @@ public sealed class MarkerAnnotation : Annotation
             }
             case MarkerShape.Pin:
             {
-                // Булавка: круг + остриё вниз.
+                // Булавка: ровная симметричная капля — круглая «голова» плавно переходит в остриё.
                 double extra = r - Radius;
-                var tip = new Point(cx, cy + Radius * 1.85 + extra * 1.4);
-                ctx.DrawGeometry(brush, null, Polygon(tip, new Point(cx - r * 0.72, cy + r * 0.62), new Point(cx + r * 0.72, cy + r * 0.62)));
-                ctx.DrawEllipse(brush, null, Center, r, r);
+                double d = Radius * 1.75 + extra * 1.5;           // от центра до острия
+                var geo = new StreamGeometry();
+                using (var g = geo.Open())
+                {
+                    g.BeginFigure(new Point(cx, cy + d), true);
+                    g.CubicBezierTo(new Point(cx - r * 0.46, cy + d * 0.68), new Point(cx - r, cy + d * 0.36), new Point(cx - r, cy));
+                    g.ArcTo(new Point(cx + r, cy), new Size(r, r), 0, false, SweepDirection.Clockwise);
+                    g.CubicBezierTo(new Point(cx + r, cy + d * 0.36), new Point(cx + r * 0.46, cy + d * 0.68), new Point(cx, cy + d));
+                    g.EndFigure(true);
+                }
+                ctx.DrawGeometry(brush, null, geo);
                 break;
             }
             default:
@@ -755,7 +763,7 @@ public sealed class MarkerAnnotation : Annotation
     {
         if (Distance(p, Center) <= Radius * 1.2 + tolerance) return true;
         if (Shape == MarkerShape.Pin && Math.Abs(p.X - Center.X) <= Radius * 0.6 + tolerance &&
-            p.Y >= Center.Y && p.Y <= Center.Y + Radius * 1.9 + tolerance) return true;
+            p.Y >= Center.Y && p.Y <= Center.Y + Radius * 1.8 + tolerance) return true;
         return Tail is Point t && DistanceToSegment(p, Center, t) <= tolerance + 4;
     }
 
