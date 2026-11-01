@@ -76,6 +76,8 @@ Jira, Word или письмо. Не нужно вставлять картин�
 | Linux — любой дистрибутив | `SnapMark-…-linux-x64.AppImage` |
 | Ubuntu / Debian / Mint | `snapmark_…_amd64.deb` |
 
+**macOS через Homebrew:** `brew install --cask kantemirbitokov/tap/snapmark`
+
 Для записи видео нужен бесплатный **ffmpeg**: на Windows SnapMark скачает его сам в один клик,
 на Mac — `brew install ffmpeg`, в Linux — `sudo apt install ffmpeg`.
 

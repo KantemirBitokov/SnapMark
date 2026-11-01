@@ -87,6 +87,8 @@ Get the latest version from **[Releases](https://github.com/KantemirBitokov/Snap
 | Linux — any distro | `SnapMark-…-linux-x64.AppImage` |
 | Ubuntu / Debian / Mint | `snapmark_…_amd64.deb` |
 
+**macOS via Homebrew:** `brew install --cask kantemirbitokov/tap/snapmark`
+
 Video recording uses the free **ffmpeg** encoder. On Windows SnapMark downloads it for you in one click;
 on macOS run `brew install ffmpeg`, on Linux `sudo apt install ffmpeg`.
 
