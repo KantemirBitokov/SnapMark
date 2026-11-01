@@ -1,0 +1,28 @@
+# Maintainer: Kantemir Bitokov <https://sadlybear.pro>
+pkgname=snapmark-bin
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="Screenshots with A-B-C markers and comments, series in one Ctrl+C, screen recording with sound"
+arch=('x86_64')
+url="https://github.com/KantemirBitokov/SnapMark"
+license=('MIT')
+depends=('fuse2' 'libx11')
+optdepends=('ffmpeg: screen recording' 'xclip: clipboard fallback' 'wl-clipboard: clipboard on Wayland')
+provides=('snapmark')
+conflicts=('snapmark')
+options=('!strip')
+source=("SnapMark-$pkgver.AppImage::https://github.com/KantemirBitokov/SnapMark/releases/download/v$pkgver/SnapMark-$pkgver-linux-x64.AppImage")
+sha256sums=('70fd623474500557831fafb21fca4c54c03f79f2d1004b0431074055bbfbee0b')
+
+prepare() {
+  chmod +x "SnapMark-$pkgver.AppImage"
+  ./"SnapMark-$pkgver.AppImage" --appimage-extract >/dev/null
+}
+
+package() {
+  install -Dm755 "SnapMark-$pkgver.AppImage" "$pkgdir/opt/snapmark/SnapMark.AppImage"
+  install -d "$pkgdir/usr/bin"
+  ln -s /opt/snapmark/SnapMark.AppImage "$pkgdir/usr/bin/snapmark"
+  install -Dm644 squashfs-root/snapmark.desktop "$pkgdir/usr/share/applications/snapmark.desktop"
+  install -Dm644 squashfs-root/snapmark.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/snapmark.png"
+}
