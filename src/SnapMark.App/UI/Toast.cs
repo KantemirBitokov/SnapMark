@@ -8,7 +8,8 @@ using SnapMark.Services;
 
 namespace SnapMark.UI;
 
-/// <summary>Уведомление в стиле macOS — карточка в правом верхнем углу основного монитора.</summary>
+/// <summary>Уведомление в стиле macOS — компактная карточка в правом нижнем углу основного монитора,
+/// над панелью задач / Dock (сверху она закрывала кнопки окон «свернуть» и «закрыть»).</summary>
 public sealed class Toast : Window
 {
     static Toast? _current;
@@ -36,17 +37,17 @@ public sealed class Toast : Window
         var icon = new Image
         {
             Source = App.Logo,
-            Width = 32,
-            Height = 32,
+            Width = 24,
+            Height = 24,
             VerticalAlignment = VerticalAlignment.Top,
         };
 
-        var titleBlock = new TextBlock { Text = title, FontWeight = FontWeight.SemiBold, FontSize = 13 };
+        var titleBlock = new TextBlock { Text = title, FontWeight = FontWeight.SemiBold, FontSize = 12.5 };
         var messageBlock = UiKit.Caption(message);
-        messageBlock.FontSize = 12.5;
-        messageBlock.MaxWidth = 240;
+        messageBlock.FontSize = 11.5;
+        messageBlock.MaxWidth = 210;
 
-        var texts = new StackPanel { Spacing = 2, Margin = new Thickness(10, 0, 8, 0), VerticalAlignment = VerticalAlignment.Center };
+        var texts = new StackPanel { Spacing = 1, Margin = new Thickness(9, 0, 6, 0), VerticalAlignment = VerticalAlignment.Center };
         texts.Children.Add(titleBlock);
         texts.Children.Add(messageBlock);
 
@@ -67,7 +68,7 @@ public sealed class Toast : Window
             grid.Children.Add(btn);
         }
 
-        var card = new Border { Padding = new Thickness(12, 10), Margin = new Thickness(16), Width = 360, Child = grid };
+        var card = new Border { Padding = new Thickness(10, 8), Margin = new Thickness(12), Width = 300, Child = grid };
         card.Classes.Add("pill");
         card.PointerPressed += (_, _) => Close();
         Content = card;
@@ -78,19 +79,21 @@ public sealed class Toast : Window
         Opened += (_, _) =>
         {
             PlatformServices.WindowHelper.ExcludeFromCapture(this);
-            PositionTopRight();
+            PositionBottomRight();
             Opacity = 1;
             _timer.Start();
         };
     }
 
-    void PositionTopRight()
+    void PositionBottomRight()
     {
         var screen = Screens.Primary ?? Screens.All.FirstOrDefault();
         if (screen is null) return;
+        // WorkingArea уже без панели задач / Dock — карточка встаёт прямо над ней.
         var wa = screen.WorkingArea;
         int width = (int)Math.Ceiling(ClientSize.Width * screen.Scaling);
-        Position = new PixelPoint(wa.Right - width, wa.Y);
+        int height = (int)Math.Ceiling(ClientSize.Height * screen.Scaling);
+        Position = new PixelPoint(wa.Right - width, wa.Bottom - height);
     }
 
     protected override void OnClosed(EventArgs e)

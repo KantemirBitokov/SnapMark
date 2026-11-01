@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.9
+- Notifications (copied, saved, recording finished…) now appear in the bottom-right corner just above the taskbar / Dock, so they no longer cover window buttons like Minimize and Close.
+- Notifications are more compact: smaller card, icon and text.
+
 ## 1.0.8
 - Moving the series panel no longer writes settings to disk on every pixel — the position is saved once the panel stops.
 - Linux: standard file permissions inside the AppImage and .deb (fixes 200+ packaging warnings); proper maintainer and homepage in the .deb.
