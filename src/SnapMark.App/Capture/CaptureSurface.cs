@@ -121,6 +121,18 @@ public sealed class CaptureSurface : Control
         InvalidateVisual();
     }
 
+    /// <summary>Задать выделение точно в пикселях (размер области записи); остаётся в пределах снимка.</summary>
+    public void SetSelection(PixelRect r)
+    {
+        if (Screenshot is null) return;
+        int sw = Screenshot.PixelSize.Width, sh = Screenshot.PixelSize.Height;
+        int w = Math.Clamp(r.Width, 1, sw), h = Math.Clamp(r.Height, 1, sh);
+        int x = Math.Clamp(r.X, 0, sw - w), y = Math.Clamp(r.Y, 0, sh - h);
+        Selection = new PixelRect(x, y, w, h);
+        SelectionChanged?.Invoke();
+        InvalidateVisual();
+    }
+
     public void Undo()
     {
         if (Document.Undo()) AfterHistoryChange();

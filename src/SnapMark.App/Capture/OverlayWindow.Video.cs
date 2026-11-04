@@ -38,7 +38,81 @@ public partial class OverlayWindow
         };
         // Выбор устройств есть только там, где мы сами пишем звук (Windows/WASAPI).
         VideoDevicesBox.IsVisible = OperatingSystem.IsWindows();
+
+        // Точный размер области: поля показывают текущий размер, Enter — применить.
+        Surface.SelectionChanged += SyncVideoSize;
+        foreach (var box in new[] { VideoWidthBox, VideoHeightBox })
+            box.KeyDown += (_, e) =>
+            {
+                if (e.Key != Key.Enter) return;
+                e.Handled = true;
+                ApplyVideoSize();
+            };
         SyncVideoOptions();
+    }
+
+    void OnVideoQualityChip(object? sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleButton { Tag: string t } && Enum.TryParse<VideoQuality>(t, out var q))
+        {
+            AppServices.Settings.VideoQuality = q;
+            AppServices.SaveSettings();
+        }
+        SyncVideoOptions();
+    }
+
+    void OnVideoSizePreset(object? sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleButton { Tag: string t } && t.Split('x') is [var ws, var hs]
+            && int.TryParse(ws, out var w) && int.TryParse(hs, out var h))
+            SetVideoSize(w, h);
+        else SyncVideoSize();
+    }
+
+    void OnVideoSizeApply(object? sender, RoutedEventArgs e) => ApplyVideoSize();
+
+    void ApplyVideoSize()
+    {
+        if (int.TryParse(VideoWidthBox.Text?.Trim(), out var w) && int.TryParse(VideoHeightBox.Text?.Trim(), out var h) && w >= 16 && h >= 16)
+            SetVideoSize(w, h);
+        else SyncVideoSize(); // ерунда в полях — вернуть текущий размер
+    }
+
+    /// <summary>
+    /// Область записи ровно w×h пикселей: центр остаётся на месте, область не выходит за экран.
+    /// Видео пишется в чётных размерах (так требуют кодеки), поэтому нечётное значение округляется вниз.
+    /// </summary>
+    void SetVideoSize(int w, int h)
+    {
+        if (Surface.Screenshot is not { } shot) return;
+        w &= ~1;
+        h &= ~1;
+        int sw = shot.PixelSize.Width & ~1, sh = shot.PixelSize.Height & ~1;
+        bool clipped = w > sw || h > sh;
+        w = Math.Min(w, sw);
+        h = Math.Min(h, sh);
+        var c = Surface.Selection is PixelRect cur
+            ? new PixelPoint(cur.X + cur.Width / 2, cur.Y + cur.Height / 2)
+            : new PixelPoint(sw / 2, sh / 2);
+        Surface.SetSelection(new PixelRect(c.X - w / 2, c.Y - h / 2, w, h));
+        VideoSizeNote.IsVisible = clipped;
+        VideoSizeNote.Text = clipped ? L.F("Экран меньше — область уменьшена до {0} × {1}.", w, h) : "";
+    }
+
+    /// <summary>Поля «ширина × высота» и подсветка готового размера — по текущей области.</summary>
+    void SyncVideoSize()
+    {
+        if (_mode != CaptureMode.VideoRegion) return;
+        if (Surface.Selection is not PixelRect sel)
+        {
+            VideoWidthBox.Text = VideoHeightBox.Text = "";
+            CheckChips(VideoSizeChips, "");
+            return;
+        }
+        int w = sel.Width & ~1, h = sel.Height & ~1;
+        if (!VideoWidthBox.IsFocused) VideoWidthBox.Text = w.ToString();
+        if (!VideoHeightBox.IsFocused) VideoHeightBox.Text = h.ToString();
+        CheckChips(VideoSizeChips, $"{w}x{h}");
     }
 
     void OnPreviewPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -151,6 +225,8 @@ public partial class OverlayWindow
         var s = AppServices.Settings;
         CheckChips(VideoFormatChips, s.VideoFormat.ToString());
         CheckChips(VideoFpsChips, s.VideoFps.ToString());
+        CheckChips(VideoQualityChips, s.VideoQuality.ToString());
+        SyncVideoSize();
         var audio = (_withMic, _withSystem) switch
         {
             (true, true) => AudioSource.MicrophoneAndSystem,

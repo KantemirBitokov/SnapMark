@@ -4,6 +4,9 @@ public enum ImageFileFormat { Png, Jpg, WebP, Bmp }
 
 public enum VideoFileFormat { Mp4, Mkv, WebM, Gif }
 
+/// <summary>Качество видео: чем выше, тем чётче мелкий текст и тем больше файл.</summary>
+public enum VideoQuality { Low, Standard, High, Best }
+
 /// <summary>Источник звука для записи видео. System — то, что играет в колонках/наушниках (WASAPI loopback).</summary>
 public enum AudioSource { None, Microphone, System, MicrophoneAndSystem }
 
@@ -88,6 +91,7 @@ public sealed class AppSettings
     public string FfmpegPath { get; set; } = "";
     public VideoFileFormat VideoFormat { get; set; } = VideoFileFormat.Mp4;
     public int VideoFps { get; set; } = 30;
+    public VideoQuality VideoQuality { get; set; } = VideoQuality.Standard;
     public AudioSource Audio { get; set; } = AudioSource.None;
     /// <summary>Id микрофона (Windows: Id устройства WASAPI). "" — устройство по умолчанию.</summary>
     public string MicrophoneDevice { get; set; } = "";

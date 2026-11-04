@@ -218,6 +218,27 @@
             <ToggleButton Classes="chip" Tag="30" Content="30 fps" Click="OnVideoFpsChip"/>
             <ToggleButton Classes="chip" Tag="60" Content="60 fps" Click="OnVideoFpsChip"/>
           </WrapPanel>
+          <TextBlock Classes="group" Text="{l:Tr 'КАЧЕСТВО'}"/>
+          <WrapPanel x:Name="VideoQualityChips">
+            <ToggleButton Classes="chip" Tag="Low" Content="{l:Tr 'Низкое'}" Click="OnVideoQualityChip" ToolTip.Tip="{l:Tr 'Маленький файл, мелкий текст может быть размытым'}"/>
+            <ToggleButton Classes="chip" Tag="Standard" Content="{l:Tr 'Обычное'}" Click="OnVideoQualityChip"/>
+            <ToggleButton Classes="chip" Tag="High" Content="{l:Tr 'Высокое'}" Click="OnVideoQualityChip" ToolTip.Tip="{l:Tr 'Чёткий мелкий текст — для туториалов и баг-репортов'}"/>
+            <ToggleButton Classes="chip" Tag="Best" Content="{l:Tr 'Максимальное'}" Click="OnVideoQualityChip" ToolTip.Tip="{l:Tr 'Почти без потерь, файл заметно больше'}"/>
+          </WrapPanel>
+          <TextBlock Classes="group" Text="{l:Tr 'РАЗМЕР ОБЛАСТИ'}"/>
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBox x:Name="VideoWidthBox" Width="76" ToolTip.Tip="{l:Tr 'Ширина, пикселей'}"/>
+            <TextBlock Text="×" VerticalAlignment="Center"/>
+            <TextBox x:Name="VideoHeightBox" Width="76" ToolTip.Tip="{l:Tr 'Высота, пикселей'}"/>
+            <Button Classes="soft" Content="{l:Tr 'Задать'}" Click="OnVideoSizeApply"/>
+          </StackPanel>
+          <WrapPanel x:Name="VideoSizeChips">
+            <ToggleButton Classes="chip" Tag="1280x720" Content="1280×720" Click="OnVideoSizePreset"/>
+            <ToggleButton Classes="chip" Tag="1920x1080" Content="1920×1080" Click="OnVideoSizePreset"/>
+            <ToggleButton Classes="chip" Tag="1080x1080" Content="1080×1080" Click="OnVideoSizePreset" ToolTip.Tip="{l:Tr 'Квадрат — для соцсетей'}"/>
+            <ToggleButton Classes="chip" Tag="1080x1920" Content="1080×1920" Click="OnVideoSizePreset" ToolTip.Tip="{l:Tr 'Вертикальное — для Reels, Shorts, TikTok'}"/>
+          </WrapPanel>
+          <TextBlock x:Name="VideoSizeNote" Classes="caption" IsVisible="False" TextWrapping="Wrap"/>
           <TextBlock Classes="group" Text="{l:Tr 'ЗВУК'}"/>
           <WrapPanel x:Name="VideoAudioChips">
             <ToggleButton Classes="chip" Tag="None" Content="{l:Tr 'Без звука'}" Click="OnVideoAudioChip"/>

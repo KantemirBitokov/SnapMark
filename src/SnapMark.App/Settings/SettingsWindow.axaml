@@ -343,6 +343,16 @@
                   </Grid>
                   <Border Classes="hsep"/>
                   <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Качество'}"/>
+                    <ComboBox x:Name="QualityCombo" Grid.Column="1" Width="230">
+                      <ComboBoxItem Content="{l:Tr 'Низкое — маленький файл'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Обычное'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Высокое — чёткий мелкий текст'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Максимальное — большой файл'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
                     <TextBlock Text="{l:Tr 'Показывать рамку вокруг области'}"/>
                     <ToggleSwitch x:Name="FrameToggle" Grid.Column="1"/>
                   </Grid>

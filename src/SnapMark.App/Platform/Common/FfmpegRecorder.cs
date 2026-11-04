@@ -18,6 +18,7 @@ public sealed class FfmpegRecorder
     readonly Queue<string> _log = new();
     Process? _process;
     string _outputPath = "";
+    VideoQuality _quality = VideoQuality.Standard;
     string? _tempVideo;
     VideoFileFormat _format;
     string _ffmpeg = "";
@@ -138,6 +139,7 @@ public sealed class FfmpegRecorder
     {
         _ffmpeg = ffmpeg;
         _format = s.VideoFormat;
+        _quality = s.VideoQuality;
         _outputPath = outputPath;
 
         // H.264/VP9 с yuv420p требуют чётных размеров.
@@ -261,12 +263,16 @@ public sealed class FfmpegRecorder
         // Кодеки видео (звук на Windows добавится при склейке).
         if (_format == VideoFileFormat.WebM)
         {
-            args.AddRange(new[] { "-c:v", "libvpx-vp9", "-deadline", "realtime", "-cpu-used", "8", "-row-mt", "1", "-b:v", "0", "-crf", "32", "-pix_fmt", "yuv420p" });
+            var vp9Crf = s.VideoQuality switch { VideoQuality.Low => "40", VideoQuality.High => "26", VideoQuality.Best => "20", _ => "32" };
+            args.AddRange(new[] { "-c:v", "libvpx-vp9", "-deadline", "realtime", "-cpu-used", "8", "-row-mt", "1", "-b:v", "0", "-crf", vp9Crf, "-pix_fmt", "yuv420p" });
             if (liveAudio > 0) args.AddRange(new[] { "-c:a", "libopus", "-b:a", "128k" });
         }
         else
         {
-            args.AddRange(new[] { "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p" });
+            // CRF: меньше — чётче и больше файл. «Максимальное» к тому же без цветовой субдискретизации
+            // не делаем: yuv444 не открывается во многих плеерах и браузерах.
+            var x264Crf = s.VideoQuality switch { VideoQuality.Low => "30", VideoQuality.High => "19", VideoQuality.Best => "15", _ => "23" };
+            args.AddRange(new[] { "-c:v", "libx264", "-preset", "veryfast", "-crf", x264Crf, "-pix_fmt", "yuv420p" });
             if (liveAudio > 0) args.AddRange(new[] { "-c:a", "aac", "-b:a", "160k" });
         }
         args.Add(target);
@@ -485,7 +491,14 @@ public sealed class FfmpegRecorder
         await RunFfmpegAsync(new List<string>
         {
             "-hide_banner", "-y", "-i", input,
-            "-vf", "fps=15,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4",
+            "-vf", _quality switch
+            {
+                // GIF: качество — это частота кадров, размер и число цветов.
+                VideoQuality.Low => "fps=10,scale=trunc(iw/2/2)*2:-2,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4",
+                VideoQuality.High => "fps=20,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=3",
+                VideoQuality.Best => "fps=25,split[a][b];[a]palettegen=stats_mode=full[p];[b][p]paletteuse=dither=sierra2_4a",
+                _ => "fps=15,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4",
+            },
             output,
         });
     }

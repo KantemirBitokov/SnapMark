@@ -114,6 +114,7 @@ public partial class SettingsWindow : Window
 
         VideoFormatCombo.SelectedIndex = (int)S.VideoFormat;
         FpsCombo.SelectedIndex = Math.Max(0, Array.IndexOf(FpsValues, S.VideoFps));
+        QualityCombo.SelectedIndex = (int)S.VideoQuality;
         FrameToggle.IsChecked = S.ShowRecordingFrame;
         AudioCombo.SelectedIndex = (int)S.Audio;
         // Звук компьютера: Windows — WASAPI, Linux — PulseAudio, macOS 13+ — ScreenCaptureKit (11–12 — BlackHole).
@@ -223,6 +224,7 @@ public partial class SettingsWindow : Window
         // Видео
         VideoFormatCombo.SelectionChanged += (_, _) => Change(() => S.VideoFormat = (VideoFileFormat)Math.Max(0, VideoFormatCombo.SelectedIndex));
         FpsCombo.SelectionChanged += (_, _) => Change(() => S.VideoFps = FpsValues[Math.Max(0, FpsCombo.SelectedIndex)]);
+        QualityCombo.SelectionChanged += (_, _) => Change(() => S.VideoQuality = (VideoQuality)Math.Max(0, QualityCombo.SelectedIndex));
         FrameToggle.IsCheckedChanged += (_, _) => Change(() => S.ShowRecordingFrame = FrameToggle.IsChecked == true);
         AudioCombo.SelectionChanged += (_, _) => Change(() => S.Audio = (AudioSource)Math.Max(0, AudioCombo.SelectedIndex));
         MicCombo.SelectionChanged += (_, _) =>
