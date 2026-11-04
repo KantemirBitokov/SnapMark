@@ -167,7 +167,7 @@ public sealed class LiveStyleWindow : Window
         ShowActivated = false;
         Title = L.T("SnapMark — стиль");
 
-        var card = new Border
+        var card = new GlassPanel
         {
             Margin = new Thickness(12),
             Padding = new Thickness(14, 10),

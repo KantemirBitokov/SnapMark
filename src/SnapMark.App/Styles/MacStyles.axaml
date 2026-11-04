@@ -1,5 +1,6 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="using:SnapMark.UI">
 
   <!-- ═══════════ Базовое ═══════════ -->
   <Style Selector="Window">
@@ -28,19 +29,16 @@
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
 
-  <!-- ═══════════ Плавающие «пилюли» (тулбары, HUD, уведомления) ═══════════ -->
-  <Style Selector="Border.pill">
-    <Setter Property="Background" Value="{DynamicResource Sm.PillBg}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource Sm.PillBorder}"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="CornerRadius" Value="13"/>
+  <!-- ═══════════ Стеклянные панели (тулбары, HUD, уведомления) — см. UI/Glass.cs ═══════════ -->
+  <Style Selector="ui|GlassPanel.pill">
+    <Setter Property="CornerRadius" Value="20"/>
     <Setter Property="Padding" Value="5"/>
-    <Setter Property="BoxShadow" Value="0 12 32 0 #40000000, 0 1 4 0 #26000000"/>
+    <Setter Property="BoxShadow" Value="0 18 44 0 #38000000, 0 2 8 0 #1F000000"/>
   </Style>
-  <Style Selector="Border.pill TextBlock">
+  <Style Selector="ui|GlassPanel.pill TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
-  <Style Selector="Border.pill TextBlock.caption">
+  <Style Selector="ui|GlassPanel.pill TextBlock.caption">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
   </Style>
 
@@ -76,7 +74,7 @@
     <Setter Property="Width" Value="34"/>
     <Setter Property="Height" Value="34"/>
     <Setter Property="Padding" Value="0"/>
-    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="CornerRadius" Value="11"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -85,6 +83,13 @@
   </Style>
   <Style Selector="Button.tool /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.12"/>
+      </Transitions>
+    </Setter>
   </Style>
   <Style Selector="Button.tool:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Sm.HoverBg}"/>
@@ -92,13 +97,16 @@
   <Style Selector="Button.tool:pressed /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Sm.PressedBg}"/>
   </Style>
+  <!-- Выбранный инструмент — стеклянная «линза» с бликом, как в iOS / macOS 26. -->
   <Style Selector="Button.tool.selected /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
+    <Setter Property="BoxShadow" Value="0 3 10 0 #2E000000"/>
   </Style>
   <Style Selector="Button.tool.small">
     <Setter Property="Width" Value="26"/>
     <Setter Property="Height" Value="26"/>
-    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="CornerRadius" Value="9"/>
   </Style>
   <Style Selector="Button.tool.wide">
     <Setter Property="Width" Value="NaN"/>
@@ -117,9 +125,6 @@
     <Setter Property="StrokeLineCap" Value="Round"/>
     <Setter Property="StrokeJoin" Value="Round"/>
   </Style>
-  <Style Selector="Button.tool.selected Path">
-    <Setter Property="Stroke" Value="White"/>
-  </Style>
   <Style Selector="Button.tool Path.filled">
     <Setter Property="Fill" Value="{DynamicResource Sm.Red}"/>
     <Setter Property="StrokeThickness" Value="0"/>
@@ -129,14 +134,8 @@
     <Setter Property="Fill" Value="{DynamicResource Sm.TextPrimary}"/>
     <Setter Property="StrokeThickness" Value="0"/>
   </Style>
-  <Style Selector="Button.tool.selected Path.solid">
-    <Setter Property="Fill" Value="White"/>
-  </Style>
   <Style Selector="Button.tool TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
-  </Style>
-  <Style Selector="Button.tool.selected TextBlock">
-    <Setter Property="Foreground" Value="White"/>
   </Style>
   <Style Selector="Button.tool.off Path">
     <Setter Property="Opacity" Value="0.35"/>
@@ -144,9 +143,11 @@
 
   <!-- ═══════════ Кнопки с текстом ═══════════ -->
   <Style Selector="Button.primary">
-    <Setter Property="Background" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.AccentGlass}"/>
     <Setter Property="Foreground" Value="White"/>
-    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="BorderBrush" Value="#59FFFFFF"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="11"/>
     <Setter Property="Padding" Value="14,6"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
   </Style>
@@ -160,9 +161,11 @@
   </Style>
 
   <Style Selector="Button.record">
-    <Setter Property="Background" Value="{DynamicResource Sm.Red}"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.RedGlass}"/>
     <Setter Property="Foreground" Value="White"/>
-    <Setter Property="CornerRadius" Value="8"/>
+    <Setter Property="BorderBrush" Value="#59FFFFFF"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="11"/>
     <Setter Property="Padding" Value="12,7"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
   </Style>
@@ -195,18 +198,20 @@
   </Style>
 
   <Style Selector="Button.soft">
-    <Setter Property="Background" Value="{DynamicResource Sm.FieldBg}"/>
-    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.GlassField}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.GlassRim}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="11"/>
     <Setter Property="Padding" Value="12,6"/>
-    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style Selector="Button.soft:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
   </Style>
 
   <!-- Пресеты толщины: точка, выделенная — с акцентной подложкой. -->
   <Style Selector="Button.tool Ellipse.dot">
     <Setter Property="Fill" Value="{DynamicResource Sm.TextPrimary}"/>
-  </Style>
-  <Style Selector="Button.tool.selected Ellipse.dot">
-    <Setter Property="Fill" Value="White"/>
   </Style>
 
   <!-- Подзаголовок секции во всплывающих панелях. -->
@@ -216,7 +221,7 @@
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
     <Setter Property="Margin" Value="0,4,0,0"/>
   </Style>
-  <Style Selector="Border.pill TextBlock.group">
+  <Style Selector="ui|GlassPanel.pill TextBlock.group">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
   </Style>
 
@@ -246,7 +251,11 @@
 
   <!-- Маленькие переключатели (B, I, Подложка…). -->
   <Style Selector="ToggleButton.chip">
-    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="CornerRadius" Value="10"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.GlassField}"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
     <Setter Property="Padding" Value="9,4"/>
     <Setter Property="MinWidth" Value="30"/>
     <Setter Property="FontSize" Value="12"/>
@@ -258,8 +267,32 @@
   <Style Selector="Button.primary TextBlock, Button.record TextBlock">
     <Setter Property="Foreground" Value="White"/>
   </Style>
+  <!-- Включённый чип — та же стеклянная линза, что и у выбранного инструмента. -->
+  <Style Selector="ToggleButton.chip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.HoverBg}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="ToggleButton.chip:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+    <Setter Property="BoxShadow" Value="0 2 8 0 #29000000"/>
+  </Style>
+  <Style Selector="ToggleButton.chip:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
   <Style Selector="ToggleButton.chip:checked TextBlock">
-    <Setter Property="Foreground" Value="White"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+
+  <!-- Подсказки — маленькие стеклянные плашки. -->
+  <Style Selector="ToolTip">
+    <Setter Property="CornerRadius" Value="10"/>
+    <Setter Property="Padding" Value="10,6"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="FontSize" Value="12"/>
   </Style>
 
   <!-- ═══════════ Встроенный редактор текста на скриншоте ═══════════ -->
@@ -299,7 +332,8 @@
     <Setter Property="Background" Value="{DynamicResource Sm.CardBg}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Sm.CardBorder}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="CornerRadius" Value="11"/>
+    <Setter Property="CornerRadius" Value="16"/>
+    <Setter Property="BoxShadow" Value="0 4 18 0 #14000000"/>
   </Style>
   <Style Selector="Grid.row">
     <Setter Property="Margin" Value="14,9"/>
@@ -324,15 +358,23 @@
     <Setter Property="Padding" Value="8,0"/>
   </Style>
   <Style Selector="ListBox.sidebar ListBoxItem">
-    <Setter Property="Padding" Value="8,6"/>
-    <Setter Property="Margin" Value="0,1"/>
-    <Setter Property="CornerRadius" Value="7"/>
+    <Setter Property="Padding" Value="10,7"/>
+    <Setter Property="Margin" Value="0,2"/>
+    <Setter Property="CornerRadius" Value="12"/>
+  </Style>
+  <!-- Выбранный раздел меню — стеклянная линза (как «Schedule» в примере). -->
+  <Style Selector="ListBox.sidebar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
   </Style>
   <Style Selector="ListBox.sidebar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource Sm.NavSelected}"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
+    <Setter Property="BoxShadow" Value="0 3 10 0 #24000000"/>
   </Style>
   <Style Selector="ListBox.sidebar ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource Sm.NavSelected}"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
   </Style>
   <Style Selector="ListBox.sidebar ListBoxItem TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>

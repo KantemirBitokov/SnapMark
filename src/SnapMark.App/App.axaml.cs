@@ -38,6 +38,7 @@ public partial class App : Application
             AppServices.Init();
             InstallCrashGuard();
             ApplyTheme();
+            UI.Glass.Transparency = AppServices.Settings.GlassTransparency / 100.0;
             LoadLogo();
             ExcludePopupsFromCapture();
 

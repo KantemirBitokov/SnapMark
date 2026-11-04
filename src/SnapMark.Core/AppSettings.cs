@@ -57,6 +57,8 @@ public sealed class AppSettings
     /// <summary>Язык интерфейса: en, ru, de, fr, it, es. По умолчанию — английский.</summary>
     public string Language { get; set; } = "en";
     public ThemeMode Theme { get; set; } = ThemeMode.System;
+    /// <summary>Прозрачность стекла панелей, 0…100 %.</summary>
+    public int GlassTransparency { get; set; } = 50;
     public bool LaunchAtStartup { get; set; }
     public bool ShowNotifications { get; set; } = true;
     public bool FirstRunDone { get; set; }

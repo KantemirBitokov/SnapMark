@@ -6,9 +6,9 @@
 
     <ResourceDictionary x:Key="Light">
       <SolidColorBrush x:Key="Sm.WindowBg" Color="#F5F5F7"/>
-      <SolidColorBrush x:Key="Sm.SidebarBg" Color="#E8E8ED"/>
-      <SolidColorBrush x:Key="Sm.CardBg" Color="#FFFFFF"/>
-      <SolidColorBrush x:Key="Sm.CardBorder" Color="#14000000"/>
+      <SolidColorBrush x:Key="Sm.SidebarBg" Color="#99E8E8ED"/>
+      <SolidColorBrush x:Key="Sm.CardBg" Color="#B3FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.CardBorder" Color="#E6FFFFFF"/>
       <SolidColorBrush x:Key="Sm.TextPrimary" Color="#1D1D1F"/>
       <SolidColorBrush x:Key="Sm.TextSecondary" Color="#6E6E73"/>
       <SolidColorBrush x:Key="Sm.Separator" Color="#1A000000"/>
@@ -18,13 +18,40 @@
       <SolidColorBrush x:Key="Sm.PressedBg" Color="#22000000"/>
       <SolidColorBrush x:Key="Sm.FieldBg" Color="#0A000000"/>
       <SolidColorBrush x:Key="Sm.NavSelected" Color="#1F000000"/>
+      <!-- Стекло -->
+      <LinearGradientBrush x:Key="Sm.LensBg" StartPoint="0%,0%" EndPoint="0%,100%">
+        <GradientStop Color="#F7FFFFFF" Offset="0"/>
+        <GradientStop Color="#B8FFFFFF" Offset="1"/>
+      </LinearGradientBrush>
+      <SolidColorBrush x:Key="Sm.LensBorder" Color="#FFFFFFFF"/>
+      <SolidColorBrush x:Key="Sm.GlassRim" Color="#99FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.GlassField" Color="#80FFFFFF"/>
+      <SolidColorBrush x:Key="ToolTipBackground" Color="#EBF6F6FA"/>
+      <SolidColorBrush x:Key="ToolTipForeground" Color="#1D1D1F"/>
+      <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#FFFFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBackground" Color="#80FFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#A6FFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#D9FFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBorderBrush" Color="#1F000000"/>
+      <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#2E000000"/>
+      <SolidColorBrush x:Key="ComboBoxBackground" Color="#80FFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#B3FFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#CCFFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#1F000000"/>
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#2E000000"/>
+      <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#F2F6F6FA"/>
+      <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="#FFFFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBackground" Color="#80FFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#B3FFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#D9FFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBorderBrush" Color="#1F000000"/>
     </ResourceDictionary>
 
     <ResourceDictionary x:Key="Dark">
       <SolidColorBrush x:Key="Sm.WindowBg" Color="#1E1E20"/>
-      <SolidColorBrush x:Key="Sm.SidebarBg" Color="#2A2A2D"/>
-      <SolidColorBrush x:Key="Sm.CardBg" Color="#2C2C2E"/>
-      <SolidColorBrush x:Key="Sm.CardBorder" Color="#1FFFFFFF"/>
+      <SolidColorBrush x:Key="Sm.SidebarBg" Color="#802A2A2D"/>
+      <SolidColorBrush x:Key="Sm.CardBg" Color="#992C2C2E"/>
+      <SolidColorBrush x:Key="Sm.CardBorder" Color="#2EFFFFFF"/>
       <SolidColorBrush x:Key="Sm.TextPrimary" Color="#F5F5F7"/>
       <SolidColorBrush x:Key="Sm.TextSecondary" Color="#98989D"/>
       <SolidColorBrush x:Key="Sm.Separator" Color="#24FFFFFF"/>
@@ -34,6 +61,33 @@
       <SolidColorBrush x:Key="Sm.PressedBg" Color="#33FFFFFF"/>
       <SolidColorBrush x:Key="Sm.FieldBg" Color="#14FFFFFF"/>
       <SolidColorBrush x:Key="Sm.NavSelected" Color="#2EFFFFFF"/>
+      <!-- Стекло -->
+      <LinearGradientBrush x:Key="Sm.LensBg" StartPoint="0%,0%" EndPoint="0%,100%">
+        <GradientStop Color="#5CFFFFFF" Offset="0"/>
+        <GradientStop Color="#1FFFFFFF" Offset="1"/>
+      </LinearGradientBrush>
+      <SolidColorBrush x:Key="Sm.LensBorder" Color="#73FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.GlassRim" Color="#33FFFFFF"/>
+      <SolidColorBrush x:Key="Sm.GlassField" Color="#1FFFFFFF"/>
+      <SolidColorBrush x:Key="ToolTipBackground" Color="#E62A2A2E"/>
+      <SolidColorBrush x:Key="ToolTipForeground" Color="#F5F5F7"/>
+      <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#40FFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBackground" Color="#1FFFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#2BFFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#33FFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBorderBrush" Color="#33FFFFFF"/>
+      <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#4DFFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBackground" Color="#1FFFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#2EFFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#3DFFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#33FFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#4DFFFFFF"/>
+      <SolidColorBrush x:Key="ComboBoxDropDownBackground" Color="#F22A2A2E"/>
+      <SolidColorBrush x:Key="ComboBoxDropDownBorderBrush" Color="#40FFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBackground" Color="#1FFFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2EFFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#3DFFFFFF"/>
+      <SolidColorBrush x:Key="ButtonBorderBrush" Color="#33FFFFFF"/>
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>
@@ -50,6 +104,20 @@
   <SolidColorBrush x:Key="Sm.Accent" Color="#0A84FF"/>
   <SolidColorBrush x:Key="Sm.Red" Color="#FF3B30"/>
   <SolidColorBrush x:Key="Sm.HudBg" Color="#D91C1C1E"/>
+
+  <!-- Скругления Fluent: крупнее, как у стекла iOS / macOS. -->
+  <CornerRadius x:Key="ControlCornerRadius">9</CornerRadius>
+  <CornerRadius x:Key="OverlayCornerRadius">14</CornerRadius>
+
+  <!-- Акцентные «стеклянные» кнопки: градиент сверху вниз. -->
+  <LinearGradientBrush x:Key="Sm.AccentGlass" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#4FA3FF" Offset="0"/>
+    <GradientStop Color="#0A7CF5" Offset="1"/>
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="Sm.RedGlass" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#FF6259" Offset="0"/>
+    <GradientStop Color="#F2362B" Offset="1"/>
+  </LinearGradientBrush>
 
   <FontFamily x:Key="Sm.Font">Segoe UI Variable Text, Segoe UI, SF Pro Text, Helvetica Neue, Ubuntu, Cantarell, Arial</FontFamily>
 

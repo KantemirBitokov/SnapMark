@@ -68,7 +68,7 @@ public sealed class Toast : Window
             grid.Children.Add(btn);
         }
 
-        var card = new Border { Padding = new Thickness(10, 8), Margin = new Thickness(12), Width = 300, Child = grid };
+        var card = new GlassPanel { Padding = new Thickness(10, 8), Margin = new Thickness(12), Width = 300, Child = grid };
         card.Classes.Add("pill");
         card.PointerPressed += (_, _) => Close();
         Content = card;

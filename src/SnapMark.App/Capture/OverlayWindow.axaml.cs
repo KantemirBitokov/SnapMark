@@ -68,6 +68,8 @@ public partial class OverlayWindow : Window
 
         var s = AppServices.Settings;
         Surface.Screenshot = shot;
+        // Стеклянные панели редактора размывают замороженный снимок под собой.
+        SnapMark.UI.Glass.SetStaticBackdrop(this, shot);
         Surface.Mode = mode;
         Surface.FrameColor = TryParseColor(s.SelectionColor, Color.Parse("#0A84FF"));
         Surface.DrawStyle.Color = TryParseColor(s.LastColor, Colors.Red);

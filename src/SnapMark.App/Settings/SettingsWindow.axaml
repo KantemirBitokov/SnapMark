@@ -91,6 +91,16 @@
                       <ComboBoxItem Content="{l:Tr 'Тёмная'}"/>
                     </ComboBox>
                   </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto,Auto">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{l:Tr 'Прозрачность стекла'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'Панели инструментов, записи и уведомлений'}"/>
+                    </StackPanel>
+                    <Slider x:Name="GlassSlider" Grid.Column="1" Width="170" Minimum="0" Maximum="100"
+                            SmallChange="5" LargeChange="10" TickFrequency="5" IsSnapToTickEnabled="True" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="GlassValue" Grid.Column="2" Classes="caption" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
+                  </Grid>
                 </StackPanel>
               </Border>
             </StackPanel>

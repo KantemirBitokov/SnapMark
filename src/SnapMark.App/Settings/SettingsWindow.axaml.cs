@@ -37,6 +37,11 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
         TransparencyLevelHint = new[] { WindowTransparencyLevel.Mica, WindowTransparencyLevel.AcrylicBlur, WindowTransparencyLevel.None };
+        // Системное стекло (Mica / Acrylic): окно — полупрозрачная тонировка поверх размытого рабочего стола.
+        Opened += (_, _) => ApplyGlassBackground();
+        ActualThemeVariantChanged += (_, _) => ApplyGlassBackground();
+        UI.Glass.TransparencyChanged += ApplyGlassBackground;
+        Closed += (_, _) => UI.Glass.TransparencyChanged -= ApplyGlassBackground;
 
         var version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.1.0";
         VersionText.Text = L.T("Версия ") + version;
@@ -49,6 +54,19 @@ public partial class SettingsWindow : Window
         LoadValues();
         WireEvents();
         ShowPage(0);
+    }
+
+    void ApplyGlassBackground()
+    {
+        if (ActualTransparencyLevel != WindowTransparencyLevel.Mica && ActualTransparencyLevel != WindowTransparencyLevel.AcrylicBlur)
+        {
+            ClearValue(BackgroundProperty); // системного стекла нет — обычный фон из стиля Window.sm
+            return;
+        }
+        bool dark = ActualThemeVariant == Avalonia.Styling.ThemeVariant.Dark;
+        double a = 0.9 - 0.55 * UI.Glass.Transparency;
+        var tint = dark ? Avalonia.Media.Color.FromRgb(30, 30, 34) : Avalonia.Media.Color.FromRgb(246, 246, 250);
+        Background = new Avalonia.Media.SolidColorBrush(tint, a);
     }
 
     protected override void OnClosed(EventArgs e)
@@ -85,6 +103,8 @@ public partial class SettingsWindow : Window
         LanguageCombo.SelectedItem = LanguageCombo.Items.OfType<ComboBoxItem>()
             .FirstOrDefault(i => (i.Tag as string) == L.Language) ?? LanguageCombo.Items[0];
         ThemeCombo.SelectedIndex = (int)S.Theme;
+        GlassSlider.Value = S.GlassTransparency;
+        GlassValue.Text = $"{S.GlassTransparency} %";
         AutostartToggle.IsChecked = S.LaunchAtStartup;
         AutostartToggle.IsEnabled = PlatformServices.Autostart.IsSupported;
         NotifyToggle.IsChecked = S.ShowNotifications;
@@ -139,6 +159,19 @@ public partial class SettingsWindow : Window
             L.Set(code);
             UI.Toast.Show(L.T("Язык изменён"), L.T("Перезапусти SnapMark, чтобы применить новый язык."),
                 L.T("Перезапустить"), App.Restart);
+        };
+        // Прозрачность стекла: вид меняется сразу, на диск пишем, когда ползунок остановился.
+        var glassSave = new Avalonia.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(400) };
+        glassSave.Tick += (_, _) => { glassSave.Stop(); Save(); };
+        GlassSlider.PropertyChanged += (_, e) =>
+        {
+            if (e.Property != RangeBase.ValueProperty || _loading) return;
+            int v = (int)Math.Round(GlassSlider.Value);
+            S.GlassTransparency = v;
+            GlassValue.Text = $"{v} %";
+            UI.Glass.Transparency = v / 100.0;
+            glassSave.Stop();
+            glassSave.Start();
         };
         ThemeCombo.SelectionChanged += (_, _) => Change(() =>
         {

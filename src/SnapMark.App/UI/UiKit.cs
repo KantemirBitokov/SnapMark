@@ -58,6 +58,7 @@ public static class UiKit
         w.TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent };
         w.WindowStartupLocation = WindowStartupLocation.Manual;
         w.FontFamily = Annotations.UiFonts.Family;
+        Glass.EnableLiveBackdrop(w); // стекло с размытием того, что под окном (Windows)
     }
 
     public static Ellipse Dot(double size, IBrush fill) => new() { Width = size, Height = size, Fill = fill };

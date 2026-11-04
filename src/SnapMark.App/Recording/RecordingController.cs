@@ -538,7 +538,7 @@ public sealed class RecordingHud : Window
         stack.Children.Add(_tools);
         SyncTools();
 
-        var card = new Border { Margin = new Thickness(16), Padding = new Thickness(6), Child = stack };
+        var card = new GlassPanel { Margin = new Thickness(16), Padding = new Thickness(6), Child = stack };
         card.Classes.Add("pill");
         Content = card;
 

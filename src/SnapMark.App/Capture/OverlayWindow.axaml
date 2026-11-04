@@ -2,6 +2,7 @@
         xmlns:l="using:SnapMark.Localization"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cap="using:SnapMark.Capture"
+        xmlns:ui="using:SnapMark.UI"
         x:Class="SnapMark.Capture.OverlayWindow"
         Title="SnapMark"
         SystemDecorations="None"
@@ -22,7 +23,7 @@
       </Border>
 
       <!-- ═══════════ Панель Markup: инструменты ═══════════ -->
-      <Border x:Name="ToolsBar" Classes="pill" IsVisible="False" Padding="6">
+      <ui:GlassPanel x:Name="ToolsBar" Classes="pill" IsVisible="False" Padding="6">
         <StackPanel Orientation="Horizontal" Spacing="2">
 
           <StackPanel x:Name="ToolButtons" Orientation="Horizontal" Spacing="2">
@@ -116,10 +117,10 @@
             <Path Data="{StaticResource Icon.Redo}"/>
           </Button>
         </StackPanel>
-      </Border>
+      </ui:GlassPanel>
 
       <!-- Выбор фигуры -->
-      <Border x:Name="ShapesPanel" Classes="pill" IsVisible="False" Padding="6">
+      <ui:GlassPanel x:Name="ShapesPanel" Classes="pill" IsVisible="False" Padding="6">
         <StackPanel x:Name="ShapeChoices" Orientation="Horizontal" Spacing="2">
           <Button Classes="tool" Tag="Line" Click="OnShapeChoice" ToolTip.Tip="{l:Tr 'Линия (Shift — шаг 45°)'}">
             <Path Data="{StaticResource Icon.Line}"/>
@@ -137,10 +138,10 @@
             <Path Data="{StaticResource Icon.Ellipse}"/>
           </Button>
         </StackPanel>
-      </Border>
+      </ui:GlassPanel>
 
       <!-- Действия -->
-      <Border x:Name="ActionsBar" Classes="pill" IsVisible="False" Padding="6">
+      <ui:GlassPanel x:Name="ActionsBar" Classes="pill" IsVisible="False" Padding="6">
         <StackPanel Spacing="2">
           <Button Classes="tool" Click="OnCopyClick" ToolTip.Tip="{l:Tr 'Копировать (Ctrl+C). Если идёт серия — добавить и скопировать всю серию'}">
             <Path Data="{StaticResource Icon.Copy}"/>
@@ -166,15 +167,15 @@
             <Path Data="{StaticResource Icon.Close}"/>
           </Button>
         </StackPanel>
-      </Border>
+      </ui:GlassPanel>
 
       <!-- Контекстная панель выделенного объекта: свои цвет, шрифт, размер, рамка; дублировать / удалить -->
-      <Border x:Name="ObjectBar" Classes="pill" IsVisible="False" Padding="10,8">
+      <ui:GlassPanel x:Name="ObjectBar" Classes="pill" IsVisible="False" Padding="10,8">
         <StackPanel x:Name="ContextContent" Spacing="6"/>
-      </Border>
+      </ui:GlassPanel>
 
       <!-- Панель записи видео -->
-      <Border x:Name="VideoBar" Classes="pill" IsVisible="False">
+      <ui:GlassPanel x:Name="VideoBar" Classes="pill" IsVisible="False">
         <StackPanel Orientation="Horizontal" Spacing="4">
           <Button x:Name="RecordButton" Classes="record" Click="OnRecordClick" ClickMode="Press" ToolTip.Tip="{l:Tr 'Начать запись (Enter)'}">
             <StackPanel Orientation="Horizontal" Spacing="7">
@@ -199,10 +200,10 @@
             <Path Data="{StaticResource Icon.Close}"/>
           </Button>
         </StackPanel>
-      </Border>
+      </ui:GlassPanel>
 
       <!-- Параметры записи: формат, частота кадров, звук, устройства -->
-      <Border x:Name="VideoOptionsPanel" Classes="pill" IsVisible="False" Width="360" Padding="14,12">
+      <ui:GlassPanel x:Name="VideoOptionsPanel" Classes="pill" IsVisible="False" Width="360" Padding="14,12">
         <StackPanel Spacing="8">
           <TextBlock Classes="group" Text="{l:Tr 'ФОРМАТ'}" Margin="0"/>
           <WrapPanel x:Name="VideoFormatChips">
@@ -259,10 +260,10 @@
             <ComboBox x:Name="VideoSystemCombo" HorizontalAlignment="Stretch"/>
           </StackPanel>
         </StackPanel>
-      </Border>
+      </ui:GlassPanel>
 
       <!-- Цвет, прозрачность, толщина, текст, метки, рамка -->
-      <Border x:Name="StylePanel" Classes="pill" IsVisible="False" Width="480" Padding="16,12,6,12">
+      <ui:GlassPanel x:Name="StylePanel" Classes="pill" IsVisible="False" Width="480" Padding="16,12,6,12">
         <ScrollViewer MaxHeight="640" HorizontalScrollBarVisibility="Disabled">
           <StackPanel Spacing="8" Margin="0,0,16,0">
             <StackPanel Spacing="1">
@@ -354,10 +355,10 @@
             <WrapPanel x:Name="FrameSwatches"/>
           </StackPanel>
         </ScrollViewer>
-      </Border>
+      </ui:GlassPanel>
 
       <!-- Комментарии к меткам -->
-      <Border x:Name="CommentsPanel" Classes="pill" IsVisible="False" Width="300" Padding="12,10">
+      <ui:GlassPanel x:Name="CommentsPanel" Classes="pill" IsVisible="False" Width="300" Padding="12,10">
         <StackPanel Spacing="8">
           <Grid ColumnDefinitions="*,Auto,Auto">
             <StackPanel Spacing="1" VerticalAlignment="Center">
@@ -405,7 +406,7 @@
             <StackPanel x:Name="CommentsList" Spacing="6"/>
           </ScrollViewer>
         </StackPanel>
-      </Border>
+      </ui:GlassPanel>
 
     </Canvas>
   </Grid>
