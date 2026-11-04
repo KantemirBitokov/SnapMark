@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0
+- **Full editor styles while recording.** New Select tool (V): move objects, double-click a text or a marker to edit it, Delete to remove, Ctrl+J to duplicate. The Style button opens the same settings as in the screenshot editor — color, thickness, opacity, dashes, fill, font, weight, italic, size, frame and plate colors, shadows, marker shapes and comment-label style — for the selected object, the text you're typing, or new objects.
+- **Only your drawings get into the video.** The recording bar, the style panel, tooltips, drop-down lists and the selection frame are excluded from the recording (Windows 10 2004+ and macOS; on Linux the system can't hide windows from a recording).
+- **Video quality:** Low, Standard, High (crisp small text) or Maximum — in the recording options and in Settings → Video. Works for MP4, MKV, WebM and GIF.
+- **Exact recording size:** type width × height or pick 1280×720, 1920×1080, 1080×1080 or 1080×1920 (vertical for Reels/Shorts/TikTok); the area keeps its center and stays on screen.
+- The Mouse button (Esc) now has its own icon: clicks go through the drawings to your apps.
+
 ## 1.1.1
 - Drawing on video: markers with and without an arrow are now separate tools, as in the screenshot editor. The plain marker (M) is placed exactly where you click and never gets an accidental arrow; the arrow marker (N) — press and drag to the target.
 

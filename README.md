@@ -58,7 +58,8 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 
 **Record**
 - Record a region or the full screen to MP4, MKV, WebM or GIF, 15–60 fps
-- **Draw live while recording**: pen, highlighter, arrows, shapes, A-B-C markers with comments and text appear in the video as you draw and type; switch back to the cursor to keep working in your apps
+- **Draw live while recording**: pen, highlighter, arrows, shapes, A-B-C markers with comments and text appear in the video as you draw and type — with the same style settings as the editor (fonts, frames, shadows…); the recording bar and panels never get into the video; switch to the mouse to keep working in your apps
+- Quality presets (Low → Maximum) and an exact area size: 1280×720, 1920×1080, square, vertical 1080×1920 or any W × H
 - Microphone, computer audio or both — with device selection and a mic level test
 - No time limit; crash-safe recording (nothing is lost if the PC freezes)
 
