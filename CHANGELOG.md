@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+- Mouse cursor in recordings: show or hide it — in the recording options (Mouse cursor) and in Settings → Video. Works on Windows, macOS (also hides click highlights) and Linux.
+- Drawing on video: fixed a freeze that could happen the first time you started typing text. The drawing layer now takes the keyboard with a normal activation instead of attaching to another app's input thread.
+
 ## 1.2.2
 - Drawing on video: the Style panel's buttons (colors, shadow, frame, font…) now always work. Before, while typing text the drawing layer could cover the panel, and clicks went through it and created new text instead.
 

@@ -120,6 +120,25 @@ public sealed class LiveDrawCanvas : Panel
         return StyleTarget?.Bounds;
     }
 
+    /// <summary>
+    /// Клавиатуру — холсту, чтобы набор шёл в него. Обычная активация: окно, по которому только что щёлкнули
+    /// (или чьей панелью пользовался), Windows активировать разрешает. «Принудительную» (AttachThreadInput
+    /// к потоку чужой программы) здесь не используем — если та программа занята, она подвешивала SnapMark.
+    /// </summary>
+    void TakeKeyboard()
+    {
+        try
+        {
+            if (TopLevel.GetTopLevel(this) is not Window window) return;
+            if (!window.IsActive) window.Activate();
+            ForegroundTaken?.Invoke(); // холст поднялся наверх — панели снова поверх него
+        }
+        catch (Exception ex)
+        {
+            App.LogError(ex);
+        }
+    }
+
     void SetSelected(Annotation? a)
     {
         if (ReferenceEquals(_selected, a)) return;
@@ -154,11 +173,7 @@ public sealed class LiveDrawCanvas : Panel
     public void RefocusInput()
     {
         if (_input is not { } tb) return;
-        if (TopLevel.GetTopLevel(this) is Window window)
-        {
-            PlatformServices.WindowHelper.ForceForeground(window);
-            ForegroundTaken?.Invoke(); // холст поднялся наверх — панели снова поверх него
-        }
+        TakeKeyboard();
         tb.Focus();
     }
 
@@ -610,11 +625,7 @@ public sealed class LiveDrawCanvas : Panel
         _input = tb;
         SelectionChanged?.Invoke(); // панель стиля — для того, что сейчас печатается
         // Без активного окна клавиатура ушла бы программе под областью.
-        if (TopLevel.GetTopLevel(this) is Window window)
-        {
-            PlatformServices.WindowHelper.ForceForeground(window);
-            ForegroundTaken?.Invoke(); // холст поднялся наверх — панели снова поверх него
-        }
+        TakeKeyboard();
         Redraw();
         Dispatcher.UIThread.Post(() =>
         {

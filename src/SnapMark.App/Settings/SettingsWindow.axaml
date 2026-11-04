@@ -356,6 +356,11 @@
                     <TextBlock Text="{l:Tr 'Показывать рамку вокруг области'}"/>
                     <ToggleSwitch x:Name="FrameToggle" Grid.Column="1"/>
                   </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Курсор мыши в видео'}"/>
+                    <ToggleSwitch x:Name="CursorToggle" Grid.Column="1"/>
+                  </Grid>
                 </StackPanel>
               </Border>
             </StackPanel>

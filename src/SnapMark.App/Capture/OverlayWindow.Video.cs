@@ -51,6 +51,16 @@ public partial class OverlayWindow
         SyncVideoOptions();
     }
 
+    void OnVideoCursorChip(object? sender, RoutedEventArgs e)
+    {
+        if (sender is ToggleButton { Tag: string t })
+        {
+            AppServices.Settings.VideoShowCursor = t == "Show";
+            AppServices.SaveSettings();
+        }
+        SyncVideoOptions();
+    }
+
     void OnVideoQualityChip(object? sender, RoutedEventArgs e)
     {
         if (sender is ToggleButton { Tag: string t } && Enum.TryParse<VideoQuality>(t, out var q))
@@ -226,6 +236,7 @@ public partial class OverlayWindow
         CheckChips(VideoFormatChips, s.VideoFormat.ToString());
         CheckChips(VideoFpsChips, s.VideoFps.ToString());
         CheckChips(VideoQualityChips, s.VideoQuality.ToString());
+        CheckChips(VideoCursorChips, s.VideoShowCursor ? "Show" : "Hide");
         SyncVideoSize();
         var audio = (_withMic, _withSystem) switch
         {

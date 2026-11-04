@@ -218,6 +218,11 @@
             <ToggleButton Classes="chip" Tag="30" Content="30 fps" Click="OnVideoFpsChip"/>
             <ToggleButton Classes="chip" Tag="60" Content="60 fps" Click="OnVideoFpsChip"/>
           </WrapPanel>
+          <TextBlock Classes="group" Text="{l:Tr 'КУРСОР МЫШИ'}"/>
+          <WrapPanel x:Name="VideoCursorChips">
+            <ToggleButton Classes="chip" Tag="Show" Content="{l:Tr 'Показывать'}" Click="OnVideoCursorChip"/>
+            <ToggleButton Classes="chip" Tag="Hide" Content="{l:Tr 'Скрыть'}" Click="OnVideoCursorChip" ToolTip.Tip="{l:Tr 'В видео не будет курсора — только то, что на экране и что ты рисуешь'}"/>
+          </WrapPanel>
           <TextBlock Classes="group" Text="{l:Tr 'КАЧЕСТВО'}"/>
           <WrapPanel x:Name="VideoQualityChips">
             <ToggleButton Classes="chip" Tag="Low" Content="{l:Tr 'Низкое'}" Click="OnVideoQualityChip" ToolTip.Tip="{l:Tr 'Маленький файл, мелкий текст может быть размытым'}"/>

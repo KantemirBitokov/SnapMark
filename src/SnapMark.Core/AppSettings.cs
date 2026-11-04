@@ -99,6 +99,8 @@ public sealed class AppSettings
     public string SystemAudioDevice { get; set; } = "";
     public string VideoFolder { get; set; } = DefaultFolders.Videos;
     public bool ShowRecordingFrame { get; set; } = true;
+    /// <summary>Курсор мыши в видео (и подсветка кликов на macOS).</summary>
+    public bool VideoShowCursor { get; set; } = true;
 
     // ── Последний стиль аннотаций (запоминаем между запусками) ──────
     public string LastColor { get; set; } = "#FF3B30";

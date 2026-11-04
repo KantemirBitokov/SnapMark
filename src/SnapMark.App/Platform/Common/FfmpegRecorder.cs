@@ -210,7 +210,7 @@ public sealed class FfmpegRecorder
             args.AddRange(new[]
             {
                 "-thread_queue_size", "1024",
-                "-f", "gdigrab", "-framerate", fps.ToString(), "-draw_mouse", "1",
+                "-f", "gdigrab", "-framerate", fps.ToString(), "-draw_mouse", s.VideoShowCursor ? "1" : "0",
                 "-offset_x", rect.X.ToString(), "-offset_y", rect.Y.ToString(),
                 "-video_size", $"{w}x{h}", "-i", "desktop",
             });
@@ -226,7 +226,7 @@ public sealed class FfmpegRecorder
                 : "none";
             args.AddRange(new[]
             {
-                "-f", "avfoundation", "-capture_cursor", "1", "-capture_mouse_clicks", "1",
+                "-f", "avfoundation", "-capture_cursor", s.VideoShowCursor ? "1" : "0", "-capture_mouse_clicks", s.VideoShowCursor ? "1" : "0",
                 "-framerate", fps.ToString(), "-i", $"{device}:{mic}",
             });
             if (mic != "none") _macLiveAudio = true;
@@ -236,7 +236,7 @@ public sealed class FfmpegRecorder
             if (Linux.Xlib.IsWayland)
                 throw new InvalidOperationException(L.T("Запись видео в Linux пока работает только в сеансе X11 (Xorg). На экране входа выбери «Ubuntu на Xorg» / «Plasma (X11)»."));
             var display = Environment.GetEnvironmentVariable("DISPLAY") ?? ":0.0";
-            args.AddRange(new[] { "-f", "x11grab", "-framerate", fps.ToString(), "-video_size", $"{w}x{h}", "-i", $"{display}+{rect.X},{rect.Y}" });
+            args.AddRange(new[] { "-f", "x11grab", "-framerate", fps.ToString(), "-draw_mouse", s.VideoShowCursor ? "1" : "0", "-video_size", $"{w}x{h}", "-i", $"{display}+{rect.X},{rect.Y}" });
         }
 
         // Звук на macOS/Linux — настоящие устройства ffmpeg с нормальными метками времени.
