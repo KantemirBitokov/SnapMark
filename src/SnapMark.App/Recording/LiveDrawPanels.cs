@@ -116,14 +116,38 @@ public sealed class LiveChromeWindow : Window
 
         Opened += (_, _) =>
         {
-            PlatformServices.WindowHelper.ExcludeFromCapture(this);
-            PlatformServices.WindowHelper.SetPixelBounds(this, _rect);
-            ClickThroughOk = PlatformServices.WindowHelper.SetClickThrough(this, true);
+            var wh = PlatformServices.WindowHelper;
+            wh.SetPixelBounds(this, _rect);
+            if (OperatingSystem.IsWindows())
+            {
+                // Windows: на «я прозрачен для мыши» (HTTRANSPARENT) система отдаёт мышь окну под слоем
+                // из того же потока — холсту. Стиль WS_EX_LAYERED тут не годится: после него Windows
+                // переставала исключать слой из записи, и «свой» курсор с рамкой выделения попадали в видео.
+                Win32Properties.AddWndProcHookCallback(this, _hitTestHook);
+                ClickThroughOk = true;
+            }
+            else ClickThroughOk = wh.SetClickThrough(this, true);
+            wh.ExcludeFromCapture(this); // после всех изменений стиля окна
+            Excluded = wh.IsExcludedFromCapture(this);
         };
     }
 
+    const uint WM_NCHITTEST = 0x0084;
+    static readonly IntPtr HTTRANSPARENT = new(-1);
+
+    // Делегат храним в поле, чтобы сборщик мусора не убрал его, пока окно живо.
+    readonly Win32Properties.CustomWndProcHookCallback _hitTestHook = (IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam, ref bool handled) =>
+    {
+        if (msg != WM_NCHITTEST) return IntPtr.Zero;
+        handled = true;
+        return HTTRANSPARENT;
+    };
+
     /// <summary>Мышь проходит сквозь слой. Если нет — слой нельзя держать над холстом.</summary>
     public bool ClickThroughOk { get; private set; }
+
+    /// <summary>Слой действительно не попадает в видео — только тогда на нём можно рисовать «свой» курсор.</summary>
+    public bool Excluded { get; private set; }
 }
 
 /// <summary>

@@ -108,6 +108,9 @@ public static class RecordingController
         {
             DrawTool = null;
             _style?.Hide();
+            // В режиме «Мышь» слою интерфейса показывать нечего (выделения нет, свой курсор не нужен),
+            // а на Windows он перехватывал бы клики, предназначенные программам под областью.
+            _chrome?.Hide();
             if (_draw is not null)
             {
                 _draw.Board.IsDrawing = false;
@@ -115,7 +118,6 @@ public static class RecordingController
                 {
                     // Система не умеет пропускать мышь сквозь окно — прячем рисунки, чтобы не мешали работать.
                     _draw.Hide();
-                    _chrome?.Hide();
                     if (!_clickThroughWarned)
                     {
                         _clickThroughWarned = true;
@@ -130,12 +132,9 @@ public static class RecordingController
         if (!EnsureDrawWindow()) return;
         var w = _draw!;
         w.Board.CommitTextInput(); // сменили инструмент посреди набора — текст готов
-        if (!w.IsVisible)
-        {
-            w.Show();
-            _chrome?.Show(w);
-            RaiseHud();
-        }
+        if (!w.IsVisible) w.Show();
+        if (_chrome is { IsVisible: false } chromeLayer) chromeLayer.Show(w);
+        RaiseHud();
         if (tool != ToolKind.Select) w.Board.ClearSelection(); // как в редакторе: новый инструмент — без выделения
         w.Board.Tool = tool.Value;
         w.Board.IsDrawing = true;
@@ -195,7 +194,7 @@ public static class RecordingController
         w.Board.DrawSelectionInline = _chrome is null;
         // Курсор в видео выключен — системный курсор над холстом прячем, свой рисует слой интерфейса.
         // Без слоя (Linux) оставляем системный: там ffmpeg и так не рисует курсор при -draw_mouse 0.
-        w.Board.HideSystemCursor = _chrome is not null && !AppServices.Settings.VideoShowCursor;
+        w.Board.HideSystemCursor = _chrome is { Excluded: true } && !AppServices.Settings.VideoShowCursor;
         RaiseHud();
         return true;
     }

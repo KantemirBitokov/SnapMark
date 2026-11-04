@@ -141,6 +141,12 @@ internal sealed class WinWindowHelper : IWindowHelper
         if (hwnd != IntPtr.Zero) SetWindowDisplayAffinity(hwnd, WDA_EXCLUDEFROMCAPTURE); // Win10 2004+
     }
 
+    public bool IsExcludedFromCapture(TopLevel window)
+    {
+        var hwnd = Hwnd(window);
+        return hwnd != IntPtr.Zero && GetWindowDisplayAffinity(hwnd, out var a) && a == WDA_EXCLUDEFROMCAPTURE;
+    }
+
     public PixelPoint? GetCursorPosition() =>
         GetCursorPos(out var p) ? new PixelPoint(p.X, p.Y) : null;
 

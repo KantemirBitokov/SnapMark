@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.5
+- Hidden mouse cursor now stays hidden in the video after you pick any drawing tool. On Windows the layer with SnapMark's own cursor and the selection frame could stop being hidden from the recording once it was made click-through; it now passes clicks differently, and SnapMark checks that the layer is really excluded before drawing its cursor there.
+
 ## 1.2.4
 - Mouse cursor off really means no cursor in the video: while drawing, the crosshair, text cursor and other drawing cursors no longer get into the recording either. You still see them — SnapMark draws its own cursor on a layer that's hidden from the recording (Windows 10 2004+, macOS).
 
