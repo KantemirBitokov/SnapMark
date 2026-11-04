@@ -1,9 +1,12 @@
 # Changelog
 
+## 1.1.1
+- Drawing on video: markers with and without an arrow are now separate tools, as in the screenshot editor. The plain marker (M) is placed exactly where you click and never gets an accidental arrow; the arrow marker (N) — press and drag to the target.
+
 ## 1.1.0
 - **Draw on the video while recording.** Press the pen button on the recording bar: pen, highlighter, arrow, rectangle, ellipse, A-B-C markers (click, or drag to point at something, then type a comment), text and eraser, 7 colors, undo and "erase all". Everything appears in the video as you draw and type.
 - The cursor button (or Esc) lets clicks go through the drawings to your apps, so you can keep working while the drawings stay on screen.
-- Hotkeys while drawing: P pen, H highlighter, A arrow, R rectangle, O ellipse, M marker, T text, E eraser, Ctrl+Z / Ctrl+Y undo / redo; hold the pen still at the end of a stroke to turn it into a clean shape; Shift — straight lines and squares.
+- Hotkeys while drawing: P pen, H highlighter, A arrow, R rectangle, O ellipse, M marker, N marker with arrow, T text, E eraser, Ctrl+Z / Ctrl+Y undo / redo; hold the pen still at the end of a stroke to turn it into a clean shape; Shift — straight lines and squares.
 
 ## 1.0.9
 - Notifications (copied, saved, recording finished…) now appear in the bottom-right corner just above the taskbar / Dock, so they no longer cover window buttons like Minimize and Close.

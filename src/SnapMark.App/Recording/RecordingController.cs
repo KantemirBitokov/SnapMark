@@ -400,14 +400,21 @@ public sealed class RecordingHud : Window
             (ToolKind.Arrow, "Icon.Arrow", L.T("Стрелка (A)")),
             (ToolKind.Rectangle, "Icon.Rect", L.T("Прямоугольник (R)")),
             (ToolKind.Ellipse, "Icon.Ellipse", L.T("Эллипс (O)")),
-            (ToolKind.Marker, "Icon.MarkerBadge", L.T("Метка A, B, C… (M): нажми или потяни к цели, затем набери комментарий")),
+            (ToolKind.Marker, "Icon.MarkerBadge", L.T("Метка A, B, C… с комментарием (M)")),
+            (ToolKind.MarkerArrow, "", L.T("Метка со стрелкой (N): нажми и тяни к цели")),
             (ToolKind.Text, "Icon.Text", L.T("Текст (T): Enter — готово, Shift+Enter — новая строка")),
             (ToolKind.Eraser, "Icon.Eraser", L.T("Ластик (E): проведи по объекту, чтобы удалить")),
         })
         {
             var t = tool;
-            var b = UiKit.ToolButton(icon, tip, () => RecordingController.SetDrawTool(t));
-            if (t == ToolKind.Marker && b.Content is Avalonia.Controls.Shapes.Path path) path.Classes.Add("solid");
+            var b = UiKit.ToolButton(t == ToolKind.MarkerArrow ? "Icon.MarkerBadgeSmall" : icon, tip, () => RecordingController.SetDrawTool(t));
+            if (t is ToolKind.Marker or ToolKind.MarkerArrow && b.Content is Avalonia.Controls.Shapes.Path path) path.Classes.Add("solid");
+            if (t == ToolKind.MarkerArrow && b.Content is Avalonia.Controls.Shapes.Path badge)
+            {
+                // Как в редакторе: маленькая метка + стрелка из неё.
+                b.Content = null;
+                b.Content = new Grid { Width = 20, Height = 20, Children = { badge, UiKit.Icon("Icon.MarkerTail") } };
+            }
             _toolButtons[t] = b;
             _tools.Children.Add(b);
         }

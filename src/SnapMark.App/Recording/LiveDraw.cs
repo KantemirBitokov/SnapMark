@@ -188,9 +188,23 @@ public sealed class LiveDrawCanvas : Panel
                 return;
 
             case ToolKind.Marker:
+            {
+                // Обычная метка — ровно там, где щёлкнули, без стрелки (даже если мышь чуть дрогнула).
+                var snap = Document.Snapshot();
+                var m = Document.NewMarker();
+                m.Center = img;
+                m.ApplyStyle(DrawStyle);
+                m.ApplyCommentStyle(_commentStyle);
+                Document.Items.Add(m);
+                Document.PushUndo(snap);
+                Changed();
+                BeginCommentInput(m);
+                return;
+            }
+
             case ToolKind.MarkerArrow:
             {
-                // Нажми — метка; потяни — метка со стрелкой к цели. Потом сразу можно набрать комментарий.
+                // Метка со стрелкой: нажми на метку и тяни к цели. Потом сразу можно набрать комментарий.
                 _snapshot = Document.Snapshot();
                 var m = Document.NewMarker();
                 m.Center = img;
@@ -524,6 +538,7 @@ public sealed class LiveDrawCanvas : Panel
             Key.R => ToolKind.Rectangle,
             Key.O => ToolKind.Ellipse,
             Key.M => ToolKind.Marker,
+            Key.N => ToolKind.MarkerArrow,
             Key.T => ToolKind.Text,
             Key.E => ToolKind.Eraser,
             _ => null,
