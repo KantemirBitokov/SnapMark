@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0 — Liquid Glass
+- **New design in the style of iOS / macOS 26 Liquid Glass.** Toolbars, style panels, the recording bar, notifications and the series panel are now frosted glass: the screenshot (or, on Windows, whatever is behind a floating panel) shows through blurred, with a soft tint, a highlight at the top and a thin bright rim.
+- The selected tool, switched-on chips and the current Settings section are a glass "lens" with a highlight instead of a solid blue fill. Buttons, fields, drop-down lists and tooltips are translucent with larger rounded corners.
+- **Glass transparency** slider in Settings → General: from almost frosted to almost clear; changes instantly.
+- The Settings window uses the system Mica / Acrylic glass on Windows 11/10 (and translucent cards).
+
 ## 1.2.5
 - Hidden mouse cursor now stays hidden in the video after you pick any drawing tool. On Windows the layer with SnapMark's own cursor and the selection frame could stop being hidden from the recording once it was made click-through; it now passes clicks differently, and SnapMark checks that the layer is really excluded before drawing its cursor there.
 
