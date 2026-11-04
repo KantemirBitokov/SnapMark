@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2
+- Drawing on video: the Style panel's buttons (colors, shadow, frame, font…) now always work. Before, while typing text the drawing layer could cover the panel, and clicks went through it and created new text instead.
+
 ## 1.2.1
 - Drawing on video now has every editor tool: pencil (C), line (L) and double arrow (D) joined the pen, highlighter, arrow, shapes, markers, text and eraser.
 - A B C / 1 2 3 switch for markers on video (in the Style panel) — relabels all markers at once and is remembered, just like in the editor.

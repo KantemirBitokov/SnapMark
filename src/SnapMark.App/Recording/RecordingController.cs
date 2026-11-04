@@ -59,7 +59,14 @@ public static class RecordingController
                 _hud?.SyncTools(); // цвет на кнопке «Стиль»
                 if (_style is not { } st) return;
                 if (!st.HasContent) { st.Hide(); return; }
-                if (!st.IsVisible) st.Show();
+                // Окно холста — «владелец» панели: система всегда держит панель над ним,
+                // иначе холст, забрав фокус при наборе текста, перекрывал бы панель и клики уходили бы в него.
+                if (!st.IsVisible)
+                {
+                    // Показывать с владельцем можно, только пока он виден (иначе Avalonia бросит исключение).
+                    if (_draw is not { IsVisible: true } owner || DrawTool is null) return;
+                    st.Show(owner);
+                }
                 PositionStylePanel();
             };
             _style.SizeChanged += (_, _) => PositionStylePanel();
@@ -126,7 +133,7 @@ public static class RecordingController
         if (!w.IsVisible)
         {
             w.Show();
-            _chrome?.Show();
+            _chrome?.Show(w);
             RaiseHud();
         }
         if (tool != ToolKind.Select) w.Board.ClearSelection(); // как в редакторе: новый инструмент — без выделения
@@ -166,6 +173,7 @@ public static class RecordingController
         w.Board.ToolRequested += t => SetDrawTool(t);
         // Холст получил фокус (клик, набор текста) — система подняла его наверх; панель снова поверх.
         w.Activated += (_, _) => Dispatcher.UIThread.Post(RaiseHud);
+        w.Board.ForegroundTaken += () => Dispatcher.UIThread.Post(RaiseHud);
         w.Show();
         if (!w.IsTransparent)
         {
@@ -180,7 +188,7 @@ public static class RecordingController
         if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS())
         {
             var chrome = new LiveChromeWindow(_rect, _scaling, w.Board);
-            chrome.Show();
+            chrome.Show(w);
             if (chrome.ClickThroughOk) _chrome = chrome;
             else chrome.Close();
         }

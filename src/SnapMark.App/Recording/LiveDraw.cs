@@ -105,6 +105,8 @@ public sealed class LiveDrawCanvas : Panel
     /// <summary>Холст перерисован — слою с рамкой выделения тоже пора.</summary>
     public event Action? Invalidated;
     public event Action? SelectionChanged;
+    /// <summary>Холст забрал фокус клавиатуры (для набора текста) и оказался поверх остальных окон.</summary>
+    public event Action? ForegroundTaken;
 
     /// <summary>Рамка объекта, который сейчас настраивается, — в пикселях области.</summary>
     public Rect? TargetBounds()
@@ -152,7 +154,11 @@ public sealed class LiveDrawCanvas : Panel
     public void RefocusInput()
     {
         if (_input is not { } tb) return;
-        if (TopLevel.GetTopLevel(this) is Window window) PlatformServices.WindowHelper.ForceForeground(window);
+        if (TopLevel.GetTopLevel(this) is Window window)
+        {
+            PlatformServices.WindowHelper.ForceForeground(window);
+            ForegroundTaken?.Invoke(); // холст поднялся наверх — панели снова поверх него
+        }
         tb.Focus();
     }
 
@@ -604,7 +610,11 @@ public sealed class LiveDrawCanvas : Panel
         _input = tb;
         SelectionChanged?.Invoke(); // панель стиля — для того, что сейчас печатается
         // Без активного окна клавиатура ушла бы программе под областью.
-        if (TopLevel.GetTopLevel(this) is Window window) PlatformServices.WindowHelper.ForceForeground(window);
+        if (TopLevel.GetTopLevel(this) is Window window)
+        {
+            PlatformServices.WindowHelper.ForceForeground(window);
+            ForegroundTaken?.Invoke(); // холст поднялся наверх — панели снова поверх него
+        }
         Redraw();
         Dispatcher.UIThread.Post(() =>
         {
