@@ -80,6 +80,11 @@ public interface IWindowHelper
     void SetPixelBounds(Window window, PixelRect bounds);
     /// <summary>Окно-оверлей захвата: поверх всего, включая строку меню macOS. По умолчанию ничего не делает.</summary>
     void MakeOverlay(Window window) { }
+    /// <summary>
+    /// Окно пропускает мышь насквозь — клики и прокрутка уходят приложениям под ним (холст рисования
+    /// во время записи в режиме «курсор»). false — окно снова принимает мышь. Возвращает false, если не умеет.
+    /// </summary>
+    bool SetClickThrough(Window window, bool enabled) => false;
 }
 
 /// <summary>

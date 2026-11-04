@@ -48,7 +48,7 @@ public static class PlatformServices
             Print = new UnixPrint();
             Autostart = new Linux.LinuxAutostart();
             PrintScreenConflict = new NoPrintScreenConflict();
-            WindowHelper = new NoWindowHelper();
+            WindowHelper = new Linux.X11WindowHelper();
             Paste = new NoPasteSupport();
         }
         else

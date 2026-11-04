@@ -154,12 +154,13 @@ internal sealed class NoPrintScreenConflict : IPrintScreenConflict
     public bool TryDisableSystemBinding() => false;
 }
 
-internal sealed class NoWindowHelper : IWindowHelper
+internal class NoWindowHelper : IWindowHelper
 {
     public void ForceForeground(Window window) => window.Activate();
     public void ExcludeFromCapture(Window window) { }
     public PixelPoint? GetCursorPosition() => null;
     public void SetPixelBounds(Window window, PixelRect bounds) => window.Position = bounds.Position;
+    public virtual bool SetClickThrough(Window window, bool enabled) => false;
 }
 
 /// <summary>TODO(mac): CGEventTap для Cmd+V. TODO(linux): зависит от окружения, пока без умной вставки.</summary>

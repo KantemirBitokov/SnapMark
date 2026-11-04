@@ -136,6 +136,15 @@ internal sealed class MacWindowHelper : IWindowHelper
             MacNative.SendULong(w, MacNative.Sel("setCollectionBehavior:"), (1UL << 0) | (1UL << 8)); // CanJoinAllSpaces | FullScreenAuxiliary
     }
 
+    public bool SetClickThrough(Window window, bool enabled)
+    {
+        // Явное NO тоже важно: иначе macOS сама пропускает клики по полностью прозрачным пикселям.
+        var w = MacNative.NSWindowOf(window);
+        if (w == IntPtr.Zero || !MacNative.Responds(w, "setIgnoresMouseEvents:")) return false;
+        MacNative.SendBool(w, MacNative.Sel("setIgnoresMouseEvents:"), enabled);
+        return true;
+    }
+
     public PixelPoint? GetCursorPosition() => null;
 
     public void SetPixelBounds(Window window, PixelRect bounds)

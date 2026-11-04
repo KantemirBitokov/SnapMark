@@ -144,6 +144,23 @@ internal sealed class WinWindowHelper : IWindowHelper
     public PixelPoint? GetCursorPosition() =>
         GetCursorPos(out var p) ? new PixelPoint(p.X, p.Y) : null;
 
+    /// <summary>
+    /// WS_EX_LAYERED + WS_EX_TRANSPARENT — стандартный способ сделать окно «прозрачным для мыши».
+    /// LAYERED оставляем навсегда (с полной непрозрачностью), переключаем только TRANSPARENT.
+    /// </summary>
+    public bool SetClickThrough(Window window, bool enabled)
+    {
+        var hwnd = Hwnd(window);
+        if (hwnd == IntPtr.Zero) return false;
+        long ex = GetWindowLongPtr(hwnd, GWL_EXSTYLE).ToInt64();
+        long next = enabled ? ex | WS_EX_TRANSPARENT | WS_EX_LAYERED : ex & ~WS_EX_TRANSPARENT;
+        if (next == ex) return true;
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, new IntPtr(next));
+        if ((ex & WS_EX_LAYERED) == 0 && (next & WS_EX_LAYERED) != 0)
+            SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA); // иначе только что «слоёное» окно станет невидимым
+        return true;
+    }
+
     public void SetPixelBounds(Window window, PixelRect b)
     {
         var hwnd = Hwnd(window);

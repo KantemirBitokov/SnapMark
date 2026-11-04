@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using SnapMark.Annotations;
 using SnapMark.Core;
 using SnapMark.Platform;
 using SnapMark.Platform.Common;
@@ -21,7 +22,107 @@ public static class RecordingController
 
     static bool _starting;
 
+    // Рисование поверх записи: окно-холст создаётся при первом выборе инструмента.
+    static LiveDrawWindow? _draw;
+    static PixelRect _rect;
+    static double _scaling = 1;
+    static ToolKind _lastTool = ToolKind.Pen;
+    static bool _clickThroughWarned;
+
     public static bool IsRecording => _recorder is not null;
+
+    /// <summary>Текущий инструмент рисования на видео; null — курсор (мышь уходит программам под областью).</summary>
+    public static ToolKind? DrawTool { get; private set; }
+
+    public static LiveDrawCanvas? DrawBoard => _draw?.Board;
+
+    /// <summary>Выбрать инструмент рисования на видео (null — вернуться к курсору).</summary>
+    public static void SetDrawTool(ToolKind? tool)
+    {
+        if (_recorder is null) return;
+        if (tool is null)
+        {
+            DrawTool = null;
+            if (_draw is not null)
+            {
+                _draw.Board.IsDrawing = false;
+                if (!PlatformServices.WindowHelper.SetClickThrough(_draw, true))
+                {
+                    // Система не умеет пропускать мышь сквозь окно — прячем рисунки, чтобы не мешали работать.
+                    _draw.Hide();
+                    if (!_clickThroughWarned)
+                    {
+                        _clickThroughWarned = true;
+                        Toast.Show(L.T("Рисунки скрыты"), L.T("На этой системе нельзя кликать сквозь рисунки. Они снова появятся, когда выберешь инструмент."));
+                    }
+                }
+            }
+            _hud?.SyncTools();
+            return;
+        }
+
+        if (!EnsureDrawWindow()) return;
+        var w = _draw!;
+        if (!w.IsVisible)
+        {
+            w.Show();
+            RaiseHud();
+        }
+        w.Board.Tool = tool.Value;
+        w.Board.IsDrawing = true;
+        PlatformServices.WindowHelper.SetClickThrough(w, false);
+        DrawTool = tool;
+        _lastTool = tool.Value;
+        _hud?.SyncTools();
+    }
+
+    /// <summary>Последний выбранный инструмент — для кнопки «Рисовать».</summary>
+    public static ToolKind LastDrawTool => _lastTool;
+
+    public static void SetDrawColor(Color color)
+    {
+        if (_draw is null && !EnsureDrawWindow()) return;
+        _draw!.Board.DrawStyle.Color = color;
+        _hud?.SyncTools();
+    }
+
+    public static Color DrawColor => _draw?.Board.DrawStyle.Color
+        ?? (Color.TryParse(AppServices.Settings.LastColor, out var c) ? c : Color.Parse("#FF3B30"));
+
+    static bool EnsureDrawWindow()
+    {
+        if (_draw is not null) return true;
+        var w = new LiveDrawWindow(_rect, _scaling);
+        w.Board.ContentChanged += () => _hud?.SyncTools();
+        w.Board.CursorRequested += () => SetDrawTool(null);
+        w.Board.ToolRequested += t => SetDrawTool(t);
+        w.Show();
+        if (!w.IsTransparent)
+        {
+            // Без прозрачности (Linux без композитора) окно закрыло бы область записи сплошной заливкой.
+            w.Close();
+            Toast.Show(L.T("Рисование на видео недоступно"), L.T("Системе не хватает прозрачных окон. В Linux включи композитный менеджер окон (эффекты рабочего стола)."));
+            return false;
+        }
+        _draw = w;
+        RaiseHud();
+        return true;
+    }
+
+    /// <summary>Панель записи — поверх холста (важно, когда записывается весь экран).</summary>
+    static void RaiseHud()
+    {
+        if (_hud is not { } hud) return;
+        hud.Hide();
+        hud.Show();
+    }
+
+    static void CloseDrawWindow()
+    {
+        _draw?.Close();
+        _draw = null;
+        DrawTool = null;
+    }
 
     public static async void Start(PixelRect rect, double scaling, bool withMic, bool withSystem)
     {
@@ -74,6 +175,9 @@ public static class RecordingController
         });
         _recorder = recorder;
         _starting = true;
+        _rect = rect;
+        _scaling = scaling > 0 ? scaling : 1;
+        DrawTool = null;
 
         // Панель появляется сразу («Запуск…») — видно, что нажатие сработало.
         bool audioAllowed = s.VideoFormat != VideoFileFormat.Gif;
@@ -97,6 +201,7 @@ public static class RecordingController
             _hud?.Close();
             _hud = null;
             HideFrame();
+            CloseDrawWindow();
             Toast.Show(L.T("Запись не запустилась"), ex.Message.Length > 300 ? ex.Message[..300] + "…" : ex.Message);
         }
         finally
@@ -114,6 +219,7 @@ public static class RecordingController
         _hud?.Close();
         _hud = null;
         HideFrame();
+        CloseDrawWindow();
 
         Toast.Show(L.T("Запись остановлена"), AppServices.Settings.VideoFormat == VideoFileFormat.Gif
             ? L.T("Собираю GIF…")
@@ -214,6 +320,16 @@ public sealed class RecordingHud : Window
     Button? _stop;
     bool _recording;
 
+    // Рисование на видео.
+    static readonly string[] DrawPalette = { "#FF3B30", "#FF9500", "#FFCC00", "#34C759", "#0A84FF", "#FFFFFF", "#000000" };
+    readonly StackPanel _tools = new() { Orientation = Orientation.Horizontal, Spacing = 2, IsVisible = false };
+    readonly Button _drawToggle;
+    readonly Button _cursorButton;
+    readonly Button _undoButton;
+    readonly Button _clearButton;
+    readonly Dictionary<ToolKind, Button> _toolButtons = new();
+    readonly List<Button> _swatches = new();
+
     public RecordingHud(PixelRect region, double scaling, bool withMic, bool withSystem)
     {
         _region = region;
@@ -269,6 +385,51 @@ public sealed class RecordingHud : Window
         }
         stack.Children.Add(stop);
 
+        // ── Рисование на видео: всё, что рисуешь, сразу видно в записи ──
+        stack.Children.Add(UiKit.VSep());
+        _drawToggle = UiKit.ToolButton("Icon.InkPen", L.T("Рисовать на видео: стрелки, метки, текст — всё видно в записи"), ToggleTools);
+        stack.Children.Add(_drawToggle);
+
+        _cursorButton = UiKit.ToolButton("Icon.Select", L.T("Курсор: работать с программами в области записи (Esc)"), () => RecordingController.SetDrawTool(null));
+        _tools.Children.Add(_cursorButton);
+        foreach (var (tool, icon, tip) in new[]
+        {
+            (ToolKind.Pen, "Icon.InkPen", L.T("Перо (P): задержи в конце — станет ровной фигурой")),
+            (ToolKind.Highlighter, "Icon.Marker", L.T("Маркер-выделитель (H)")),
+            (ToolKind.Arrow, "Icon.Arrow", L.T("Стрелка (A)")),
+            (ToolKind.Rectangle, "Icon.Rect", L.T("Прямоугольник (R)")),
+            (ToolKind.Ellipse, "Icon.Ellipse", L.T("Эллипс (O)")),
+            (ToolKind.Marker, "Icon.MarkerBadge", L.T("Метка A, B, C… (M): нажми или потяни к цели, затем набери комментарий")),
+            (ToolKind.Text, "Icon.Text", L.T("Текст (T): Enter — готово, Shift+Enter — новая строка")),
+            (ToolKind.Eraser, "Icon.Eraser", L.T("Ластик (E): проведи по объекту, чтобы удалить")),
+        })
+        {
+            var t = tool;
+            var b = UiKit.ToolButton(icon, tip, () => RecordingController.SetDrawTool(t));
+            if (t == ToolKind.Marker && b.Content is Avalonia.Controls.Shapes.Path path) path.Classes.Add("solid");
+            _toolButtons[t] = b;
+            _tools.Children.Add(b);
+        }
+        _tools.Children.Add(UiKit.VSep());
+        // Цвета — прямо в панели (без всплывающих окон: они попали бы в видео).
+        foreach (var hex in DrawPalette)
+        {
+            var color = Color.Parse(hex);
+            var sw = new Button { Background = new SolidColorBrush(color), Tag = hex, VerticalAlignment = VerticalAlignment.Center };
+            sw.Classes.Add("swatch");
+            sw.Classes.Add("mini");
+            sw.Click += (_, _) => RecordingController.SetDrawColor(color);
+            _swatches.Add(sw);
+            _tools.Children.Add(sw);
+        }
+        _tools.Children.Add(UiKit.VSep());
+        _undoButton = UiKit.ToolButton("Icon.Undo", L.T("Отменить (Ctrl+Z)"), () => RecordingController.DrawBoard?.Undo());
+        _clearButton = UiKit.ToolButton("Icon.Trash", L.T("Стереть всё нарисованное"), () => RecordingController.DrawBoard?.Clear(), "danger");
+        _tools.Children.Add(_undoButton);
+        _tools.Children.Add(_clearButton);
+        stack.Children.Add(_tools);
+        SyncTools();
+
         var card = new Border { Margin = new Thickness(16), Padding = new Thickness(6), Child = stack };
         card.Classes.Add("pill");
         Content = card;
@@ -293,6 +454,29 @@ public sealed class RecordingHud : Window
             Opacity = 1;
             _timer.Start();
         };
+    }
+
+    void ToggleTools()
+    {
+        _tools.IsVisible = !_tools.IsVisible;
+        RecordingController.SetDrawTool(_tools.IsVisible ? RecordingController.LastDrawTool : null);
+        // Панель стала шире/уже — снова по центру области.
+        Dispatcher.UIThread.Post(Reposition, DispatcherPriority.Background);
+    }
+
+    /// <summary>Подсветить текущий инструмент и цвет, включить/выключить «Отменить» и «Стереть всё».</summary>
+    public void SyncTools()
+    {
+        var current = RecordingController.DrawTool;
+        _drawToggle.Classes.Set("selected", _tools.IsVisible);
+        _cursorButton.Classes.Set("selected", current is null);
+        foreach (var (tool, b) in _toolButtons) b.Classes.Set("selected", current == tool);
+        var board = RecordingController.DrawBoard;
+        _undoButton.IsEnabled = board?.Document.CanUndo == true;
+        _clearButton.IsEnabled = board?.HasContent == true;
+        var color = RecordingController.DrawColor;
+        foreach (var sw in _swatches)
+            sw.Classes.Set("current", sw.Tag is string hex && Color.Parse(hex).ToUInt32() == Color.FromRgb(color.R, color.G, color.B).ToUInt32());
     }
 
     /// <summary>Запись реально началась: красная точка, таймер с нуля, кнопка «Стоп» активна.</summary>

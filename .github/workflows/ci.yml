@@ -1,0 +1,21 @@
+# Быстрая проверка: код компилируется (без выпуска релиза). Запускается на каждый push.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: Build
+        run: dotnet build src/SnapMark.App -c Release -warnaserror:CS8602,CS8604,CS0168,CS0219 2>&1 | tee build.log
+      - name: Warnings
+        if: always()
+        run: grep -E "warning (CS|AVLN|CA)" build.log | sed 's#.*/src/#src/#' | sort -u || true
