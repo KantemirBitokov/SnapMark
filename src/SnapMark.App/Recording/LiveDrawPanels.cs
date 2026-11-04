@@ -7,6 +7,7 @@ using SnapMark.Annotations;
 using SnapMark.Capture;
 using SnapMark.Core;
 using SnapMark.Platform;
+using SnapMark.Services;
 using SnapMark.UI;
 
 namespace SnapMark.Recording;
@@ -196,6 +197,7 @@ public sealed class LiveStyleWindow : Window
             tip: L.T("Белый на тёмном, тёмный на светлом"));
         Add(OverlayWindow.Row(OverlayWindow.Label(m.Label.All(char.IsDigit) ? L.T("Цифра") : L.T("Буква")), auto,
             OverlayWindow.ColorRow(OverlayWindow.LabelPalette, m.LabelColor, c => Mutate(a => ((MarkerAnnotation)a).LabelColor = c))));
+        Add(NumberingRow());
         Add(OverlayWindow.Row(
             ShapeButtons(m.Shape, shape => Mutate(a => ((MarkerAnnotation)a).Shape = shape)),
             OverlayWindow.Stepper(m.FontSize, 12, 120, 2, v => Mutate(a => ((MarkerAnnotation)a).FontSize = v), L.T("Размер метки")),
@@ -303,6 +305,7 @@ public sealed class LiveStyleWindow : Window
     {
         var cs = _board.CommentStyle;
         Add(OverlayWindow.Row(OverlayWindow.Label(L.T("Фон")), OverlayWindow.ColorRow(OverlayWindow.ContextPalette, St.Color, c => Defaults(() => St.Color = c))));
+        Add(NumberingRow());
         Add(OverlayWindow.Row(
             ShapeButtons(St.MarkerShape, shape => Defaults(() => St.MarkerShape = shape)),
             OverlayWindow.Stepper(St.FontSize, 12, 120, 2, v => Defaults(() => St.FontSize = v), L.T("Размер метки"))));
@@ -325,6 +328,25 @@ public sealed class LiveStyleWindow : Window
                 cs.Shadow = true;
                 cs.ShadowColor = c;
             })));
+    }
+
+    /// <summary>A B C / 1 2 3 — меняется сразу у всех меток, запоминается для следующих записей и скриншотов.</summary>
+    Control NumberingRow()
+    {
+        var current = _board.Document.Numbering;
+        void Pick(MarkerNumbering n)
+        {
+            _board.SetNumbering(n);
+            AppServices.Settings.MarkerNumbering = n;
+            AppServices.SaveSettings();
+            RequestRebuild();
+            _board.RefocusInput();
+        }
+        var letters = OverlayWindow.Chip("A B C", current == MarkerNumbering.Letters, _ => Pick(MarkerNumbering.Letters),
+            tip: L.T("Буквы — у всех меток сразу"));
+        var numbers = OverlayWindow.Chip("1 2 3", current == MarkerNumbering.Numbers, _ => Pick(MarkerNumbering.Numbers),
+            tip: L.T("Цифры — у всех меток сразу"));
+        return OverlayWindow.Row(OverlayWindow.Label(L.T("Метки")), letters, numbers);
     }
 
     static StackPanel ShapeButtons(MarkerShape current, Action<MarkerShape> pick)

@@ -128,6 +128,14 @@ public sealed class LiveDrawCanvas : Panel
 
     public void ClearSelection() => SetSelected(null);
 
+    /// <summary>A, B, C… или 1, 2, 3… — сразу у всех меток на видео.</summary>
+    public void SetNumbering(MarkerNumbering numbering)
+    {
+        Document.Numbering = numbering;
+        Document.RelabelMarkers();
+        Changed();
+    }
+
     /// <summary>Изменить объект из панели стиля (с отменой через Ctrl+Z).</summary>
     public void MutateTarget(Action<Annotation> change)
     {
@@ -685,6 +693,9 @@ public sealed class LiveDrawCanvas : Panel
         ToolKind? tool = e.Key switch
         {
             Key.P => ToolKind.Pen,
+            Key.C => ToolKind.Pencil,
+            Key.D => ToolKind.DoubleArrow,
+            Key.N => ToolKind.MarkerArrow,
             Key.S => ToolKind.Select,
             Key.H => ToolKind.Highlighter,
             Key.A => ToolKind.Arrow,
@@ -692,7 +703,6 @@ public sealed class LiveDrawCanvas : Panel
             Key.R => ToolKind.Rectangle,
             Key.O => ToolKind.Ellipse,
             Key.M => ToolKind.Marker,
-            Key.N => ToolKind.MarkerArrow,
             Key.T => ToolKind.Text,
             Key.E => ToolKind.Eraser,
             _ => null,
@@ -738,6 +748,7 @@ public sealed class LiveDrawWindow : Window
         if (Color.TryParse(s.LastColor, out var c)) Board.DrawStyle.Color = c;
         if (s.LastThickness > 0) Board.DrawStyle.Thickness = s.LastThickness;
         if (s.LastFontSize > 0) Board.DrawStyle.FontSize = s.LastFontSize;
+        Board.Document.Numbering = s.MarkerNumbering; // как в редакторе: буквы или цифры
         Content = Board;
 
         Opened += (_, _) =>

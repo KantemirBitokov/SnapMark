@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+- Drawing on video now has every editor tool: pencil (C), line (L) and double arrow (D) joined the pen, highlighter, arrow, shapes, markers, text and eraser.
+- A B C / 1 2 3 switch for markers on video (in the Style panel) — relabels all markers at once and is remembered, just like in the editor.
+
 ## 1.2.0
 - **Full editor styles while recording.** New Select tool (V): move objects, double-click a text or a marker to edit it, Delete to remove, Ctrl+J to duplicate. The Style button opens the same settings as in the screenshot editor — color, thickness, opacity, dashes, fill, font, weight, italic, size, frame and plate colors, shadows, marker shapes and comment-label style — for the selected object, the text you're typing, or new objects.
 - **Only your drawings get into the video.** The recording bar, the style panel, tooltips, drop-down lists and the selection frame are excluded from the recording (Windows 10 2004+ and macOS; on Linux the system can't hide windows from a recording).

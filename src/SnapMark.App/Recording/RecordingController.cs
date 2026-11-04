@@ -483,8 +483,11 @@ public sealed class RecordingHud : Window
         {
             (ToolKind.Select, "Icon.Select", L.T("Выбор (V): двигать объекты, менять их стиль; двойной щелчок — править текст или комментарий")),
             (ToolKind.Pen, "Icon.InkPen", L.T("Перо (P): задержи в конце — станет ровной фигурой")),
+            (ToolKind.Pencil, "Icon.Pencil", L.T("Карандаш (C)")),
             (ToolKind.Highlighter, "Icon.Marker", L.T("Маркер-выделитель (H)")),
+            (ToolKind.Line, "Icon.Line", L.T("Линия (L)")),
             (ToolKind.Arrow, "Icon.Arrow", L.T("Стрелка (A)")),
+            (ToolKind.DoubleArrow, "Icon.DoubleArrow", L.T("Двойная стрелка (D)")),
             (ToolKind.Rectangle, "Icon.Rect", L.T("Прямоугольник (R)")),
             (ToolKind.Ellipse, "Icon.Ellipse", L.T("Эллипс (O)")),
             (ToolKind.Marker, "Icon.MarkerBadge", L.T("Метка A, B, C… с комментарием (M)")),
