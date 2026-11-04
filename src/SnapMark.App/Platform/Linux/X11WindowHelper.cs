@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Avalonia.Controls;
+using SnapMark.Platform.Unix;
 
 namespace SnapMark.Platform.Linux;
 

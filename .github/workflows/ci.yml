@@ -15,6 +15,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with: { dotnet-version: '8.0.x' }
       - name: Build
+        shell: bash
         run: dotnet build src/SnapMark.App -c Release -warnaserror:CS8602,CS8604,CS0168,CS0219 2>&1 | tee build.log
       - name: Warnings
         if: always()

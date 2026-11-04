@@ -16,8 +16,21 @@ namespace SnapMark.Recording;
 /// появляется — линии, фигуры, метки, набираемый текст, — попадает в видео прямо в момент рисования.
 /// Координаты аннотаций — в физических пикселях области (как в редакторе скриншота).
 /// </summary>
-public sealed class LiveDrawCanvas : Canvas
+public sealed class LiveDrawCanvas : Panel
 {
+    /// <summary>Слой, на котором рисуются аннотации (у Panel свой Render переопределять нельзя).</summary>
+    sealed class Layer : Control
+    {
+        readonly LiveDrawCanvas _owner;
+        public Layer(LiveDrawCanvas owner)
+        {
+            _owner = owner;
+            IsHitTestVisible = false;
+        }
+        public override void Render(DrawingContext ctx) => _owner.RenderContent(ctx);
+    }
+
+    readonly Layer _layer;
     static readonly TimeSpan SnapDelay = TimeSpan.FromMilliseconds(600);
 
     readonly CommentLabelStyle _commentStyle = new() { Enabled = true };
@@ -42,6 +55,8 @@ public sealed class LiveDrawCanvas : Canvas
     {
         Focusable = true;
         ClipToBounds = true;
+        _layer = new Layer(this);
+        Children.Add(_layer);
         _snapTimer = new DispatcherTimer { Interval = SnapDelay };
         _snapTimer.Tick += (_, _) => TrySnapShape();
     }
@@ -103,13 +118,14 @@ public sealed class LiveDrawCanvas : Canvas
     void Changed()
     {
         ContentChanged?.Invoke();
-        InvalidateVisual();
+        Redraw();
     }
 
     // ── Отрисовка ─────────────────────────────────────────────────────
-    public override void Render(DrawingContext ctx)
+    void Redraw() => _layer.InvalidateVisual();
+
+    void RenderContent(DrawingContext ctx)
     {
-        base.Render(ctx); // прозрачный фон
         var s = PixelScale;
         using (ctx.PushTransform(Matrix.CreateScale(1 / s, 1 / s)))
         {
@@ -184,7 +200,7 @@ public sealed class LiveDrawCanvas : Canvas
                 _drawing = m;
                 Document.Items.Add(m);
                 e.Pointer.Capture(this);
-                InvalidateVisual();
+                Redraw();
                 return;
             }
 
@@ -197,7 +213,7 @@ public sealed class LiveDrawCanvas : Canvas
                 Document.Items.Add(_drawing);
                 e.Pointer.Capture(this);
                 if (_drawing is FreehandAnnotation) _snapTimer.Start();
-                InvalidateVisual();
+                Redraw();
                 return;
             }
         }
@@ -238,7 +254,7 @@ public sealed class LiveDrawCanvas : Canvas
         }
         _lastImg = img;
         _lastTimestamp = e.Timestamp;
-        InvalidateVisual();
+        Redraw();
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
@@ -327,7 +343,7 @@ public sealed class LiveDrawCanvas : Canvas
         Document.Items[index] = shape;
         _drawing = shape;
         _snapped = true;
-        InvalidateVisual();
+        Redraw();
     }
 
     Annotation? Hit(Point img, double tolerancePx = 5)
@@ -344,7 +360,7 @@ public sealed class LiveDrawCanvas : Canvas
         Document.Items.Remove(hit);
         if (hit is MarkerAnnotation) Document.RelabelMarkers();
         _erasedAny = true;
-        InvalidateVisual();
+        Redraw();
     }
 
     void Remove(Annotation a)
@@ -404,14 +420,15 @@ public sealed class LiveDrawCanvas : Canvas
             BorderThickness = new Thickness(0),
         };
         // Около места набора — туда же система поставит окно подсказок ввода (IME).
-        SetLeft(tb, imgPos.X / PixelScale);
-        SetTop(tb, imgPos.Y / PixelScale);
+        tb.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
+        tb.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top;
+        tb.Margin = new Thickness(imgPos.X / PixelScale, imgPos.Y / PixelScale, 0, 0);
         tb.AddHandler(KeyDownEvent, OnInputKeyDown, RoutingStrategies.Tunnel);
         tb.PropertyChanged += (_, e) =>
         {
             if (e.Property != TextBox.TextProperty) return;
             if (_editMarker is not null) UpdateMarkerComment();
-            InvalidateVisual();
+            Redraw();
         };
         tb.LostFocus += (_, _) => Dispatcher.UIThread.Post(() =>
         {
@@ -421,7 +438,7 @@ public sealed class LiveDrawCanvas : Canvas
         _input = tb;
         // Без активного окна клавиатура ушла бы программе под областью.
         if (TopLevel.GetTopLevel(this) is Window window) PlatformServices.WindowHelper.ForceForeground(window);
-        InvalidateVisual();
+        Redraw();
         Dispatcher.UIThread.Post(() =>
         {
             if (!ReferenceEquals(_input, tb)) return;
