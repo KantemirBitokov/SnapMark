@@ -28,6 +28,63 @@ public static class RecordingController
     static double _scaling = 1;
     static ToolKind _lastTool = ToolKind.Pen;
     static bool _clickThroughWarned;
+    static LiveChromeWindow? _chrome;   // рамка выделения — в видео не попадает
+    static LiveStyleWindow? _style;     // панель стиля — в видео не попадает
+    static bool _styleOpen;
+
+    /// <summary>Панель стиля открыта кнопкой (иначе появляется сама, когда что-то выделено или печатается).</summary>
+    public static bool StyleOpen => _styleOpen;
+
+    public static void ToggleStyle()
+    {
+        _styleOpen = !_styleOpen;
+        UpdateStylePanel();
+        _hud?.SyncTools();
+    }
+
+    static void UpdateStylePanel()
+    {
+        var board = _draw?.Board;
+        bool want = board is not null && DrawTool is not null && (_styleOpen || board.StyleTarget is not null);
+        if (!want)
+        {
+            _style?.Hide();
+            return;
+        }
+        if (_style is null)
+        {
+            _style = new LiveStyleWindow(board!);
+            _style.Rebuilt += () =>
+            {
+                _hud?.SyncTools(); // цвет на кнопке «Стиль»
+                if (_style is not { } st) return;
+                if (!st.HasContent) { st.Hide(); return; }
+                if (!st.IsVisible) st.Show();
+                PositionStylePanel();
+            };
+            _style.SizeChanged += (_, _) => PositionStylePanel();
+        }
+        _style.RequestRebuild();
+    }
+
+    /// <summary>Панель стиля — над панелью записи (или под ней, если сверху нет места).</summary>
+    static void PositionStylePanel()
+    {
+        if (_style is not { IsVisible: true } st || _hud is not { } hud) return;
+        double hs = hud.RenderScaling > 0 ? hud.RenderScaling : _scaling;
+        double ss = st.RenderScaling > 0 ? st.RenderScaling : _scaling;
+        int hw = (int)(hud.ClientSize.Width * hs), hh = (int)(hud.ClientSize.Height * hs);
+        int sw = (int)(st.ClientSize.Width * ss), sh = (int)(st.ClientSize.Height * ss);
+        var screen = hud.Screens.ScreenFromPoint(hud.Position) ?? hud.Screens.Primary;
+        var area = screen?.WorkingArea ?? new PixelRect(0, 0, 1920, 1080);
+        int gap = (int)(4 * hs);
+        int x = hud.Position.X + (hw - sw) / 2;
+        int y = hud.Position.Y - sh + gap;
+        if (y < area.Y) y = hud.Position.Y + hh - gap;
+        x = Math.Clamp(x, area.X, Math.Max(area.X, area.Right - sw));
+        y = Math.Clamp(y, area.Y, Math.Max(area.Y, area.Bottom - sh));
+        st.Position = new PixelPoint(x, y);
+    }
 
     public static bool IsRecording => _recorder is not null;
 
@@ -43,6 +100,7 @@ public static class RecordingController
         if (tool is null)
         {
             DrawTool = null;
+            _style?.Hide();
             if (_draw is not null)
             {
                 _draw.Board.IsDrawing = false;
@@ -50,6 +108,7 @@ public static class RecordingController
                 {
                     // Система не умеет пропускать мышь сквозь окно — прячем рисунки, чтобы не мешали работать.
                     _draw.Hide();
+                    _chrome?.Hide();
                     if (!_clickThroughWarned)
                     {
                         _clickThroughWarned = true;
@@ -67,13 +126,16 @@ public static class RecordingController
         if (!w.IsVisible)
         {
             w.Show();
+            _chrome?.Show();
             RaiseHud();
         }
+        if (tool != ToolKind.Select) w.Board.ClearSelection(); // как в редакторе: новый инструмент — без выделения
         w.Board.Tool = tool.Value;
         w.Board.IsDrawing = true;
         PlatformServices.WindowHelper.SetClickThrough(w, false);
         DrawTool = tool;
         _lastTool = tool.Value;
+        UpdateStylePanel();
         _hud?.SyncTools();
     }
 
@@ -94,7 +156,12 @@ public static class RecordingController
     {
         if (_draw is not null) return true;
         var w = new LiveDrawWindow(_rect, _scaling);
-        w.Board.ContentChanged += () => _hud?.SyncTools();
+        w.Board.ContentChanged += () =>
+        {
+            _hud?.SyncTools();
+            if (_style is { IsVisible: true } st) st.RequestRebuild();
+        };
+        w.Board.SelectionChanged += UpdateStylePanel;
         w.Board.CursorRequested += () => SetDrawTool(null);
         w.Board.ToolRequested += t => SetDrawTool(t);
         // Холст получил фокус (клик, набор текста) — система подняла его наверх; панель снова поверх.
@@ -108,6 +175,16 @@ public static class RecordingController
             return false;
         }
         _draw = w;
+
+        // Рамка выделения — на отдельном слое, исключённом из захвата (в Linux исключать окна из записи нельзя).
+        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS())
+        {
+            var chrome = new LiveChromeWindow(_rect, _scaling, w.Board);
+            chrome.Show();
+            if (chrome.ClickThroughOk) _chrome = chrome;
+            else chrome.Close();
+        }
+        w.Board.DrawSelectionInline = _chrome is null;
         RaiseHud();
         return true;
     }
@@ -115,14 +192,22 @@ public static class RecordingController
     /// <summary>Панель записи — поверх холста (важно, когда записывается весь экран).</summary>
     static void RaiseHud()
     {
-        if (_hud is { } hud) PlatformServices.WindowHelper.BringToFront(hud);
+        var wh = PlatformServices.WindowHelper;
+        if (_chrome is { IsVisible: true } chrome) wh.BringToFront(chrome);
+        if (_style is { IsVisible: true } style) wh.BringToFront(style);
+        if (_hud is { } hud) wh.BringToFront(hud);
     }
 
     static void CloseDrawWindow()
     {
+        _style?.Close();
+        _style = null;
+        _chrome?.Close();
+        _chrome = null;
         _draw?.Close();
         _draw = null;
         DrawTool = null;
+        _styleOpen = false;
     }
 
     public static async void Start(PixelRect rect, double scaling, bool withMic, bool withSystem)
@@ -183,6 +268,7 @@ public static class RecordingController
         // Панель появляется сразу («Запуск…») — видно, что нажатие сработало.
         bool audioAllowed = s.VideoFormat != VideoFileFormat.Gif;
         _hud = new RecordingHud(rect, scaling, withMic && audioAllowed, withSystem && audioAllowed);
+        _hud.PositionChanged += (_, _) => PositionStylePanel();
         _hud.Show();
         try
         {
@@ -322,14 +408,14 @@ public sealed class RecordingHud : Window
     bool _recording;
 
     // Рисование на видео.
-    static readonly string[] DrawPalette = { "#FF3B30", "#FF9500", "#FFCC00", "#34C759", "#0A84FF", "#FFFFFF", "#000000" };
     readonly StackPanel _tools = new() { Orientation = Orientation.Horizontal, Spacing = 2, IsVisible = false };
     readonly Button _drawToggle;
     readonly Button _cursorButton;
     readonly Button _undoButton;
     readonly Button _clearButton;
     readonly Dictionary<ToolKind, Button> _toolButtons = new();
-    readonly List<Button> _swatches = new();
+    readonly Button _styleButton;
+    readonly Avalonia.Controls.Shapes.Ellipse _styleDot = new() { Width = 14, Height = 14, StrokeThickness = 1, Stroke = new SolidColorBrush(Color.FromArgb(60, 0, 0, 0)) };
 
     public RecordingHud(PixelRect region, double scaling, bool withMic, bool withSystem)
     {
@@ -391,10 +477,11 @@ public sealed class RecordingHud : Window
         _drawToggle = UiKit.ToolButton("Icon.InkPen", L.T("Рисовать на видео: стрелки, метки, текст — всё видно в записи"), ToggleTools);
         stack.Children.Add(_drawToggle);
 
-        _cursorButton = UiKit.ToolButton("Icon.Select", L.T("Курсор: работать с программами в области записи (Esc)"), () => RecordingController.SetDrawTool(null));
+        _cursorButton = UiKit.ToolButton("Icon.Mouse", L.T("Мышь: работать с программами — клики проходят сквозь рисунки (Esc)"), () => RecordingController.SetDrawTool(null));
         _tools.Children.Add(_cursorButton);
         foreach (var (tool, icon, tip) in new[]
         {
+            (ToolKind.Select, "Icon.Select", L.T("Выбор (V): двигать объекты, менять их стиль; двойной щелчок — править текст или комментарий")),
             (ToolKind.Pen, "Icon.InkPen", L.T("Перо (P): задержи в конце — станет ровной фигурой")),
             (ToolKind.Highlighter, "Icon.Marker", L.T("Маркер-выделитель (H)")),
             (ToolKind.Arrow, "Icon.Arrow", L.T("Стрелка (A)")),
@@ -419,17 +506,17 @@ public sealed class RecordingHud : Window
             _tools.Children.Add(b);
         }
         _tools.Children.Add(UiKit.VSep());
-        // Цвета — прямо в панели (без всплывающих окон: они попали бы в видео).
-        foreach (var hex in DrawPalette)
+        // Стиль: цвет, толщина, шрифт, рамки, тени — как в редакторе. Панель стиля в видео не попадает.
+        _styleButton = new Button
         {
-            var color = Color.Parse(hex);
-            var sw = new Button { Background = new SolidColorBrush(color), Tag = hex, VerticalAlignment = VerticalAlignment.Center };
-            sw.Classes.Add("swatch");
-            sw.Classes.Add("mini");
-            sw.Click += (_, _) => RecordingController.SetDrawColor(color);
-            _swatches.Add(sw);
-            _tools.Children.Add(sw);
-        }
+            Content = new Grid { Width = 20, Height = 20, Children = { _styleDot } },
+        };
+        _styleDot.HorizontalAlignment = HorizontalAlignment.Center;
+        _styleDot.VerticalAlignment = VerticalAlignment.Center;
+        _styleButton.Classes.Add("tool");
+        ToolTip.SetTip(_styleButton, L.T("Стиль: цвет, толщина, шрифт, рамка, тень"));
+        _styleButton.Click += (_, _) => RecordingController.ToggleStyle();
+        _tools.Children.Add(_styleButton);
         _tools.Children.Add(UiKit.VSep());
         _undoButton = UiKit.ToolButton("Icon.Undo", L.T("Отменить (Ctrl+Z)"), () => RecordingController.DrawBoard?.Undo());
         _clearButton = UiKit.ToolButton("Icon.Trash", L.T("Стереть всё нарисованное"), () => RecordingController.DrawBoard?.Clear(), "danger");
@@ -482,9 +569,8 @@ public sealed class RecordingHud : Window
         var board = RecordingController.DrawBoard;
         _undoButton.IsEnabled = board?.Document.CanUndo == true;
         _clearButton.IsEnabled = board?.HasContent == true;
-        var color = RecordingController.DrawColor;
-        foreach (var sw in _swatches)
-            sw.Classes.Set("current", sw.Tag is string hex && Color.Parse(hex).ToUInt32() == Color.FromRgb(color.R, color.G, color.B).ToUInt32());
+        _styleDot.Fill = new SolidColorBrush(RecordingController.DrawColor);
+        _styleButton.Classes.Set("selected", RecordingController.StyleOpen);
     }
 
     /// <summary>Запись реально началась: красная точка, таймер с нуля, кнопка «Стоп» активна.</summary>

@@ -39,6 +39,7 @@ public partial class App : Application
             InstallCrashGuard();
             ApplyTheme();
             LoadLogo();
+            ExcludePopupsFromCapture();
 
             // Окно-«зонд» не показывается; нужно только для Screens/Clipboard.
             _probe = new Window { Width = 1, Height = 1, ShowInTaskbar = false, SystemDecorations = SystemDecorations.None };
@@ -63,6 +64,30 @@ public partial class App : Application
                 DispatcherTimer.RunOnce(ShowWelcome, TimeSpan.FromMilliseconds(600));
         }
         base.OnFrameworkInitializationCompleted();
+    }
+
+    /// <summary>
+    /// Подсказки и выпадающие списки — отдельные окна. Исключаем их из захвата, чтобы при записи видео
+    /// (и на скриншотах) было видно только то, что пользователь рисует, а не меню программы.
+    /// </summary>
+    static void ExcludePopupsFromCapture()
+    {
+        Avalonia.Controls.Primitives.Popup.IsOpenProperty.Changed.AddClassHandler<Avalonia.Controls.Primitives.Popup>((popup, e) =>
+        {
+            if (e.NewValue is not true) return;
+            if (popup.Host is TopLevel shown)
+            {
+                PlatformServices.WindowHelper.ExcludeFromCapture(shown);
+                return;
+            }
+            // Окно подсказки ещё не создано — дождёмся открытия.
+            void OnOpened(object? sender, EventArgs args)
+            {
+                popup.Opened -= OnOpened;
+                if (popup.Host is TopLevel host) PlatformServices.WindowHelper.ExcludeFromCapture(host);
+            }
+            popup.Opened += OnOpened;
+        });
     }
 
     /// <summary>

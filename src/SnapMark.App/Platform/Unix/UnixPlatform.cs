@@ -157,7 +157,7 @@ internal sealed class NoPrintScreenConflict : IPrintScreenConflict
 internal class NoWindowHelper : IWindowHelper
 {
     public void ForceForeground(Window window) => window.Activate();
-    public void ExcludeFromCapture(Window window) { }
+    public void ExcludeFromCapture(TopLevel window) { }
     public PixelPoint? GetCursorPosition() => null;
     public void SetPixelBounds(Window window, PixelRect bounds) => window.Position = bounds.Position;
     public virtual bool SetClickThrough(Window window, bool enabled) => false;

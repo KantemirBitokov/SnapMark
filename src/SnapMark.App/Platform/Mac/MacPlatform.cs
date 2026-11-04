@@ -117,7 +117,7 @@ internal sealed class MacWindowHelper : IWindowHelper
         window.Activate();
     }
 
-    public void ExcludeFromCapture(Window window)
+    public void ExcludeFromCapture(TopLevel window)
     {
         // NSWindowSharingNone: панель записи и рамка не попадают в видео и скриншоты.
         var w = MacNative.NSWindowOf(window);

@@ -20,15 +20,15 @@ namespace SnapMark.Capture;
 /// </summary>
 public partial class OverlayWindow
 {
-    static readonly string[] ContextPalette =
+    internal static readonly string[] ContextPalette =
     {
         "#FF3B30", "#FF9500", "#FFCC00", "#34C759", "#00C7BE", "#0A84FF",
         "#5E5CE6", "#AF52DE", "#FF2D55", "#8E8E93", "#FFFFFF", "#000000",
     };
 
-    static readonly string[] LabelPalette = { "#FFFFFF", "#000000", "#FFCC00", "#FF3B30", "#0A84FF", "#34C759" };
+    internal static readonly string[] LabelPalette = { "#FFFFFF", "#000000", "#FFCC00", "#FF3B30", "#0A84FF", "#34C759" };
 
-    static readonly (int Weight, string Name)[] Weights =
+    internal static readonly (int Weight, string Name)[] Weights =
     {
         (300, L.T("Тонкий")), (400, L.T("Обычный")), (600, L.T("Полужирный")), (700, L.T("Жирный")), (900, L.T("Чёрный")),
     };
@@ -195,7 +195,7 @@ public partial class OverlayWindow
     }
 
     /// <summary>Строка «Тень»: вкл/выкл, «Авто» и цвета.</summary>
-    static StackPanel ShadowRow(bool enabled, Color? color, Action<bool> toggle, Action<Color?> pick)
+    internal static StackPanel ShadowRow(bool enabled, Color? color, Action<bool> toggle, Action<Color?> pick)
     {
         var on = Chip(L.T("Тень"), enabled, toggle, tip: L.T("Тень под текстом (или под плашкой)"));
         var auto = Chip(L.T("Авто"), color is null, _ => pick(null), tip: L.T("Тёмная под светлым текстом, светлая под тёмным"));
@@ -205,7 +205,7 @@ public partial class OverlayWindow
         return Row(Label(L.T("Тень")), on, auto, swatches);
     }
 
-    static readonly string[] ShadowPalette = { "#000000", "#FFFFFF", "#8E8E93", "#0A84FF", "#FF3B30", "#FFCC00" };
+    internal static readonly string[] ShadowPalette = { "#000000", "#FFFFFF", "#8E8E93", "#0A84FF", "#FF3B30", "#FFCC00" };
 
     void BuildMarkerContext(MarkerAnnotation m)
     {
@@ -311,9 +311,9 @@ public partial class OverlayWindow
         return row;
     }
 
-    static Control Spacer() => new Border { Width = 6 };
+    internal static Control Spacer() => new Border { Width = 6 };
 
-    static Control Separator()
+    internal static Control Separator()
     {
         var b = new Border();
         b.Classes.Add("hsep");
@@ -321,7 +321,7 @@ public partial class OverlayWindow
         return b;
     }
 
-    static TextBlock Label(string text)
+    internal static TextBlock Label(string text)
     {
         var t = UiKit.Caption(text);
         t.MinWidth = 44;
@@ -346,7 +346,7 @@ public partial class OverlayWindow
         return panel;
     }
 
-    static ToggleButton Chip(string text, bool isChecked, Action<bool> changed, bool italic = false, string? tip = null)
+    internal static ToggleButton Chip(string text, bool isChecked, Action<bool> changed, bool italic = false, string? tip = null)
     {
         var chip = new ToggleButton { Content = text, IsChecked = isChecked, Margin = new Thickness(0) };
         chip.Classes.Add("chip");
@@ -360,7 +360,7 @@ public partial class OverlayWindow
         return chip;
     }
 
-    static ComboBox FontPicker(string current, Action<string> pick)
+    internal static ComboBox FontPicker(string current, Action<string> pick)
     {
         var combo = new ComboBox { Width = 150, MaxDropDownHeight = 320 };
         foreach (var name in FontCatalog.Names)
@@ -376,7 +376,7 @@ public partial class OverlayWindow
         return combo;
     }
 
-    static ComboBox WeightPicker(int current, Action<int> pick)
+    internal static ComboBox WeightPicker(int current, Action<int> pick)
     {
         var combo = new ComboBox { Width = 122 };
         foreach (var (w, name) in Weights)
@@ -391,7 +391,7 @@ public partial class OverlayWindow
         return combo;
     }
 
-    static Control Stepper(double value, double min, double max, double step, Action<double> set, string tip)
+    internal static Control Stepper(double value, double min, double max, double step, Action<double> set, string tip)
     {
         var minus = new Button { Content = "−", Width = 26, Height = 26, Padding = new Thickness(0) };
         var plus = new Button { Content = "+", Width = 26, Height = 26, Padding = new Thickness(0) };
@@ -418,7 +418,7 @@ public partial class OverlayWindow
         return panel;
     }
 
-    static WrapPanel FrameChips(TextFrame current, Action<TextFrame> pick)
+    internal static WrapPanel FrameChips(TextFrame current, Action<TextFrame> pick)
     {
         var panel = new WrapPanel { Orientation = Orientation.Horizontal };
         foreach (var (frame, text) in new[]
@@ -452,7 +452,7 @@ public partial class OverlayWindow
             yield return AutoColorRow(L.T("Подложка"), plate, PlatePalette, pickPlate, L.T("Белая под тёмным текстом, тёмная под светлым"));
     }
 
-    static StackPanel AutoColorRow(string label, Color? current, string[] palette, Action<Color?> pick, string autoTip)
+    internal static StackPanel AutoColorRow(string label, Color? current, string[] palette, Action<Color?> pick, string autoTip)
     {
         var auto = Chip(L.T("Авто"), current is null, _ => pick(null), tip: autoTip);
         return Row(Label(label), auto, ColorRow(palette, current, c => pick(c)));

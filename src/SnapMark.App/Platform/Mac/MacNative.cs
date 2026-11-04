@@ -48,7 +48,7 @@ internal static class MacNative
     }
 
     /// <summary>NSWindow по дескриптору Avalonia (на macOS это NSView окна).</summary>
-    public static IntPtr NSWindowOf(Avalonia.Controls.Window window)
+    public static IntPtr NSWindowOf(Avalonia.Controls.TopLevel window)
     {
         try
         {

@@ -51,6 +51,10 @@ public sealed class LiveDrawCanvas : Panel
     MarkerAnnotation? _editMarker;
     string _editMarkerBefore = "";
 
+    // Выбор и перемещение объектов (инструмент «Выбор»).
+    Annotation? _selected;
+    bool _moving, _moved;
+
     public LiveDrawCanvas()
     {
         Focusable = true;
@@ -74,7 +78,11 @@ public sealed class LiveDrawCanvas : Panel
         get => Background is not null;
         set
         {
-            if (!value) CommitTextInput();
+            if (!value)
+            {
+                CommitTextInput();
+                SetSelected(null);
+            }
             // Прозрачный (не null) фон нужен, чтобы холст ловил нажатия по пустым местам.
             Background = value ? Brushes.Transparent : null;
             Cursor = value ? new Cursor(Tool == ToolKind.Text ? StandardCursorType.Ibeam : StandardCursorType.Cross) : null;
@@ -82,6 +90,93 @@ public sealed class LiveDrawCanvas : Panel
     }
 
     public bool HasContent => Document.Items.Count > 0 || _editText is not null;
+
+    /// <summary>Стиль подписей-комментариев для новых меток.</summary>
+    public CommentLabelStyle CommentStyle => _commentStyle;
+
+    public Annotation? SelectedAnnotation => _selected;
+
+    /// <summary>Что настраивает панель стиля: набираемый текст, метка, к которой пишем комментарий, или выделенный объект.</summary>
+    public Annotation? StyleTarget => (Annotation?)_editText ?? (Annotation?)_editMarker ?? _selected;
+
+    /// <summary>Рисовать рамку выделения прямо на холсте (тогда она попадёт в видео). Нужно, если нет отдельного слоя.</summary>
+    public bool DrawSelectionInline { get; set; }
+
+    /// <summary>Холст перерисован — слою с рамкой выделения тоже пора.</summary>
+    public event Action? Invalidated;
+    public event Action? SelectionChanged;
+
+    /// <summary>Рамка объекта, который сейчас настраивается, — в пикселях области.</summary>
+    public Rect? TargetBounds()
+    {
+        if (_editText is { } ta)
+        {
+            var preview = (TextAnnotation)ta.Clone();
+            preview.Text = (_input?.Text ?? "") + "|";
+            return preview.Bounds;
+        }
+        return StyleTarget?.Bounds;
+    }
+
+    void SetSelected(Annotation? a)
+    {
+        if (ReferenceEquals(_selected, a)) return;
+        _selected = a;
+        SelectionChanged?.Invoke();
+        Redraw();
+    }
+
+    public void ClearSelection() => SetSelected(null);
+
+    /// <summary>Изменить объект из панели стиля (с отменой через Ctrl+Z).</summary>
+    public void MutateTarget(Action<Annotation> change)
+    {
+        var target = StyleTarget;
+        if (target is null) return;
+        List<Annotation>? snap = Document.Items.Contains(target) ? Document.Snapshot() : null;
+        change(target);
+        if (snap is not null) Document.PushUndo(snap);
+        Changed();
+        RefocusInput();
+    }
+
+    /// <summary>После клика по панели стиля клавиатура снова у набираемого текста.</summary>
+    public void RefocusInput()
+    {
+        if (_input is not { } tb) return;
+        if (TopLevel.GetTopLevel(this) is Window window) PlatformServices.WindowHelper.ForceForeground(window);
+        tb.Focus();
+    }
+
+    public void DeleteSelected()
+    {
+        if (_selected is { } a) Remove(a);
+    }
+
+    /// <summary>Копия выделенного объекта со сдвигом; метка получает следующую букву.</summary>
+    public void DuplicateSelected()
+    {
+        CommitTextInput();
+        if (_selected is not { } a || !Document.Items.Contains(a)) return;
+        var snap = Document.Snapshot();
+        Annotation copy;
+        if (a is MarkerAnnotation m)
+        {
+            var numbered = Document.NewMarker();
+            var fresh = (MarkerAnnotation)m.Clone();
+            fresh.Id = Guid.NewGuid();
+            fresh.Sequence = numbered.Sequence;
+            fresh.Label = numbered.Label;
+            copy = fresh;
+        }
+        else copy = a.Clone();
+        var shift = 18 * PixelScale;
+        copy.Offset(shift, shift);
+        Document.Items.Add(copy);
+        Document.PushUndo(snap);
+        SetSelected(copy);
+        Changed();
+    }
 
     /// <summary>Изменилось содержимое (для кнопок «Отменить» / «Очистить» на панели).</summary>
     public event Action? ContentChanged;
@@ -96,18 +191,21 @@ public sealed class LiveDrawCanvas : Panel
     public void Undo()
     {
         CommitTextInput();
+        SetSelected(null);
         if (Document.Undo()) Changed();
     }
 
     public void Redo()
     {
         CommitTextInput();
+        SetSelected(null);
         if (Document.Redo()) Changed();
     }
 
     public void Clear()
     {
         CommitTextInput();
+        SetSelected(null);
         if (Document.Items.Count == 0) return;
         var snap = Document.Snapshot();
         Document.Items.Clear();
@@ -122,7 +220,11 @@ public sealed class LiveDrawCanvas : Panel
     }
 
     // ── Отрисовка ─────────────────────────────────────────────────────
-    void Redraw() => _layer.InvalidateVisual();
+    void Redraw()
+    {
+        _layer.InvalidateVisual();
+        Invalidated?.Invoke();
+    }
 
     void RenderContent(DrawingContext ctx)
     {
@@ -141,6 +243,10 @@ public sealed class LiveDrawCanvas : Panel
             }
 
             CommentLabels.Render(ctx, Document, _commentStyle, new Rect(0, 0, Bounds.Width * s, Bounds.Height * s));
+
+            if (DrawSelectionInline && TargetBounds() is Rect sel)
+                ctx.DrawRectangle(null, new Pen(new SolidColorBrush(Color.Parse("#0A84FF")), 1.25 * s, new DashStyle(new double[] { 3, 2.5 }, 0)),
+                    sel.Inflate(5 * s), 5 * s, 5 * s);
         }
     }
 
@@ -166,6 +272,23 @@ public sealed class LiveDrawCanvas : Panel
         Focus();
         _pressImg = _lastImg = _snapAnchor = img;
         _lastTimestamp = e.Timestamp;
+
+        if (Tool == ToolKind.Select)
+        {
+            // Выбор: щелчок — выделить и тащить; двойной щелчок по тексту — править, по метке — комментарий.
+            var hit = Hit(img);
+            if (e.ClickCount >= 2 && hit is TextAnnotation tx) { SetSelected(tx); BeginTextInput(tx, false); return; }
+            if (e.ClickCount >= 2 && hit is MarkerAnnotation mk) { SetSelected(mk); BeginCommentInput(mk); return; }
+            SetSelected(hit);
+            if (hit is not null)
+            {
+                _snapshot = Document.Snapshot();
+                _moving = true;
+                _moved = false;
+                e.Pointer.Capture(this);
+            }
+            return;
+        }
 
         switch (Tool)
         {
@@ -197,6 +320,7 @@ public sealed class LiveDrawCanvas : Panel
                 m.ApplyCommentStyle(_commentStyle);
                 Document.Items.Add(m);
                 Document.PushUndo(snap);
+                SetSelected(m); // рядом сразу настройки этой метки
                 Changed();
                 BeginCommentInput(m);
                 return;
@@ -236,12 +360,20 @@ public sealed class LiveDrawCanvas : Panel
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-        if (_drawing is null && !_erasing) return;
+        if (_drawing is null && !_erasing && !_moving) return;
         var pt = e.GetCurrentPoint(this);
         var img = ToImage(pt.Position);
         bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
 
-        if (_erasing) EraseAt(img);
+        if (_moving)
+        {
+            if (_selected is not null)
+            {
+                _selected.Offset(img.X - _lastImg.X, img.Y - _lastImg.Y);
+                _moved = true;
+            }
+        }
+        else if (_erasing) EraseAt(img);
         else
         {
             switch (_drawing)
@@ -287,6 +419,14 @@ public sealed class LiveDrawCanvas : Panel
     void Finish()
     {
         _snapTimer.Stop();
+        if (_moving)
+        {
+            _moving = false;
+            if (_moved && _snapshot is not null) Document.PushUndo(_snapshot);
+            _snapshot = null;
+            Changed();
+            return;
+        }
         if (_erasing)
         {
             _erasing = false;
@@ -304,6 +444,7 @@ public sealed class LiveDrawCanvas : Panel
             if (m.Tail is Point t && Annotation.Distance(t, m.Center) < m.Radius * 1.3) m.Tail = null;
             if (_snapshot is not null) Document.PushUndo(_snapshot);
             _snapshot = null;
+            SetSelected(m);
             Changed();
             BeginCommentInput(m);
             return;
@@ -373,16 +514,19 @@ public sealed class LiveDrawCanvas : Panel
         if (Hit(img, 8) is not { } hit) return;
         Document.Items.Remove(hit);
         if (hit is MarkerAnnotation) Document.RelabelMarkers();
+        if (ReferenceEquals(hit, _selected)) SetSelected(null);
         _erasedAny = true;
         Redraw();
     }
 
     void Remove(Annotation a)
     {
+        CommitTextInput();
         var snap = Document.Snapshot();
         Document.Items.Remove(a);
         if (a is MarkerAnnotation) Document.RelabelMarkers();
         Document.PushUndo(snap);
+        if (ReferenceEquals(a, _selected)) SetSelected(null);
         Changed();
     }
 
@@ -450,6 +594,7 @@ public sealed class LiveDrawCanvas : Panel
         });
         Children.Add(tb);
         _input = tb;
+        SelectionChanged?.Invoke(); // панель стиля — для того, что сейчас печатается
         // Без активного окна клавиатура ушла бы программе под областью.
         if (TopLevel.GetTopLevel(this) is Window window) PlatformServices.WindowHelper.ForceForeground(window);
         Redraw();
@@ -499,12 +644,17 @@ public sealed class LiveDrawCanvas : Panel
                     ta.Text = text;
                     Document.Items.Add(ta);
                     Document.PushUndo(snap);
+                    _selected = ta; // готовый текст выделен — рядом его настройки
                 }
             }
             else if (text != ta.Text)
             {
                 var snap = Document.Snapshot();
-                if (text.Length == 0) Document.Items.Remove(ta);
+                if (text.Length == 0)
+                {
+                    Document.Items.Remove(ta);
+                    if (ReferenceEquals(ta, _selected)) _selected = null;
+                }
                 else ta.Text = text;
                 Document.PushUndo(snap);
             }
@@ -516,6 +666,7 @@ public sealed class LiveDrawCanvas : Panel
             if (text.Length > 0) Document.Comments[m.Id] = text;
             else Document.Comments.Remove(m.Id);
         }
+        SelectionChanged?.Invoke(); // цель панели стиля сменилась (текст → объект)
         Changed();
     }
 
@@ -527,11 +678,14 @@ public sealed class LiveDrawCanvas : Panel
         bool shift = e.KeyModifiers.HasFlag(KeyModifiers.Shift);
         if (ctrl && e.Key == Key.Z) { if (shift) Redo(); else Undo(); e.Handled = true; return; }
         if (ctrl && e.Key == Key.Y) { Redo(); e.Handled = true; return; }
+        if (ctrl && e.Key is Key.D or Key.J) { DuplicateSelected(); e.Handled = true; return; }
+        if (e.Key is Key.Delete or Key.Back && _selected is not null) { DeleteSelected(); e.Handled = true; return; }
         if (ctrl || e.KeyModifiers.HasFlag(KeyModifiers.Alt)) return;
 
         ToolKind? tool = e.Key switch
         {
             Key.P => ToolKind.Pen,
+            Key.S => ToolKind.Select,
             Key.H => ToolKind.Highlighter,
             Key.A => ToolKind.Arrow,
             Key.L => ToolKind.Line,
@@ -544,7 +698,14 @@ public sealed class LiveDrawCanvas : Panel
             _ => null,
         };
         if (tool is { } t) { ToolRequested?.Invoke(t); e.Handled = true; }
-        else if (e.Key is Key.Escape or Key.V) { CursorRequested?.Invoke(); e.Handled = true; }
+        else if (e.Key == Key.V) { ToolRequested?.Invoke(ToolKind.Select); e.Handled = true; }
+        else if (e.Key == Key.Escape)
+        {
+            // Esc: сначала снять выделение, потом — вернуться к мыши.
+            if (_selected is not null) SetSelected(null);
+            else CursorRequested?.Invoke();
+            e.Handled = true;
+        }
     }
 }
 

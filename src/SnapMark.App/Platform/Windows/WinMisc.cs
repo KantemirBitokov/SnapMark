@@ -106,7 +106,7 @@ internal sealed class WinPrintScreenConflict : IPrintScreenConflict
 [SupportedOSPlatform("windows")]
 internal sealed class WinWindowHelper : IWindowHelper
 {
-    static IntPtr Hwnd(Window w) => w.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
+    static IntPtr Hwnd(TopLevel w) => w.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
 
     /// <summary>
     /// Windows не даёт фоновому процессу просто так забрать фокус. Временно «пристёгиваемся»
@@ -135,7 +135,7 @@ internal sealed class WinWindowHelper : IWindowHelper
         window.Activate();
     }
 
-    public void ExcludeFromCapture(Window window)
+    public void ExcludeFromCapture(TopLevel window)
     {
         var hwnd = Hwnd(window);
         if (hwnd != IntPtr.Zero) SetWindowDisplayAffinity(hwnd, WDA_EXCLUDEFROMCAPTURE); // Win10 2004+

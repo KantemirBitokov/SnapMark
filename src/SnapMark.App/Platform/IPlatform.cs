@@ -74,7 +74,7 @@ public interface IWindowHelper
 {
     void ForceForeground(Window window);
     /// <summary>Окно не попадает в скриншоты и запись видео.</summary>
-    void ExcludeFromCapture(Window window);
+    void ExcludeFromCapture(TopLevel window);
     PixelPoint? GetCursorPosition();
     /// <summary>Точные положение и размер окна в физических пикселях (в обход минимального размера).</summary>
     void SetPixelBounds(Window window, PixelRect bounds);
