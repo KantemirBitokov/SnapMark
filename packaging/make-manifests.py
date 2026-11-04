@@ -63,6 +63,13 @@ def main() -> None:
     # ── winget ──
     w = ROOT / "winget" / "manifests" / "s" / "SadlyBear" / "SnapMark" / ver
     w.mkdir(parents=True, exist_ok=True)
+    # Храним только самую первую версию (она в заявке в winget-pkgs) и текущую — остальное лишнее.
+    versions = sorted((d for d in w.parent.iterdir() if d.is_dir()), key=lambda d: [int(x) for x in d.name.split(".") if x.isdigit()])
+    for old in versions[1:]:
+        if old.name != ver:
+            for f in old.iterdir():
+                f.unlink()
+            old.rmdir()
     head = "# yaml-language-server: $schema=https://aka.ms/winget-manifest.{kind}.1.6.0.schema.json\n"
     (w / "SadlyBear.SnapMark.yaml").write_text(head.format(kind="version") + f"""
 PackageIdentifier: SadlyBear.SnapMark

@@ -37,7 +37,8 @@ Read each subreddit's rules first (some allow self-promotion only on certain day
 > - Copy → the comments become text: `Screenshot_1_A — Button doesn't respond`
 > - Collect a **series** of screenshots and copy them all with one Ctrl+C — images *and* text paste together into Slack/Telegram/Jira/Word
 > - Pen, arrows, shapes (hold to snap), text with frames/shadows, filled boxes to hide private data
-> - Screen recording with mic + system audio, MP4/MKV/WebM/GIF
+> - Screen recording with mic + system audio, MP4/MKV/WebM/GIF, quality presets and exact sizes (1080p, square, vertical)
+> - Draw live while recording — arrows, markers with comments, text — only the drawings get into the video, not the app's panels
 > - Windows, macOS, Linux · 6 languages · MIT
 >
 > GitHub: https://github.com/KantemirBitokov/SnapMark
@@ -61,7 +62,7 @@ Read each subreddit's rules first (some allow self-promotion only on certain day
 **Topics:** Productivity, Developer Tools, Design Tools, Open Source
 
 **Description:**
-> SnapMark is a free, open-source screenshot tool for Windows, macOS and Linux. Put lettered markers on a screenshot, add a comment to each, and copy — the comments turn into text like "Screenshot_1_A — Button doesn't respond". Collect a whole series and paste images and text together into any chat with one Ctrl+V. Plus pen and shapes that snap, styled text, and screen recording with mic and system audio.
+> SnapMark is a free, open-source screenshot tool for Windows, macOS and Linux. Put lettered markers on a screenshot, add a comment to each, and copy — the comments turn into text like "Screenshot_1_A — Button doesn't respond". Collect a whole series and paste images and text together into any chat with one Ctrl+V. Plus pen and shapes that snap, styled text, and screen recording with mic and system audio — where you can draw arrows, markers and text live, right in the video.
 
 **Maker comment:**
 > Hi Product Hunt 👋 I built SnapMark for bug reports and design feedback, where "a screenshot + an arrow" is never enough. Would love to hear what you'd use it for and what's missing!
@@ -88,4 +89,4 @@ Add as a new application, then mark it as an alternative to: **LightShot, ShareX
 > Screenshot tool with A-B-C markers and comments, series copied with one Ctrl+C, and screen recording with mic and system audio. Free & open source.
 
 **Long:**
-> SnapMark captures a region or the full screen and lets you mark it up with lettered markers (A, B, C or 1, 2, 3), each with a comment. When you copy, comments are turned into text such as "Screenshot_1_A — Button doesn't respond", so a screenshot and its explanation always travel together. Several screenshots can be collected into a series and copied at once. Annotation tools include a pressure-sensitive pen, pencil, highlighter, eraser, lines, arrows, rectangles and ellipses that snap from a rough stroke, and text with any font, frame and shadow. SnapMark also records the screen to MP4, MKV, WebM or GIF with microphone and computer audio. Available in English, Russian, German, French, Italian and Spanish.
+> SnapMark captures a region or the full screen and lets you mark it up with lettered markers (A, B, C or 1, 2, 3), each with a comment. When you copy, comments are turned into text such as "Screenshot_1_A — Button doesn't respond", so a screenshot and its explanation always travel together. Several screenshots can be collected into a series and copied at once. Annotation tools include a pressure-sensitive pen, pencil, highlighter, eraser, lines, arrows, rectangles and ellipses that snap from a rough stroke, and text with any font, frame and shadow. SnapMark also records the screen to MP4, MKV, WebM or GIF with microphone and computer audio, and lets you draw live while recording — every editor tool and style, with only the drawings (not the app's panels) appearing in the video. Available in English, Russian, German, French, Italian and Spanish.

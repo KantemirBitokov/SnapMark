@@ -51,8 +51,10 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1
 Сборка:
 - **macOS** — `./build-macos.sh` на Mac → `release/SnapMark-<версия>-macOS-arm64.dmg` и `-x64.dmg`.
 - **Linux** — `./build-linux.sh` на Linux или в WSL2 → AppImage, .deb, .tar.gz.
-- **Всё сразу без своих Mac/Linux** — GitHub Actions (`.github/workflows/release.yml`): Actions → Build SnapMark → Run workflow,
-  или `git tag v1.0.0 && git push --tags` — файлы появятся в GitHub Release.
+- **Всё сразу без своих Mac/Linux** — GitHub Actions (`.github/workflows/release.yml`): Actions → Build SnapMark → Run workflow.
+  Версия берётся из `<Version>` в `src/SnapMark.App/SnapMark.App.csproj`, тег `vX.Y.Z` и релиз создаются сами,
+  описание релиза — из раздела `## X.Y.Z` в `CHANGELOG.md` (скрипт `packaging/release-notes.sh`).
+- **Проверка без релиза** — workflow **CI** компилирует проект на каждый push в любую ветку.
 
 ffmpeg на Mac/Linux: `brew install ffmpeg` / `sudo apt install ffmpeg`.
 

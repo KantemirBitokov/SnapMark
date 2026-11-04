@@ -1,8 +1,8 @@
 # Сборка SnapMark для Windows, macOS и Linux на серверах GitHub (Mac и Linux у себя не нужны).
 #
-# Запуск: вкладка Actions → «Build SnapMark» → Run workflow.
-# Или автоматически при теге версии:  git tag v1.0.0 && git push --tags
-#   — тогда файлы сразу прикрепляются к GitHub Release.
+# Запуск: вкладка Actions → «Build SnapMark» → Run workflow. Версия — из <Version> в SnapMark.App.csproj,
+# тег vX.Y.Z и GitHub Release создаются сами, описание — из CHANGELOG.md.
+# (Push тега v* тоже запускает сборку.)
 #
 # Подпись для macOS (необязательно): добавь секреты репозитория
 #   MACOS_CERT_P12 (base64 от .p12 «Developer ID Application»), MACOS_CERT_PASSWORD,
