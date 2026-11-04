@@ -193,6 +193,9 @@ public static class RecordingController
             else chrome.Close();
         }
         w.Board.DrawSelectionInline = _chrome is null;
+        // Курсор в видео выключен — системный курсор над холстом прячем, свой рисует слой интерфейса.
+        // Без слоя (Linux) оставляем системный: там ffmpeg и так не рисует курсор при -draw_mouse 0.
+        w.Board.HideSystemCursor = _chrome is not null && !AppServices.Settings.VideoShowCursor;
         RaiseHud();
         return true;
     }

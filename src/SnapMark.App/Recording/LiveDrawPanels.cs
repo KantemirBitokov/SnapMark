@@ -27,12 +27,64 @@ public sealed class LiveChromeWindow : Window
             IsHitTestVisible = false;
         }
 
+        static readonly IPen Dark = new Pen(new SolidColorBrush(Color.FromRgb(20, 20, 22)), 1.5, lineCap: PenLineCap.Square);
+        static readonly IPen Light = new Pen(Brushes.White, 3.5, lineCap: PenLineCap.Square);
+
         public override void Render(DrawingContext ctx)
         {
-            if (_board.TargetBounds() is not Rect r) return;
-            double s = _board.PixelScale;
-            var v = new Rect(r.X / s, r.Y / s, r.Width / s, r.Height / s).Inflate(5);
-            ctx.DrawRectangle(null, new Pen(new SolidColorBrush(Color.Parse("#0A84FF")), 1.25, new DashStyle(new double[] { 3, 2.5 }, 0)), v, 5, 5);
+            if (_board.TargetBounds() is Rect r)
+            {
+                double s = _board.PixelScale;
+                var v = new Rect(r.X / s, r.Y / s, r.Width / s, r.Height / s).Inflate(5);
+                ctx.DrawRectangle(null, new Pen(new SolidColorBrush(Color.Parse("#0A84FF")), 1.25, new DashStyle(new double[] { 3, 2.5 }, 0)), v, 5, 5);
+            }
+            if (_board.HideSystemCursor && _board.IsDrawing && _board.PointerView is Point p) DrawCursor(ctx, p, _board.Tool);
+        }
+
+        /// <summary>«Свой» курсор: виден тебе, но не попадает в видео (слой исключён из захвата).</summary>
+        static void DrawCursor(DrawingContext ctx, Point p, ToolKind tool)
+        {
+            double x = Math.Round(p.X) + 0.5, y = Math.Round(p.Y) + 0.5;
+            void Line(Point a, Point b)
+            {
+                ctx.DrawLine(Light, a, b);
+                ctx.DrawLine(Dark, a, b);
+            }
+            switch (tool)
+            {
+                case ToolKind.Text:
+                    Line(new Point(x, y - 9), new Point(x, y + 9));
+                    Line(new Point(x - 4, y - 9), new Point(x + 4, y - 9));
+                    Line(new Point(x - 4, y + 9), new Point(x + 4, y + 9));
+                    break;
+                case ToolKind.Select:
+                {
+                    var geo = new StreamGeometry();
+                    using (var g = geo.Open())
+                    {
+                        g.BeginFigure(new Point(x, y), true);
+                        g.LineTo(new Point(x, y + 16));
+                        g.LineTo(new Point(x + 4.2, y + 12.2));
+                        g.LineTo(new Point(x + 7, y + 18));
+                        g.LineTo(new Point(x + 9.4, y + 17));
+                        g.LineTo(new Point(x + 6.8, y + 11.4));
+                        g.LineTo(new Point(x + 12, y + 11.4));
+                        g.EndFigure(true);
+                    }
+                    ctx.DrawGeometry(Brushes.White, new Pen(new SolidColorBrush(Color.FromRgb(20, 20, 22)), 1.2, lineJoin: PenLineJoin.Round), geo);
+                    break;
+                }
+                case ToolKind.Eraser:
+                    ctx.DrawEllipse(null, Light, new Point(x, y), 8, 8);
+                    ctx.DrawEllipse(null, Dark, new Point(x, y), 8, 8);
+                    break;
+                default:
+                    Line(new Point(x - 10, y), new Point(x - 3, y));
+                    Line(new Point(x + 3, y), new Point(x + 10, y));
+                    Line(new Point(x, y - 10), new Point(x, y - 3));
+                    Line(new Point(x, y + 3), new Point(x, y + 10));
+                    break;
+            }
         }
     }
 
@@ -60,6 +112,7 @@ public sealed class LiveChromeWindow : Window
         _layer = new FrameLayer(board);
         Content = _layer;
         board.Invalidated += () => _layer.InvalidateVisual();
+        board.PointerTracked += () => _layer.InvalidateVisual();
 
         Opened += (_, _) =>
         {

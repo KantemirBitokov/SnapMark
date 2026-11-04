@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.4
+- Mouse cursor off really means no cursor in the video: while drawing, the crosshair, text cursor and other drawing cursors no longer get into the recording either. You still see them — SnapMark draws its own cursor on a layer that's hidden from the recording (Windows 10 2004+, macOS).
+
 ## 1.2.3
 - Mouse cursor in recordings: show or hide it — in the recording options (Mouse cursor) and in Settings → Video. Works on Windows, macOS (also hides click highlights) and Linux.
 - Drawing on video: fixed a freeze that could happen the first time you started typing text. The drawing layer now takes the keyboard with a normal activation instead of attaching to another app's input thread.

@@ -85,7 +85,7 @@ public sealed class LiveDrawCanvas : Panel
             }
             // Прозрачный (не null) фон нужен, чтобы холст ловил нажатия по пустым местам.
             Background = value ? Brushes.Transparent : null;
-            Cursor = value ? new Cursor(Tool == ToolKind.Text ? StandardCursorType.Ibeam : StandardCursorType.Cross) : null;
+            UpdateCursor(value);
         }
     }
 
@@ -104,6 +104,55 @@ public sealed class LiveDrawCanvas : Panel
 
     /// <summary>Холст перерисован — слою с рамкой выделения тоже пора.</summary>
     public event Action? Invalidated;
+
+    /// <summary>
+    /// Курсор не должен попасть в видео. Системный курсор над холстом Windows иногда рисует программно — тогда
+    /// он оказывается в записи даже с выключенным курсором. Поэтому прячем его, а «свой» курсор рисует слой
+    /// интерфейса, исключённый из захвата (см. LiveChromeWindow).
+    /// </summary>
+    public bool HideSystemCursor
+    {
+        get => _hideSystemCursor;
+        set
+        {
+            _hideSystemCursor = value;
+            UpdateCursor(IsDrawing);
+        }
+    }
+    bool _hideSystemCursor;
+
+    /// <summary>Где сейчас мышь над холстом (логические точки окна); null — мышь вне холста.</summary>
+    public Point? PointerView { get; private set; }
+
+    /// <summary>Мышь сдвинулась — слою с «своим» курсором пора перерисоваться.</summary>
+    public event Action? PointerTracked;
+
+    void UpdateCursor(bool drawing)
+    {
+        if (!drawing) { Cursor = null; return; }
+        Cursor = new Cursor(_hideSystemCursor ? StandardCursorType.None
+            : Tool == ToolKind.Text ? StandardCursorType.Ibeam
+            : Tool == ToolKind.Select ? StandardCursorType.Arrow
+            : StandardCursorType.Cross);
+    }
+
+    protected override void OnPointerEntered(PointerEventArgs e)
+    {
+        base.OnPointerEntered(e);
+        TrackPointer(e.GetPosition(this));
+    }
+
+    protected override void OnPointerExited(PointerEventArgs e)
+    {
+        base.OnPointerExited(e);
+        TrackPointer(null);
+    }
+
+    void TrackPointer(Point? p)
+    {
+        PointerView = IsDrawing ? p : null;
+        if (_hideSystemCursor) PointerTracked?.Invoke();
+    }
     public event Action? SelectionChanged;
     /// <summary>Холст забрал фокус клавиатуры (для набора текста) и оказался поверх остальных окон.</summary>
     public event Action? ForegroundTaken;
@@ -389,6 +438,7 @@ public sealed class LiveDrawCanvas : Panel
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
+        TrackPointer(e.GetPosition(this));
         if (_drawing is null && !_erasing && !_moving) return;
         var pt = e.GetCurrentPoint(this);
         var img = ToImage(pt.Position);
