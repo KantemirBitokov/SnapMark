@@ -242,7 +242,7 @@ public partial class OverlayWindow : Window
         LayoutObjectBar();
     }
 
-    void PlacePopover(Border panel, Control anchor, double tx, double ty, Size tb, bool below, double W, double H)
+    void PlacePopover(Control panel, Control anchor, double tx, double ty, Size tb, bool below, double W, double H)
     {
         if (!panel.IsVisible) return;
         var size = MeasureOf(panel);
