@@ -25,6 +25,24 @@ internal sealed class X11WindowHelper : NoWindowHelper
     [DllImport("libX11.so.6")] static extern IntPtr XOpenDisplay(IntPtr name);
     [DllImport("libX11.so.6")] static extern int XCloseDisplay(IntPtr display);
     [DllImport("libX11.so.6")] static extern int XFlush(IntPtr display);
+    [DllImport("libX11.so.6")] static extern int XRaiseWindow(IntPtr display, IntPtr window);
+
+    public override void BringToFront(Window window)
+    {
+        try
+        {
+            var handle = window.TryGetPlatformHandle();
+            var display = handle is null ? IntPtr.Zero : XOpenDisplay(IntPtr.Zero);
+            if (display == IntPtr.Zero) { base.BringToFront(window); return; }
+            XRaiseWindow(display, handle!.Handle);
+            XFlush(display);
+            XCloseDisplay(display);
+        }
+        catch
+        {
+            base.BringToFront(window);
+        }
+    }
 
     public override bool SetClickThrough(Window window, bool enabled)
     {

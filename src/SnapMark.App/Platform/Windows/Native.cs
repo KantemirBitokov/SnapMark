@@ -168,6 +168,7 @@ internal static class Native
     // ── Положение окна ────────────────────────────────────────────────
     public static readonly IntPtr HWND_TOPMOST = new(-1);
     public const uint SWP_NOACTIVATE = 0x0010;
+    public const uint SWP_NOSIZE = 0x0001, SWP_NOMOVE = 0x0002;
 
     [DllImport("user32.dll", SetLastError = true)]
     public static extern bool SetWindowPos(IntPtr hWnd, IntPtr insertAfter, int x, int y, int cx, int cy, uint flags);

@@ -63,6 +63,7 @@ public static class RecordingController
 
         if (!EnsureDrawWindow()) return;
         var w = _draw!;
+        w.Board.CommitTextInput(); // сменили инструмент посреди набора — текст готов
         if (!w.IsVisible)
         {
             w.Show();
@@ -96,6 +97,8 @@ public static class RecordingController
         w.Board.ContentChanged += () => _hud?.SyncTools();
         w.Board.CursorRequested += () => SetDrawTool(null);
         w.Board.ToolRequested += t => SetDrawTool(t);
+        // Холст получил фокус (клик, набор текста) — система подняла его наверх; панель снова поверх.
+        w.Activated += (_, _) => Dispatcher.UIThread.Post(RaiseHud);
         w.Show();
         if (!w.IsTransparent)
         {
@@ -112,9 +115,7 @@ public static class RecordingController
     /// <summary>Панель записи — поверх холста (важно, когда записывается весь экран).</summary>
     static void RaiseHud()
     {
-        if (_hud is not { } hud) return;
-        hud.Hide();
-        hud.Show();
+        if (_hud is { } hud) PlatformServices.WindowHelper.BringToFront(hud);
     }
 
     static void CloseDrawWindow()

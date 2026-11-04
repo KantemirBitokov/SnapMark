@@ -161,6 +161,12 @@ internal sealed class WinWindowHelper : IWindowHelper
         return true;
     }
 
+    public void BringToFront(Window window)
+    {
+        var hwnd = Hwnd(window);
+        if (hwnd != IntPtr.Zero) SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    }
+
     public void SetPixelBounds(Window window, PixelRect b)
     {
         var hwnd = Hwnd(window);

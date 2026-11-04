@@ -145,6 +145,12 @@ internal sealed class MacWindowHelper : IWindowHelper
         return true;
     }
 
+    public void BringToFront(Window window)
+    {
+        var w = MacNative.NSWindowOf(window);
+        if (w != IntPtr.Zero && MacNative.Responds(w, "orderFrontRegardless")) MacNative.Send(w, MacNative.Sel("orderFrontRegardless"));
+    }
+
     public PixelPoint? GetCursorPosition() => null;
 
     public void SetPixelBounds(Window window, PixelRect bounds)

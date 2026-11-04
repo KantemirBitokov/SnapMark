@@ -161,6 +161,11 @@ internal class NoWindowHelper : IWindowHelper
     public PixelPoint? GetCursorPosition() => null;
     public void SetPixelBounds(Window window, PixelRect bounds) => window.Position = bounds.Position;
     public virtual bool SetClickThrough(Window window, bool enabled) => false;
+    public virtual void BringToFront(Window window)
+    {
+        window.Hide();
+        window.Show();
+    }
 }
 
 /// <summary>TODO(mac): CGEventTap для Cmd+V. TODO(linux): зависит от окружения, пока без умной вставки.</summary>

@@ -85,6 +85,12 @@ public interface IWindowHelper
     /// во время записи в режиме «курсор»). false — окно снова принимает мышь. Возвращает false, если не умеет.
     /// </summary>
     bool SetClickThrough(Window window, bool enabled) => false;
+    /// <summary>Поднять окно над остальными окнами «поверх всех», не забирая фокус.</summary>
+    void BringToFront(Window window)
+    {
+        window.Hide();
+        window.Show();
+    }
 }
 
 /// <summary>
