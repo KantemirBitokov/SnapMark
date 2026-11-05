@@ -164,15 +164,15 @@ internal sealed class GlassDrawOperation : ICustomDrawOperation
 
     public void Render(ImmediateDrawingContext context)
     {
-        var effect = GlassOptics.Effect;
         var feature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-        if (effect is null || feature is null) return;
+        if (feature is null) return;
         using var lease = feature.Lease();
         var canvas = lease.SkCanvas;
 
         float w = (float)_bounds.Width, h = (float)_bounds.Height;
         float minSide = Math.Min(w, h);
         double frost = Glass.EffectiveFrost;
+        byte alpha = (byte)Math.Clamp(lease.CurrentOpacity * 255, 0, 255);
 
         // Картинка фона → координаты панели (точки): (img − origin) / (пикселей на точку).
         var img = _backdrop.Frosted;
@@ -180,6 +180,17 @@ internal sealed class GlassDrawOperation : ICustomDrawOperation
         float ox = (float)(_originPx.X * _backdrop.FrostScale), oy = (float)(_originPx.Y * _backdrop.FrostScale);
         var local = SKMatrix.CreateScaleTranslation(1 / k, 1 / k, -ox / k, -oy / k);
         using var imageShader = img.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, local);
+
+        // Пользовательские шейдеры в Skia 2.88 падают при программной отрисовке (без видеокарты) — проверено
+        // тестом tools/ShaderTest. Там рисуем только матовый фон, без преломления.
+        var effect = lease.GrContext is not null ? GlassOptics.Effect : null;
+        if (effect is null)
+        {
+            float rad = (float)Math.Min(_radius, minSide / 2);
+            using var plain = new SKPaint { Shader = imageShader, IsAntialias = true, FilterQuality = SKFilterQuality.Medium, Color = SKColors.White.WithAlpha(alpha) };
+            canvas.DrawRoundRect(new SKRect(0, 0, w, h), rad, rad, plain);
+            return;
+        }
 
         var uniforms = new SKRuntimeEffectUniforms(effect)
         {
@@ -198,7 +209,7 @@ internal sealed class GlassDrawOperation : ICustomDrawOperation
             Shader = shader,
             IsAntialias = true,
             FilterQuality = SKFilterQuality.Medium,
-            Color = SKColors.White.WithAlpha((byte)Math.Clamp(lease.CurrentOpacity * 255, 0, 255)),
+            Color = SKColors.White.WithAlpha(alpha),
         };
         canvas.DrawRect(new SKRect(0, 0, w, h), paint);
     }

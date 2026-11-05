@@ -157,7 +157,7 @@ public static class Glass
         {
             try
             {
-                if (GlassOptics.Effect is not null && GlassOptics.ToSkImage(fullWindowImage) is { } sharp)
+                if (GlassOptics.ToSkImage(fullWindowImage) is { } sharp)
                     backdrop.SetOptics(new SkiaBackdrop(sharp));
             }
             catch { }
@@ -188,7 +188,7 @@ public static class Glass
                 var size = PixelSize.FromSize(window.ClientSize, scaling);
                 using var shot = PlatformServices.ScreenCapture.Capture(new PixelRect(window.Position, size));
                 if (shot is null) return;
-                if (GlassOptics.Effect is not null && GlassOptics.ToSkImage(shot) is { } sharp)
+                if (GlassOptics.ToSkImage(shot) is { } sharp)
                     backdrop.SetOptics(new SkiaBackdrop(sharp), notify: false);
                 backdrop.Set(Blur(shot, 8));
             }
@@ -616,7 +616,7 @@ public class GlassPanel : ThemeVariantScope
 
         // 2. Фон под панелью: шейдер Liquid Glass (матовость + линзирование + блики) или простое размытие.
         bool hasBackdrop = false;
-        if (_backdrop?.Optics is { } optics && GlassOptics.Effect is not null && TopLevel.GetTopLevel(this) is { } topO
+        if (_backdrop?.Optics is { } optics && TopLevel.GetTopLevel(this) is { } topO
             && this.TranslatePoint(default, topO) is Point o2 && topO.ClientSize.Width > 0)
         {
             double pxPerDip = optics.Sharp.Width / topO.ClientSize.Width;

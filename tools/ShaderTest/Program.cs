@@ -2,36 +2,7 @@ using SkiaSharp;
 using SnapMark.UI;
 
 // Рисует стеклянные панели поверх реального скриншота тем же шейдером, что и SnapMark.
-// Режим «probe N»: отдельные мини-шейдеры, чтобы найти, что роняет программный Skia (каждый — в своём процессе).
-if (args.Length > 0 && args[0] == "probe")
-{
-    string[] probes =
-    {
-        "uniform shader backdrop; half4 main(float2 p) { return sample(backdrop, p); }",
-        "uniform float2 size; half4 main(float2 p) { return half4(p.x / size.x, p.y / size.y, 0.5, 1.0); }",
-        "uniform float2 size; half4 main(float2 p) { float2 q = abs(p - size * 0.5); float d = length(max(q, 0.0)); return half4(d / 500.0, 0.0, 0.0, 1.0); }",
-        "uniform float2 size; half4 main(float2 p) { if (p.x > size.x * 0.5) { return half4(0.0); } return half4(1.0, 0.0, 0.0, 1.0); }",
-        "half4 main(float2 p) { return half4(fract(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453)); }",
-        "uniform float2 size; half4 main(float2 p) { float a = pow(max(p.x / size.x, 0.0), 3.0); return half4(a, a, a, 1.0); }",
-        "uniform shader backdrop; half4 main(float2 p) { half4 c = sample(backdrop, p + float2(5.0, 0.0)); half r = sample(backdrop, p).r; return half4(r, c.g, c.b, 1.0); }",
-    };
-    int n = int.Parse(args[1]);
-    var fx = SKRuntimeEffect.Create(probes[n], out var err);
-    Console.WriteLine($"probe {n}: compile {(fx is null ? "FAILED " + err : "OK")}");
-    if (fx is null) return;
-    using var s0 = SKSurface.Create(new SKImageInfo(200, 100));
-    using var bmp = SKImage.FromEncodedData("../../docs/media/markers.png");
-    var uu = new SKRuntimeEffectUniforms(fx);
-    if (uu.Names.Contains("size")) uu["size"] = new[] { 200f, 100f };
-    var cc = new SKRuntimeEffectChildren(fx);
-    if (cc.Names.Contains("backdrop")) cc["backdrop"] = bmp.ToShader();
-    using var sh0 = fx.ToShader(false, uu, cc);
-    using var p0 = new SKPaint { Shader = sh0 };
-    s0.Canvas.DrawRect(new SKRect(0, 0, 200, 100), p0);
-    s0.Canvas.Flush();
-    Console.WriteLine($"probe {n}: draw OK");
-    return;
-}
+
 var bgPath = args.Length > 0 ? args[0] : "../../docs/media/markers.png";
 var outPath = args.Length > 1 ? args[1] : "glass-test.png";
 using var bg = SKImage.FromEncodedData(bgPath) ?? throw new Exception("no background");
@@ -74,6 +45,17 @@ void Panel(SKRect r, float radius, double frost, double tintA, bool dark, string
     var local = SKMatrix.CreateScaleTranslation(1 / scale, 1 / scale, -r.Left, -r.Top);
     using var imageShader = img.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, local);
     Console.WriteLine("  uniforms"); Console.Out.Flush();
+    // Как в программе при отрисовке без видеокарты: шейдер не используем (Skia 2.88 на CPU с ним падает).
+    var useShader = Environment.GetEnvironmentVariable("GLASS_TEST_SHADER") == "1";
+    if (!useShader)
+    {
+        var local0 = SKMatrix.CreateScaleTranslation(1 / scale, 1 / scale, -r.Left, -r.Top);
+        using var plainShader = img.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, local0);
+        using var plain = new SKPaint { Shader = plainShader, IsAntialias = true, FilterQuality = SKFilterQuality.Medium };
+        c.DrawRoundRect(new SKRect(0, 0, r.Width, r.Height), radius, radius, plain);
+    }
+    else
+    {
     var u = new SKRuntimeEffectUniforms(effect!)
     {
         ["size"] = new[] { r.Width, r.Height },
@@ -89,6 +71,7 @@ void Panel(SKRect r, float radius, double frost, double tintA, bool dark, string
     Console.WriteLine("  draw"); Console.Out.Flush();
     using (var p = new SKPaint { Shader = shader, IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
         c.DrawRect(new SKRect(0, 0, r.Width, r.Height), p);
+    }
     Console.WriteLine("  overlay"); Console.Out.Flush();
     var rr = new SKRoundRect(new SKRect(0, 0, r.Width, r.Height), radius);
     c.Save();
