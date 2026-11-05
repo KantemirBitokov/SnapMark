@@ -1,0 +1,33 @@
+# Рендер стеклянных панелей SnapMark без экрана (Avalonia Headless) — картинки кладутся в ветку ci-preview.
+name: Glass preview
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ['src/SnapMark.App/UI/Glass*.cs', 'src/SnapMark.App/Styles/**', 'tools/GlassPreview/**', '.github/workflows/glass-preview.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: Render
+        shell: bash
+        working-directory: tools/GlassPreview
+        run: dotnet run -c Release -- /tmp/preview ../../docs/media/markers.png 2>&1 | tee /tmp/preview-log.txt; ls -la /tmp/preview || true
+      - name: Publish to ci-preview branch
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p /tmp/preview && cp /tmp/preview-log.txt /tmp/preview/log.txt
+          cd /tmp/preview
+          git init -q -b ci-preview
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Glass preview ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-preview
