@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0 — real Liquid Glass optics
+- **Frost from clear to fully frosted.** New slider in Settings → General → Glass frost: at 0 % the background under the glass stays sharp, at 100 % it's fully frosted with a subtle grain, like real frosted glass. (System "Reduce transparency" makes glass fully frosted, as in iOS.)
+- **Lensing at the edges.** As Apple describes it, Liquid Glass bends light rather than just blurring it: near the edges of every panel and button bar the content behind is pulled in from beyond the border and curves around the glass, with a hint of dispersion right at the rim. Larger panels bend light more, small ones more gently.
+- **Specular highlights** that follow the shape: the edges facing the light (top-left) glow, the opposite edge gets a faint reflection.
+- **Adaptive shadow:** denser over text and busy content, lighter over plain bright backgrounds.
+- Lensing needs GPU rendering (the default on Windows and macOS). With software rendering SnapMark keeps the frost and simply skips the bending, so it can never crash.
+
 ## 1.4.1
 - **Morphing selection lens.** In the editor toolbar and on the recording bar the glass lens no longer just jumps: when you pick another tool it glides over to it with a light spring and stretches along the way like a drop of liquid glass, as in iOS / macOS 26. With "Reduce motion" (macOS) or Windows animations turned off it moves instantly.
 

@@ -37,12 +37,12 @@ half4 shade(float2 p) {
 
     // 0 — глубоко внутри, 1 — у самой кромки.
     float t = clamp(1.0 + d / edge, 0.0, 1.0);
-    float bend = t * t * strength;
+    float bend = t * t * t * strength; // плавный изгиб: почти ноль в середине, сильнее к кромке
     // Линзирование: у края видно то, что лежит ЗА границей, — фон изгибается вокруг стекла.
     float2 q = p + n * bend;
     half4 c = SAMPLE(q);
-    half r = SAMPLE(q + n * bend * 0.14).r;
-    half b = SAMPLE(q - n * bend * 0.14).b;
+    half r = SAMPLE(q + n * bend * 0.10).r;
+    half b = SAMPLE(q - n * bend * 0.10).b;
     c = half4(r, c.g, b, 1.0);
 
     // Блики от источника света сверху-слева (и слабый отражённый снизу-справа).

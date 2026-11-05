@@ -197,10 +197,10 @@ internal sealed class GlassDrawOperation : ICustomDrawOperation
             ["size"] = new[] { w, h },
             ["radius"] = (float)Math.Min(_radius, minSide / 2),
             // Apple: у крупных элементов линзирование сильнее, у мелких — деликатнее.
-            ["edge"] = Math.Clamp(minSide * 0.30f, 6f, 26f),
-            ["strength"] = Math.Clamp(minSide * 0.16f, 3f, 18f),
+            ["edge"] = Math.Clamp(minSide * 0.45f, 8f, 36f),
+            ["strength"] = Math.Clamp(minSide * 0.12f, 3f, 14f),
             ["grain"] = (float)(frost * 0.035),
-            ["spec"] = 0.22f,
+            ["spec"] = 0.14f,
         };
         var children = new SKRuntimeEffectChildren(effect) { ["backdrop"] = imageShader };
         using var shader = effect.ToShader(false, uniforms, children);
