@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.1
+- **Fixed: the glass was never frosted.** Since 1.3.0 the blurred background under the glass was silently not created (Avalonia can't resize the bitmap type SnapMark uses for screenshots), so panels were only tinted and the Frost and Transparency sliders seemed to do nothing. Backdrops are now built with Skia: frost, adaptive light/dark glass and the sliders work as intended.
+- Glass panels also pick up a background that appears after they're shown, and glass errors are written to the log instead of being swallowed.
+- Glass rendering is now checked in CI with a headless render of real SnapMark panels.
+
 ## 1.5.0 — real Liquid Glass optics
 - **Frost from clear to fully frosted.** New slider in Settings → General → Glass frost: at 0 % the background under the glass stays sharp, at 100 % it's fully frosted with a subtle grain, like real frosted glass. (System "Reduce transparency" makes glass fully frosted, as in iOS.)
 - **Lensing at the edges.** As Apple describes it, Liquid Glass bends light rather than just blurring it: near the edges of every panel and button bar the content behind is pulled in from beyond the border and curves around the glass, with a hint of dispersion right at the rim. Larger panels bend light more, small ones more gently.
