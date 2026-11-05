@@ -44,9 +44,11 @@ foreach (var (name, transparency, frost, variant) in new[]
 void Render(string path)
 {
     using var bg = new Bitmap(bgPath);
-    var window = new Window { Width = 1000, Height = 520, SystemDecorations = SystemDecorations.None };
+    // Окно = скриншот в масштабе 1:2, как оверлей редактора поверх «замороженного» экрана.
+    var window = new Window { Width = bg.PixelSize.Width / 2.0, Height = bg.PixelSize.Height / 2.0, SystemDecorations = SystemDecorations.None };
+    Glass.SetStaticBackdrop(window, bg);
     var root = new Grid();
-    root.Children.Add(new Image { Source = bg, Stretch = Stretch.UniformToFill, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top });
+    root.Children.Add(new Image { Source = bg, Stretch = Stretch.Fill });
     var canvas = new Canvas();
     root.Children.Add(canvas);
     window.Content = root;
@@ -93,9 +95,6 @@ void Render(string path)
 
     window.Show();
     Dispatcher.UIThread.RunJobs();
-    // Фон окна для стекла — сам скриншот, растянутый на окно (как в редакторе).
-    var frame0 = window.CaptureRenderedFrame();
-    Glass.SetStaticBackdrop(window, frame0!);
     for (int i = 0; i < 5; i++)
     {
         Dispatcher.UIThread.RunJobs();

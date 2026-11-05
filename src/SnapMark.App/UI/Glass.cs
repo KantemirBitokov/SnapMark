@@ -144,7 +144,15 @@ public static class Glass
     internal static GlassBackdrop? BackdropOf(TopLevel? topLevel) =>
         topLevel is not null && Backdrops.TryGetValue(topLevel, out var b) ? b : null;
 
-    static GlassBackdrop Ensure(TopLevel topLevel) => Backdrops.GetValue(topLevel, _ => new GlassBackdrop());
+    static GlassBackdrop Ensure(TopLevel topLevel)
+    {
+        if (Backdrops.TryGetValue(topLevel, out var existing)) return existing;
+        var created = Backdrops.GetValue(topLevel, _ => new GlassBackdrop());
+        BackdropCreated?.Invoke(topLevel); // панели, уже показанные в этом окне, подхватят фон
+        return created;
+    }
+
+    internal static event Action<TopLevel>? BackdropCreated;
 
     /// <summary>Ошибка стекла: в журнал (один раз на вид ошибки) и в Trace — чтобы не проглатывать молча.</summary>
     static readonly HashSet<string> Reported = new();
@@ -505,6 +513,7 @@ public class GlassPanel : ThemeVariantScope
         base.OnAttachedToVisualTree(e);
         _backdrop = Glass.BackdropOf(TopLevel.GetTopLevel(this));
         if (_backdrop is not null) _backdrop.Changed += OnBackdropChanged;
+        else Glass.BackdropCreated += OnBackdropCreated;
         Glass.TransparencyChanged += OnGlassChanged;
         ActualThemeVariantChanged += OnThemeChanged;
         LayoutUpdated += OnLayoutUpdated;
@@ -513,6 +522,15 @@ public class GlassPanel : ThemeVariantScope
     }
 
     void OnLayoutUpdated(object? sender, EventArgs e) => UpdateLens();
+
+    void OnBackdropCreated(TopLevel topLevel)
+    {
+        if (!ReferenceEquals(TopLevel.GetTopLevel(this), topLevel) || _backdrop is not null) return;
+        Glass.BackdropCreated -= OnBackdropCreated;
+        _backdrop = Glass.BackdropOf(topLevel);
+        if (_backdrop is not null) _backdrop.Changed += OnBackdropChanged;
+        OnBackdropChanged();
+    }
 
     void OnBackdropChanged()
     {
@@ -596,6 +614,7 @@ public class GlassPanel : ThemeVariantScope
         base.OnDetachedFromVisualTree(e);
         if (_backdrop is not null) _backdrop.Changed -= OnBackdropChanged;
         _backdrop = null;
+        Glass.BackdropCreated -= OnBackdropCreated;
         Glass.TransparencyChanged -= OnGlassChanged;
         ActualThemeVariantChanged -= OnThemeChanged;
         LayoutUpdated -= OnLayoutUpdated;
