@@ -59,6 +59,8 @@ public sealed class AppSettings
     public ThemeMode Theme { get; set; } = ThemeMode.System;
     /// <summary>Прозрачность стекла панелей, 0…100 %.</summary>
     public int GlassTransparency { get; set; } = 50;
+    /// <summary>Матовость стекла 0…100 %: 0 — прозрачное, 100 — полностью матовое.</summary>
+    public int GlassFrost { get; set; } = 45;
     /// <summary>Вид стекла: Regular — подстраивается под фон, Clear — прозрачное с затемнением.</summary>
     public string GlassVariant { get; set; } = "Regular";
     public bool LaunchAtStartup { get; set; }

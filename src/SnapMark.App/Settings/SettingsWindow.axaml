@@ -102,6 +102,16 @@
                     <TextBlock x:Name="GlassValue" Grid.Column="2" Classes="caption" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
                   </Grid>
                   <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto,Auto">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{l:Tr 'Матовость стекла'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'От прозрачного (фон резкий) до полностью матового'}"/>
+                    </StackPanel>
+                    <Slider x:Name="FrostSlider" Grid.Column="1" Width="170" Minimum="0" Maximum="100"
+                            SmallChange="5" LargeChange="10" TickFrequency="5" IsSnapToTickEnabled="True" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="FrostValue" Grid.Column="2" Classes="caption" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
                   <Grid Classes="row" ColumnDefinitions="*,Auto">
                     <TextBlock Text="{l:Tr 'Вид стекла'}"/>
                     <ComboBox x:Name="GlassVariantCombo" Grid.Column="1" Width="250">

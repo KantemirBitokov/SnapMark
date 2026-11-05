@@ -116,6 +116,8 @@ public partial class SettingsWindow : Window
         ThemeCombo.SelectedIndex = (int)S.Theme;
         GlassSlider.Value = S.GlassTransparency;
         GlassValue.Text = $"{S.GlassTransparency} %";
+        FrostSlider.Value = S.GlassFrost;
+        FrostValue.Text = $"{S.GlassFrost} %";
         GlassVariantCombo.SelectedIndex = UI.Glass.Variant == UI.GlassVariant.Clear ? 1 : 0;
         UpdateSystemGlassNote();
         AutostartToggle.IsChecked = S.LaunchAtStartup;
@@ -183,6 +185,16 @@ public partial class SettingsWindow : Window
             S.GlassTransparency = v;
             GlassValue.Text = $"{v} %";
             UI.Glass.Transparency = v / 100.0;
+            glassSave.Stop();
+            glassSave.Start();
+        };
+        FrostSlider.PropertyChanged += (_, e) =>
+        {
+            if (e.Property != RangeBase.ValueProperty || _loading) return;
+            int v = (int)Math.Round(FrostSlider.Value);
+            S.GlassFrost = v;
+            FrostValue.Text = $"{v} %";
+            UI.Glass.Frost = v / 100.0;
             glassSave.Stop();
             glassSave.Start();
         };

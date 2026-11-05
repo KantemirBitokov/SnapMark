@@ -106,6 +106,40 @@ public static class Glass
 
     public static event Action? TransparencyChanged;
 
+    static double _frost = 0.45;
+
+    /// <summary>Матовость стекла: 0 — прозрачное (фон резкий), 1 — полностью матовое (сильное размытие и зерно).</summary>
+    public static double Frost
+    {
+        get => _frost;
+        set
+        {
+            value = Math.Clamp(value, 0, 1);
+            if (Math.Abs(value - _frost) < 0.001) return;
+            _frost = value;
+            RebuildFrost();
+        }
+    }
+
+    /// <summary>С учётом системного «Уменьшить прозрачность» (тогда стекло становится матовым — как в iOS).</summary>
+    public static double EffectiveFrost => ReduceTransparency ? 1 : _frost;
+
+    static bool _frostPending;
+
+    /// <summary>Пересобрать матовые версии фонов у всех окон (после смены матовости), не чаще раза за кадр.</summary>
+    static void RebuildFrost()
+    {
+        if (_frostPending) return;
+        _frostPending = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _frostPending = false;
+            foreach (var pair in Backdrops)
+                if (pair.Value.Optics is { } optics && optics.Rebuild()) pair.Value.NotifyChanged();
+            TransparencyChanged?.Invoke();
+        }, DispatcherPriority.Background);
+    }
+
     internal static GlassBackdrop? BackdropOf(TopLevel? topLevel) =>
         topLevel is not null && Backdrops.TryGetValue(topLevel, out var b) ? b : null;
 
@@ -115,8 +149,19 @@ public static class Glass
     public static void SetStaticBackdrop(TopLevel topLevel, Bitmap? fullWindowImage)
     {
         if (fullWindowImage is null) return;
-        try { Ensure(topLevel).Set(Blur(fullWindowImage, 12)); }
+        var backdrop = Ensure(topLevel);
+        try { backdrop.Set(Blur(fullWindowImage, 12)); }
         catch { /* без размытия — просто тонированное стекло */ }
+        // Оптика (матовость и линзирование) — сразу после показа окна, чтобы не задерживать его появление.
+        Dispatcher.UIThread.Post(() =>
+        {
+            try
+            {
+                if (GlassOptics.Effect is not null && GlassOptics.ToSkImage(fullWindowImage) is { } sharp)
+                    backdrop.SetOptics(new SkiaBackdrop(sharp));
+            }
+            catch { }
+        }, DispatcherPriority.Background);
     }
 
     /// <summary>
@@ -142,7 +187,10 @@ public static class Glass
                 var scaling = window.RenderScaling > 0 ? window.RenderScaling : 1;
                 var size = PixelSize.FromSize(window.ClientSize, scaling);
                 using var shot = PlatformServices.ScreenCapture.Capture(new PixelRect(window.Position, size));
-                if (shot is not null) backdrop.Set(Blur(shot, 8));
+                if (shot is null) return;
+                if (GlassOptics.Effect is not null && GlassOptics.ToSkImage(shot) is { } sharp)
+                    backdrop.SetOptics(new SkiaBackdrop(sharp), notify: false);
+                backdrop.Set(Blur(shot, 8));
             }
             catch { }
         }
@@ -241,20 +289,51 @@ internal sealed record BlurredImage(Bitmap Bitmap, byte[] Pixels, int Width, int
             }
         return n == 0 ? 0.5 : sum / n / 255.0;
     }
+
+    /// <summary>Насколько «пёстрый» фон (разброс яркости 0…1): над текстом и деталями — больше.</summary>
+    public double Busyness(double x0, double y0, double x1, double y1)
+    {
+        int ax = Math.Clamp((int)(x0 * Width), 0, Width - 1), bx = Math.Clamp((int)Math.Ceiling(x1 * Width), ax + 1, Width);
+        int ay = Math.Clamp((int)(y0 * Height), 0, Height - 1), by = Math.Clamp((int)Math.Ceiling(y1 * Height), ay + 1, Height);
+        double sum = 0, sum2 = 0;
+        int n = 0;
+        for (int y = ay; y < by; y++)
+            for (int x = ax; x < bx; x++)
+            {
+                int i = (y * Width + x) * 4;
+                double l = (0.2126 * Pixels[Rgba ? i : i + 2] + 0.7152 * Pixels[i + 1] + 0.0722 * Pixels[Rgba ? i + 2 : i]) / 255.0;
+                sum += l;
+                sum2 += l * l;
+                n++;
+            }
+        if (n < 2) return 0;
+        double mean = sum / n;
+        return Math.Sqrt(Math.Max(0, sum2 / n - mean * mean));
+    }
 }
 
 /// <summary>Размытый фон окна (картинка на всю клиентскую область окна).</summary>
 internal sealed class GlassBackdrop
 {
     public BlurredImage? Image { get; private set; }
+    /// <summary>Резкий фон и его матовая версия для шейдера (если Skia его поддерживает).</summary>
+    public SkiaBackdrop? Optics { get; private set; }
     public event Action? Changed;
 
-    // Старую картинку не освобождаем явно: её ещё может рисовать поток композиции. Её заберёт сборщик мусора.
+    // Старые картинки не освобождаем явно: их ещё может рисовать поток композиции. Их заберёт сборщик мусора.
     public void Set(BlurredImage image)
     {
         Image = image;
         Changed?.Invoke();
     }
+
+    public void SetOptics(SkiaBackdrop optics, bool notify = true)
+    {
+        Optics = optics;
+        if (notify) Changed?.Invoke();
+    }
+
+    public void NotifyChanged() => Changed?.Invoke();
 }
 
 /// <summary>
@@ -437,6 +516,20 @@ public class GlassPanel : ThemeVariantScope
 
     bool _adaptPending;
     bool? _lightGlass;
+    double _shadowBoost = 1;
+
+    BoxShadows ScaledShadows()
+    {
+        if (Math.Abs(_shadowBoost - 1) < 0.01 || BoxShadow.Count == 0) return BoxShadow;
+        var list = new BoxShadow[BoxShadow.Count];
+        for (int i = 0; i < BoxShadow.Count; i++)
+        {
+            var sh = BoxShadow[i];
+            sh.Color = Color.FromArgb((byte)Math.Clamp(sh.Color.A * _shadowBoost, 0, 255), sh.Color.R, sh.Color.G, sh.Color.B);
+            list[i] = sh;
+        }
+        return list.Length == 1 ? new BoxShadows(list[0]) : new BoxShadows(list[0], list[1..]);
+    }
 
     void ScheduleAdapt()
     {
@@ -472,6 +565,10 @@ public class GlassPanel : ThemeVariantScope
                 null => lum > 0.52,
             };
             want = _lightGlass == true ? ThemeVariant.Light : ThemeVariant.Dark;
+            // Адаптивная тень (Apple): над текстом и пёстрым фоном — плотнее, над ровным светлым — слабее.
+            double busy = img.Busyness(o.X / cw, o.Y / ch, (o.X + Bounds.Width) / cw, (o.Y + Bounds.Height) / ch);
+            double boost = Math.Clamp(0.7 + busy * 3.2 - (lum > 0.8 ? 0.15 : 0), 0.6, 1.6);
+            if (Math.Abs(boost - _shadowBoost) > 0.05) { _shadowBoost = boost; InvalidateVisual(); }
         }
         if (!Equals(RequestedThemeVariant, want)) RequestedThemeVariant = want;
     }
@@ -514,12 +611,19 @@ public class GlassPanel : ThemeVariantScope
             return;
         }
 
-        // 1. Тень.
-        if (BoxShadow.Count > 0) ctx.DrawRectangle(ShadowCaster, null, rr, BoxShadow);
+        // 1. Тень (адаптивная).
+        if (BoxShadow.Count > 0) ctx.DrawRectangle(ShadowCaster, null, rr, ScaledShadows());
 
-        // 2. Размытый фон ровно под панелью.
+        // 2. Фон под панелью: шейдер Liquid Glass (матовость + линзирование + блики) или простое размытие.
         bool hasBackdrop = false;
-        if (!Glass.ReduceTransparency && _backdrop?.Image?.Bitmap is { } img && TopLevel.GetTopLevel(this) is { } top
+        if (_backdrop?.Optics is { } optics && GlassOptics.Effect is not null && TopLevel.GetTopLevel(this) is { } topO
+            && this.TranslatePoint(default, topO) is Point o2 && topO.ClientSize.Width > 0)
+        {
+            double pxPerDip = optics.Sharp.Width / topO.ClientSize.Width;
+            ctx.Custom(new GlassDrawOperation(optics, r, new Point(o2.X * pxPerDip, o2.Y * pxPerDip), pxPerDip, radius.TopLeft));
+            hasBackdrop = true;
+        }
+        else if (!Glass.ReduceTransparency && _backdrop?.Image?.Bitmap is { } img && TopLevel.GetTopLevel(this) is { } top
             && this.TranslatePoint(default, top) is Point origin && top.ClientSize.Width > 0 && top.ClientSize.Height > 0)
         {
             double sx = img.Size.Width / top.ClientSize.Width, sy = img.Size.Height / top.ClientSize.Height;
