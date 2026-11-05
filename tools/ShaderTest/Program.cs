@@ -33,6 +33,7 @@ c.DrawImage(bg, 0, 0);
 
 void Panel(SKRect r, float radius, double frost, double tintA, bool dark, string label)
 {
+    Console.WriteLine($"[{label}] frost"); Console.Out.Flush();
     var (img, scale) = Frost(frost);
     float minSide = Math.Min(r.Width, r.Height);
     c.Save();
@@ -42,6 +43,7 @@ void Panel(SKRect r, float radius, double frost, double tintA, bool dark, string
         c.DrawRoundRect(new SKRect(0, 10, r.Width, r.Height + 10), radius, radius, sh);
     var local = SKMatrix.CreateScaleTranslation(1 / scale, 1 / scale, -r.Left, -r.Top);
     using var imageShader = img.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, local);
+    Console.WriteLine("  uniforms"); Console.Out.Flush();
     var u = new SKRuntimeEffectUniforms(effect!)
     {
         ["size"] = new[] { r.Width, r.Height },
@@ -52,9 +54,12 @@ void Panel(SKRect r, float radius, double frost, double tintA, bool dark, string
         ["spec"] = 0.22f,
     };
     var ch = new SKRuntimeEffectChildren(effect!) { ["backdrop"] = imageShader };
+    Console.WriteLine("  toShader"); Console.Out.Flush();
     using var shader = effect!.ToShader(false, u, ch);
+    Console.WriteLine("  draw"); Console.Out.Flush();
     using (var p = new SKPaint { Shader = shader, IsAntialias = true, FilterQuality = SKFilterQuality.Medium })
         c.DrawRect(new SKRect(0, 0, r.Width, r.Height), p);
+    Console.WriteLine("  overlay"); Console.Out.Flush();
     var rr = new SKRoundRect(new SKRect(0, 0, r.Width, r.Height), radius);
     c.Save();
     c.ClipRoundRect(rr, antialias: true);
@@ -69,7 +74,8 @@ void Panel(SKRect r, float radius, double frost, double tintA, bool dark, string
                    new[] { new SKColor(255, 255, 255, (byte)(dark ? 105 : 235)), new SKColor(255, 255, 255, (byte)(dark ? 26 : 120)), new SKColor(255, 255, 255, (byte)(dark ? 46 : 150)) },
                    new[] { 0f, 0.55f, 1f }, SKShaderTileMode.Clamp) })
         c.DrawRoundRect(new SKRect(1, 1, r.Width - 1, r.Height - 1), radius - 1, radius - 1, rim);
-    using (var txt = new SKPaint { Color = dark ? SKColors.White : new SKColor(29, 29, 31), TextSize = 15, IsAntialias = true, Typeface = SKTypeface.FromFamilyName("DejaVu Sans", SKFontStyle.Bold) })
+    Console.WriteLine("  text"); Console.Out.Flush();
+    using (var txt = new SKPaint { Color = dark ? SKColors.White : new SKColor(29, 29, 31), TextSize = 15, IsAntialias = true, Typeface = SKTypeface.Default })
         c.DrawText(label, 18, r.Height / 2 + 5, txt);
     c.Restore();
 }
