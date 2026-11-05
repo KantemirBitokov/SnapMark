@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.1
+- **Morphing selection lens.** In the editor toolbar and on the recording bar the glass lens no longer just jumps: when you pick another tool it glides over to it with a light spring and stretches along the way like a drop of liquid glass, as in iOS / macOS 26. With "Reduce motion" (macOS) or Windows animations turned off it moves instantly.
+
 ## 1.4.0 — Liquid Glass, by Apple's rules
 - **Adaptive glass (Regular):** each panel looks at what's under it — over a bright page it turns light with dark text, over a dark one it turns dark with light text, so everything stays readable over any screenshot.
 - **Clear glass** — a second style for bright backgrounds and video: almost transparent, with a light dimming layer and always-light content. Settings → General → Glass style. One style for the whole app, as Apple recommends.
