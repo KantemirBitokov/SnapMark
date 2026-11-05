@@ -13,6 +13,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with: { dotnet-version: '8.0.x' }
+      - name: Probes
+        shell: bash
+        working-directory: tools/ShaderTest
+        run: |
+          dotnet build -c Release -v q
+          for i in 0 1 2 3 4 5 6; do dotnet run -c Release --no-build -- probe $i || echo "probe $i: CRASH ($?)"; done
       - name: Render
         shell: bash
         working-directory: tools/ShaderTest
