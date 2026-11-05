@@ -24,6 +24,9 @@ namespace SnapMark.UI;
 /// </summary>
 public enum GlassVariant { Regular, Clear }
 
+/// <summary>Оформление стекла: подстраивается под фон, всегда светлое или всегда тёмное.</summary>
+public enum GlassAppearance { Auto, Light, Dark }
+
 public static class Glass
 {
     static readonly ConditionalWeakTable<TopLevel, GlassBackdrop> Backdrops = new();
@@ -37,6 +40,19 @@ public static class Glass
         {
             if (_variant == value) return;
             _variant = value;
+            TransparencyChanged?.Invoke();
+        }
+    }
+
+    static GlassAppearance _appearance = GlassAppearance.Auto;
+
+    public static GlassAppearance Appearance
+    {
+        get => _appearance;
+        set
+        {
+            if (_appearance == value) return;
+            _appearance = value;
             TransparencyChanged?.Invoke();
         }
     }
@@ -590,8 +606,11 @@ public class GlassPanel : ThemeVariantScope
     {
         ThemeVariant? want = null;
         if (Glass.HighContrast) want = null;
+        // Выбрано в настройках: всегда светлое или всегда тёмное.
+        else if (Glass.Appearance == GlassAppearance.Light) want = ThemeVariant.Light;
+        else if (Glass.Appearance == GlassAppearance.Dark) want = ThemeVariant.Dark;
         else if (Glass.Variant == GlassVariant.Clear) want = ThemeVariant.Dark;
-        else if (!Glass.ReduceTransparency && _backdrop?.Image is { } img && TopLevel.GetTopLevel(this) is { } top
+        if (!Glass.HighContrast && !Glass.ReduceTransparency && _backdrop?.Image is { } img && TopLevel.GetTopLevel(this) is { } top
                  && this.TranslatePoint(default, top) is Point o && top.ClientSize.Width > 0 && top.ClientSize.Height > 0)
         {
             double cw = top.ClientSize.Width, ch = top.ClientSize.Height;
@@ -603,7 +622,8 @@ public class GlassPanel : ThemeVariantScope
                 false => lum > 0.60,
                 null => lum > 0.52,
             };
-            want = _lightGlass == true ? ThemeVariant.Light : ThemeVariant.Dark;
+            if (Glass.Appearance == GlassAppearance.Auto && Glass.Variant != GlassVariant.Clear)
+                want = _lightGlass == true ? ThemeVariant.Light : ThemeVariant.Dark;
             // Адаптивная тень (Apple): над текстом и пёстрым фоном — плотнее, над ровным светлым — слабее.
             double busy = img.Busyness(o.X / cw, o.Y / ch, (o.X + Bounds.Width) / cw, (o.Y + Bounds.Height) / ch);
             double boost = Math.Clamp(0.7 + busy * 3.2 - (lum > 0.8 ? 0.15 : 0), 0.6, 1.6);
@@ -685,7 +705,8 @@ public class GlassPanel : ThemeVariantScope
             double a = Glass.ReduceTransparency ? 0.97
                 : clear ? (hasBackdrop ? 0.46 - 0.30 * t : 0.62 - 0.25 * t)
                 : hasBackdrop ? 0.86 - 0.62 * t : 0.97 - 0.40 * t;
-            var tint = clear ? Color.FromRgb(12, 12, 16) : dark ? Color.FromRgb(30, 30, 34) : Color.FromRgb(246, 246, 250);
+            // Прозрачное стекло в «только светлом» оформлении — лёгкая белая дымка вместо затемнения.
+            var tint = clear ? (dark ? Color.FromRgb(12, 12, 16) : Color.FromRgb(250, 250, 252)) : dark ? Color.FromRgb(30, 30, 34) : Color.FromRgb(246, 246, 250);
             ctx.FillRectangle(new SolidColorBrush(tint, a), r);
 
             // 4. Блик сверху — как у выпуклого стекла.

@@ -63,6 +63,8 @@ public sealed class AppSettings
     public int GlassFrost { get; set; } = 45;
     /// <summary>Вид стекла: Regular — подстраивается под фон, Clear — прозрачное с затемнением.</summary>
     public string GlassVariant { get; set; } = "Regular";
+    /// <summary>Оформление стекла: Auto — светлое на светлом фоне и тёмное на тёмном, Light, Dark.</summary>
+    public string GlassAppearance { get; set; } = "Auto";
     public bool LaunchAtStartup { get; set; }
     public bool ShowNotifications { get; set; } = true;
     public bool FirstRunDone { get; set; }

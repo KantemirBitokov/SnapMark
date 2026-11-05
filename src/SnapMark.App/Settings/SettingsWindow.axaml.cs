@@ -119,6 +119,7 @@ public partial class SettingsWindow : Window
         FrostSlider.Value = S.GlassFrost;
         FrostValue.Text = $"{S.GlassFrost} %";
         GlassVariantCombo.SelectedIndex = UI.Glass.Variant == UI.GlassVariant.Clear ? 1 : 0;
+        GlassAppearanceCombo.SelectedIndex = (int)UI.Glass.Appearance;
         UpdateSystemGlassNote();
         AutostartToggle.IsChecked = S.LaunchAtStartup;
         AutostartToggle.IsEnabled = PlatformServices.Autostart.IsSupported;
@@ -203,6 +204,12 @@ public partial class SettingsWindow : Window
             var v = GlassVariantCombo.SelectedIndex == 1 ? UI.GlassVariant.Clear : UI.GlassVariant.Regular;
             S.GlassVariant = v.ToString();
             UI.Glass.Variant = v;
+        });
+        GlassAppearanceCombo.SelectionChanged += (_, _) => Change(() =>
+        {
+            var a = (UI.GlassAppearance)Math.Clamp(GlassAppearanceCombo.SelectedIndex, 0, 2);
+            S.GlassAppearance = a.ToString();
+            UI.Glass.Appearance = a;
         });
         UI.Glass.TransparencyChanged += UpdateSystemGlassNote;
         Closed += (_, _) => UI.Glass.TransparencyChanged -= UpdateSystemGlassNote;

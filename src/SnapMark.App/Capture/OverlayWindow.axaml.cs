@@ -214,13 +214,46 @@ public partial class OverlayWindow : Window
         if (ty < 8) { ty = v.Bottom - tb.Height - 10; below = false; }
         Place(ToolsBar, tx, ty);
 
-        // Действия — справа от выделения (иначе слева, иначе внутри).
+        // Действия — справа от выделения (иначе слева, иначе внутри), но так, чтобы не налезать
+        // на инструменты: у маленькой зоны тулбар шире выделения и заходит под панель действий.
         var ab = MeasureOf(ActionsBar);
-        double ax = v.Right + 10;
-        bool actionsRight = true;
-        if (ax + ab.Width > W - 8) { ax = v.Left - ab.Width - 10; actionsRight = false; }
-        if (ax < 8) { ax = v.Right - ab.Width - 10; actionsRight = false; }
-        double ay = Clamp(v.Top, 8, H - ab.Height - 8);
+        double topY = Clamp(v.Top, 8, H - ab.Height - 8);
+        // Над тулбаром (если он снизу) или под ним (если сверху).
+        double clearY = below ? ty - ab.Height - 10 : ty + tb.Height + 10;
+        double rightX = v.Right + 10, leftX = v.Left - ab.Width - 10, insideX = v.Right - ab.Width - 10;
+        // Варианты по порядку: X, Y, сторона, куда сдвинуть тулбар (null — оставить по центру).
+        var candidates = new (double X, double Y, bool Right, double? ToolsX)[]
+        {
+            (rightX, topY, true, null),
+            (rightX, topY, true, rightX - tb.Width - 10),          // тулбар левее, действия у зоны справа
+            (leftX, topY, false, null),
+            (leftX, topY, false, leftX + ab.Width + 10),           // тулбар правее, действия у зоны слева
+            (rightX, clearY, true, null), (leftX, clearY, false, null),
+            (W - ab.Width - 8, topY, true, null), (8, topY, false, null),
+            (insideX, topY, false, null),
+        };
+        double ax = rightX, ay = topY;
+        bool actionsRight = true, placed = false;
+        foreach (var c in candidates)
+        {
+            if (c.X < 8 || c.X + ab.Width > W - 8 || c.Y < 8 || c.Y + ab.Height > H - 8) continue;
+            double cx = c.ToolsX ?? tx;
+            if (cx < 8 || cx + tb.Width > W - 8) continue;
+            var toolsRect = new Rect(cx, ty, tb.Width, tb.Height).Inflate(6);
+            if (new Rect(c.X, c.Y, ab.Width, ab.Height).Intersects(toolsRect)) continue;
+            (ax, ay, actionsRight, placed, tx) = (c.X, c.Y, c.Right, true, cx);
+            break;
+        }
+        if (!placed)
+        {
+            // Совсем тесно: действия у выделения, тулбар — под (или над) ними.
+            ax = rightX + ab.Width <= W - 8 ? rightX : leftX >= 8 ? leftX : insideX;
+            actionsRight = ax == rightX;
+            double ny = ay + ab.Height + 10;
+            if (ny + tb.Height <= H - 8) { ty = ny; below = true; }
+            else { ty = Math.Max(8, ay - tb.Height - 10); below = false; }
+        }
+        Place(ToolsBar, tx, ty);
         Place(ActionsBar, ax, ay);
 
         // Всплывающие панели — рядом с тулбаром, со стороны от выделения.
@@ -247,8 +280,9 @@ public partial class OverlayWindow : Window
         if (!panel.IsVisible) return;
         var size = MeasureOf(panel);
         double anchorX = tx + tb.Width / 2;
-        var origin = anchor.TranslatePoint(new Point(anchor.Bounds.Width / 2, 0), Layer);
-        if (origin is Point o) anchorX = o.X;
+        // Относительно тулбара: его могли только что сдвинуть, а раскладка ещё не обновилась.
+        var origin = anchor.TranslatePoint(new Point(anchor.Bounds.Width / 2, 0), ToolsBar);
+        if (origin is Point o) anchorX = tx + o.X;
         double px = Clamp(anchorX - size.Width / 2, 8, W - size.Width - 8);
         double py = below ? ty + tb.Height + 8 : ty - size.Height - 8;
         if (py + size.Height > H - 8 || py < 8) py = Clamp(ty - size.Height - 8, 8, H - size.Height - 8);

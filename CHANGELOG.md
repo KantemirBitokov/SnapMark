@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.3
+- **Glass appearance.** New option in Settings → General → Glass appearance: *Auto* (light glass over light content, dark over dark — as before), *Always light* or *Always dark*.
+- **Fixed: bars overlapping on small selections.** For a small capture area the tool bar is wider than the selection and used to run under the action bar. The action bar now looks for a free spot next to the selection, and the tool bar moves aside (or below the action bar) when space is tight.
+
 ## 1.5.2
 - **Fixed: no frost on Windows.** With hardware (GPU) rendering, the glass shader drew the background shifted or transparent, so panels showed sharp content behind a dark tint. The frosted background is now always drawn with a plain image brush, and the shader only adds lensing and highlights at the edges, computing its own coordinates.
 - Glass is now also checked in CI in a real Windows window with GPU rendering (ANGLE).

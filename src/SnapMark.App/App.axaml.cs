@@ -41,6 +41,7 @@ public partial class App : Application
             UI.Glass.Transparency = AppServices.Settings.GlassTransparency / 100.0;
             UI.Glass.Frost = AppServices.Settings.GlassFrost / 100.0;
             UI.Glass.Variant = Enum.TryParse<UI.GlassVariant>(AppServices.Settings.GlassVariant, out var gv) ? gv : UI.GlassVariant.Regular;
+            UI.Glass.Appearance = Enum.TryParse<UI.GlassAppearance>(AppServices.Settings.GlassAppearance, out var ga) ? ga : UI.GlassAppearance.Auto;
             // Системные «Уменьшить прозрачность» / «Высокий контраст» — проверяем при запуске и раз в 5 секунд.
             UI.Glass.RefreshSystemAccessibility();
             var a11yTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };

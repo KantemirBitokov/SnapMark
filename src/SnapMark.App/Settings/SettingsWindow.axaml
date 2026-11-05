@@ -119,6 +119,15 @@
                       <ComboBoxItem Content="{l:Tr 'Прозрачное — для ярких фонов и видео'}"/>
                     </ComboBox>
                   </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Оформление стекла'}"/>
+                    <ComboBox x:Name="GlassAppearanceCombo" Grid.Column="1" Width="250">
+                      <ComboBoxItem Content="{l:Tr 'Авто — светлое на светлом, тёмное на тёмном'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Всегда светлое'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Всегда тёмное'}"/>
+                    </ComboBox>
+                  </Grid>
                   <TextBlock x:Name="SystemGlassNote" Classes="caption" Margin="14,0,14,10" IsVisible="False"/>
                 </StackPanel>
               </Border>
