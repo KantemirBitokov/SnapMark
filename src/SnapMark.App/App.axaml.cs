@@ -39,6 +39,12 @@ public partial class App : Application
             InstallCrashGuard();
             ApplyTheme();
             UI.Glass.Transparency = AppServices.Settings.GlassTransparency / 100.0;
+            UI.Glass.Variant = Enum.TryParse<UI.GlassVariant>(AppServices.Settings.GlassVariant, out var gv) ? gv : UI.GlassVariant.Regular;
+            // Системные «Уменьшить прозрачность» / «Высокий контраст» — проверяем при запуске и раз в 5 секунд.
+            UI.Glass.RefreshSystemAccessibility();
+            var a11yTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
+            a11yTimer.Tick += (_, _) => UI.Glass.RefreshSystemAccessibility();
+            a11yTimer.Start();
             LoadLogo();
             ExcludePopupsFromCapture();
 

@@ -101,6 +101,15 @@
                             SmallChange="5" LargeChange="10" TickFrequency="5" IsSnapToTickEnabled="True" VerticalAlignment="Center"/>
                     <TextBlock x:Name="GlassValue" Grid.Column="2" Classes="caption" Width="40" TextAlignment="Right" VerticalAlignment="Center"/>
                   </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{l:Tr 'Вид стекла'}"/>
+                    <ComboBox x:Name="GlassVariantCombo" Grid.Column="1" Width="250">
+                      <ComboBoxItem Content="{l:Tr 'Обычное — подстраивается под фон'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Прозрачное — для ярких фонов и видео'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <TextBlock x:Name="SystemGlassNote" Classes="caption" Margin="14,0,14,10" IsVisible="False"/>
                 </StackPanel>
               </Border>
             </StackPanel>

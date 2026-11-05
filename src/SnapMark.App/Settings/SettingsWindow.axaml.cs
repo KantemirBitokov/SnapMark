@@ -56,9 +56,20 @@ public partial class SettingsWindow : Window
         ShowPage(0);
     }
 
+    /// <summary>Система сама попросила меньше прозрачности или больше контраста — объясняем, почему стекло матовое.</summary>
+    void UpdateSystemGlassNote()
+    {
+        string? note = UI.Glass.HighContrast ? L.T("В системе включён высокий контраст — панели показываются без стекла, с контрастным краем.")
+            : UI.Glass.ReduceTransparency ? L.T("В системе выключены эффекты прозрачности — стекло показывается матовым, без размытия.")
+            : null;
+        SystemGlassNote.Text = note ?? "";
+        SystemGlassNote.IsVisible = note is not null;
+    }
+
     void ApplyGlassBackground()
     {
-        if (ActualTransparencyLevel != WindowTransparencyLevel.Mica && ActualTransparencyLevel != WindowTransparencyLevel.AcrylicBlur)
+        if (UI.Glass.ReduceTransparency || UI.Glass.HighContrast
+            || (ActualTransparencyLevel != WindowTransparencyLevel.Mica && ActualTransparencyLevel != WindowTransparencyLevel.AcrylicBlur))
         {
             ClearValue(BackgroundProperty); // системного стекла нет — обычный фон из стиля Window.sm
             return;
@@ -105,6 +116,8 @@ public partial class SettingsWindow : Window
         ThemeCombo.SelectedIndex = (int)S.Theme;
         GlassSlider.Value = S.GlassTransparency;
         GlassValue.Text = $"{S.GlassTransparency} %";
+        GlassVariantCombo.SelectedIndex = UI.Glass.Variant == UI.GlassVariant.Clear ? 1 : 0;
+        UpdateSystemGlassNote();
         AutostartToggle.IsChecked = S.LaunchAtStartup;
         AutostartToggle.IsEnabled = PlatformServices.Autostart.IsSupported;
         NotifyToggle.IsChecked = S.ShowNotifications;
@@ -173,6 +186,14 @@ public partial class SettingsWindow : Window
             glassSave.Stop();
             glassSave.Start();
         };
+        GlassVariantCombo.SelectionChanged += (_, _) => Change(() =>
+        {
+            var v = GlassVariantCombo.SelectedIndex == 1 ? UI.GlassVariant.Clear : UI.GlassVariant.Regular;
+            S.GlassVariant = v.ToString();
+            UI.Glass.Variant = v;
+        });
+        UI.Glass.TransparencyChanged += UpdateSystemGlassNote;
+        Closed += (_, _) => UI.Glass.TransparencyChanged -= UpdateSystemGlassNote;
         ThemeCombo.SelectionChanged += (_, _) => Change(() =>
         {
             S.Theme = (ThemeMode)Math.Max(0, ThemeCombo.SelectedIndex);

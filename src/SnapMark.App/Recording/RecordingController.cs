@@ -540,6 +540,7 @@ public sealed class RecordingHud : Window
 
         var card = new GlassPanel { Margin = new Thickness(16), Padding = new Thickness(6), Child = stack };
         card.Classes.Add("pill");
+        card.Classes.Add("bar"); // капсула
         Content = card;
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(500) };

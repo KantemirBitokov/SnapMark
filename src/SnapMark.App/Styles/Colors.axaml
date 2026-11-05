@@ -106,8 +106,8 @@
   <SolidColorBrush x:Key="Sm.HudBg" Color="#D91C1C1E"/>
 
   <!-- Скругления Fluent: крупнее, как у стекла iOS / macOS. -->
-  <CornerRadius x:Key="ControlCornerRadius">9</CornerRadius>
-  <CornerRadius x:Key="OverlayCornerRadius">14</CornerRadius>
+  <CornerRadius x:Key="ControlCornerRadius">10</CornerRadius>
+  <CornerRadius x:Key="OverlayCornerRadius">16</CornerRadius>
 
   <!-- Акцентные «стеклянные» кнопки: градиент сверху вниз. -->
   <LinearGradientBrush x:Key="Sm.AccentGlass" StartPoint="0%,0%" EndPoint="0%,100%">

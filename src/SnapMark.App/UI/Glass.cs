@@ -15,10 +15,71 @@ namespace SnapMark.UI;
 /// «Жидкое стекло» в духе iOS / macOS 26: размытый фон под панелью, тонированное стекло, блик сверху
 /// и светлый ободок. Прозрачность стекла настраивается (Настройки → Основные).
 /// </summary>
+/// <summary>
+/// Вариант стекла — как у Apple, один на всё приложение:
+/// Regular — подстраивается под фон (над светлым становится светлым, над тёмным — тёмным), читается везде;
+/// Clear — почти прозрачное с лёгким затемнением и всегда светлым текстом, для ярких фонов и видео.
+/// </summary>
+public enum GlassVariant { Regular, Clear }
+
 public static class Glass
 {
     static readonly ConditionalWeakTable<TopLevel, GlassBackdrop> Backdrops = new();
     static double _transparency = 0.5;
+    static GlassVariant _variant = GlassVariant.Regular;
+
+    public static GlassVariant Variant
+    {
+        get => _variant;
+        set
+        {
+            if (_variant == value) return;
+            _variant = value;
+            TransparencyChanged?.Invoke();
+        }
+    }
+
+    /// <summary>В системе выключены эффекты прозрачности — стекло матовое, без размытия.</summary>
+    public static bool ReduceTransparency { get; private set; }
+
+    /// <summary>В системе включён высокий контраст — стекло непрозрачное с контрастным краем.</summary>
+    public static bool HighContrast { get; private set; }
+
+    /// <summary>Перечитать системные настройки доступности (вызывается при запуске и периодически).</summary>
+    public static void RefreshSystemAccessibility()
+    {
+        bool reduce = false, contrast = false;
+        try
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+                reduce = key?.GetValue("EnableTransparency") is int v && v == 0;
+                var hc = new HighContrastInfo { cbSize = (uint)Marshal.SizeOf<HighContrastInfo>() };
+                contrast = SystemParametersInfo(0x0042 /* SPI_GETHIGHCONTRAST */, hc.cbSize, ref hc, 0) && (hc.dwFlags & 1) != 0;
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                (reduce, contrast) = Platform.Mac.MacNative.AccessibilityDisplay();
+            }
+        }
+        catch { }
+        if (reduce == ReduceTransparency && contrast == HighContrast) return;
+        ReduceTransparency = reduce;
+        HighContrast = contrast;
+        TransparencyChanged?.Invoke();
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct HighContrastInfo
+    {
+        public uint cbSize;
+        public uint dwFlags;
+        public IntPtr lpszDefaultScheme;
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern bool SystemParametersInfo(uint action, uint param, ref HighContrastInfo info, uint winIni);
 
     /// <summary>0 — почти матовое стекло, 1 — почти прозрачное.</summary>
     public static double Transparency
@@ -94,7 +155,7 @@ public static class Glass
     }
 
     /// <summary>Размытие: уменьшаем в factor раз и трижды проходим box-blur — мягко и почти бесплатно.</summary>
-    static Bitmap Blur(Bitmap source, int factor)
+    static BlurredImage Blur(Bitmap source, int factor)
     {
         int w = Math.Max(2, source.PixelSize.Width / factor), h = Math.Max(2, source.PixelSize.Height / factor);
         using var small = source.CreateScaledBitmap(new PixelSize(w, h), BitmapInterpolationMode.MediumQuality);
@@ -112,7 +173,7 @@ public static class Glass
         using (var fb = result.Lock())
             for (int y = 0; y < h; y++)
                 Marshal.Copy(pixels, y * stride, fb.Address + y * fb.RowBytes, stride);
-        return result;
+        return new BlurredImage(result, pixels, w, h, format == PixelFormat.Rgba8888);
     }
 
     /// <summary>Горизонтальный и вертикальный box-blur радиуса r по всем четырём каналам (края — повтором).</summary>
@@ -150,14 +211,36 @@ public static class Glass
     }
 }
 
+/// <summary>Размытая картинка и её пиксели (по ним стекло понимает, светлый под ним фон или тёмный).</summary>
+internal sealed record BlurredImage(Bitmap Bitmap, byte[] Pixels, int Width, int Height, bool Rgba)
+{
+    /// <summary>Средняя яркость 0…1 в доле [x0..x1]×[y0..y1] картинки (координаты 0…1).</summary>
+    public double Luminance(double x0, double y0, double x1, double y1)
+    {
+        int ax = Math.Clamp((int)(x0 * Width), 0, Width - 1), bx = Math.Clamp((int)Math.Ceiling(x1 * Width), ax + 1, Width);
+        int ay = Math.Clamp((int)(y0 * Height), 0, Height - 1), by = Math.Clamp((int)Math.Ceiling(y1 * Height), ay + 1, Height);
+        double sum = 0;
+        int n = 0;
+        for (int y = ay; y < by; y++)
+            for (int x = ax; x < bx; x++)
+            {
+                int i = (y * Width + x) * 4;
+                double r = Pixels[Rgba ? i : i + 2], g = Pixels[i + 1], b = Pixels[Rgba ? i + 2 : i];
+                sum += 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                n++;
+            }
+        return n == 0 ? 0.5 : sum / n / 255.0;
+    }
+}
+
 /// <summary>Размытый фон окна (картинка на всю клиентскую область окна).</summary>
 internal sealed class GlassBackdrop
 {
-    public Bitmap? Image { get; private set; }
+    public BlurredImage? Image { get; private set; }
     public event Action? Changed;
 
     // Старую картинку не освобождаем явно: её ещё может рисовать поток композиции. Её заберёт сборщик мусора.
-    public void Set(Bitmap image)
+    public void Set(BlurredImage image)
     {
         Image = image;
         Changed?.Invoke();
@@ -168,8 +251,18 @@ internal sealed class GlassBackdrop
 /// Стеклянная панель — замена Border для «пилюль»: тень, размытый фон под панелью, тонированное стекло,
 /// блик сверху и тонкий светлый ободок, ярче у верхнего края, как у iOS / macOS.
 /// </summary>
-public class GlassPanel : Decorator
+public class GlassPanel : ThemeVariantScope
 {
+    /// <summary>Капсула: скругление — половина высоты (тулбары, панель записи), как у Apple.</summary>
+    public static readonly StyledProperty<bool> CapsuleProperty =
+        AvaloniaProperty.Register<GlassPanel, bool>(nameof(Capsule));
+
+    public bool Capsule
+    {
+        get => GetValue(CapsuleProperty);
+        set => SetValue(CapsuleProperty, value);
+    }
+
     public static readonly StyledProperty<CornerRadius> CornerRadiusProperty =
         AvaloniaProperty.Register<GlassPanel, CornerRadius>(nameof(CornerRadius), new CornerRadius(18));
 
@@ -193,7 +286,7 @@ public class GlassPanel : Decorator
 
     static GlassPanel()
     {
-        AffectsRender<GlassPanel>(CornerRadiusProperty, BoxShadowProperty, BoundsProperty);
+        AffectsRender<GlassPanel>(CornerRadiusProperty, BoxShadowProperty, BoundsProperty, CapsuleProperty);
     }
 
     public GlassPanel()
@@ -205,17 +298,77 @@ public class GlassPanel : Decorator
     {
         base.OnAttachedToVisualTree(e);
         _backdrop = Glass.BackdropOf(TopLevel.GetTopLevel(this));
-        if (_backdrop is not null) _backdrop.Changed += InvalidateVisual;
-        Glass.TransparencyChanged += InvalidateVisual;
+        if (_backdrop is not null) _backdrop.Changed += OnBackdropChanged;
+        Glass.TransparencyChanged += OnGlassChanged;
         ActualThemeVariantChanged += OnThemeChanged;
+        ScheduleAdapt();
+    }
+
+    void OnBackdropChanged()
+    {
+        InvalidateVisual();
+        ScheduleAdapt();
+    }
+
+    void OnGlassChanged()
+    {
+        InvalidateVisual();
+        ScheduleAdapt();
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == BoundsProperty) ScheduleAdapt(); // панель переехала — под ней другой фон
+    }
+
+    bool _adaptPending;
+    bool? _lightGlass;
+
+    void ScheduleAdapt()
+    {
+        if (_adaptPending) return;
+        _adaptPending = true;
+        Dispatcher.UIThread.Post(() =>
+        {
+            _adaptPending = false;
+            Adapt();
+        }, DispatcherPriority.Background);
+    }
+
+    /// <summary>
+    /// Адаптивная читаемость (вариант Regular): над светлым фоном стекло светлое с тёмным текстом, над тёмным —
+    /// тёмное со светлым, как «адаптивные тени» в iOS. Clear — всегда тёмная подложка и светлый текст.
+    /// Без фона (macOS/Linux у плавающих окон) — как выбранная тема программы.
+    /// </summary>
+    void Adapt()
+    {
+        ThemeVariant? want = null;
+        if (Glass.HighContrast) want = null;
+        else if (Glass.Variant == GlassVariant.Clear) want = ThemeVariant.Dark;
+        else if (!Glass.ReduceTransparency && _backdrop?.Image is { } img && TopLevel.GetTopLevel(this) is { } top
+                 && this.TranslatePoint(default, top) is Point o && top.ClientSize.Width > 0 && top.ClientSize.Height > 0)
+        {
+            double cw = top.ClientSize.Width, ch = top.ClientSize.Height;
+            double lum = img.Luminance(o.X / cw, o.Y / ch, (o.X + Bounds.Width) / cw, (o.Y + Bounds.Height) / ch);
+            // Гистерезис: не «мигать» на границе светлого и тёмного.
+            _lightGlass = _lightGlass switch
+            {
+                true => lum > 0.42,
+                false => lum > 0.60,
+                null => lum > 0.52,
+            };
+            want = _lightGlass == true ? ThemeVariant.Light : ThemeVariant.Dark;
+        }
+        if (!Equals(RequestedThemeVariant, want)) RequestedThemeVariant = want;
     }
 
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-        if (_backdrop is not null) _backdrop.Changed -= InvalidateVisual;
+        if (_backdrop is not null) _backdrop.Changed -= OnBackdropChanged;
         _backdrop = null;
-        Glass.TransparencyChanged -= InvalidateVisual;
+        Glass.TransparencyChanged -= OnGlassChanged;
         ActualThemeVariantChanged -= OnThemeChanged;
     }
 
@@ -225,15 +378,26 @@ public class GlassPanel : Decorator
     {
         var r = new Rect(Bounds.Size);
         if (r.Width <= 0 || r.Height <= 0) return;
-        var rr = new RoundedRect(r, CornerRadius);
+        var radius = Capsule ? new CornerRadius(Math.Min(r.Width, r.Height) / 2) : CornerRadius;
+        var rr = new RoundedRect(r, radius);
         bool dark = ActualThemeVariant == ThemeVariant.Dark;
+        bool clear = Glass.Variant == GlassVariant.Clear;
         double t = Glass.Transparency;
 
         // Подхватываем фон окна, если он появился позже (окно уже показано).
         if (_backdrop is null && TopLevel.GetTopLevel(this) is { } tl0 && Glass.BackdropOf(tl0) is { } late)
         {
             _backdrop = late;
-            _backdrop.Changed += InvalidateVisual;
+            _backdrop.Changed += OnBackdropChanged;
+            ScheduleAdapt();
+        }
+
+        // Высокий контраст (системная настройка): сплошная заливка и контрастный край, без стекла.
+        if (Glass.HighContrast)
+        {
+            if (BoxShadow.Count > 0) ctx.DrawRectangle(ShadowCaster, null, rr, BoxShadow);
+            ctx.DrawRectangle(dark ? Brushes.Black : Brushes.White, new Pen(dark ? Brushes.White : Brushes.Black, 1.5), rr);
+            return;
         }
 
         // 1. Тень.
@@ -241,7 +405,7 @@ public class GlassPanel : Decorator
 
         // 2. Размытый фон ровно под панелью.
         bool hasBackdrop = false;
-        if (_backdrop?.Image is { } img && TopLevel.GetTopLevel(this) is { } top
+        if (!Glass.ReduceTransparency && _backdrop?.Image?.Bitmap is { } img && TopLevel.GetTopLevel(this) is { } top
             && this.TranslatePoint(default, top) is Point origin && top.ClientSize.Width > 0 && top.ClientSize.Height > 0)
         {
             double sx = img.Size.Width / top.ClientSize.Width, sy = img.Size.Height / top.ClientSize.Height;
@@ -258,8 +422,12 @@ public class GlassPanel : Decorator
         using (ctx.PushClip(rr))
         {
             // 3. Тонированное стекло: чем выше «прозрачность», тем больше видно фон.
-            double a = hasBackdrop ? 0.86 - 0.62 * t : 0.97 - 0.40 * t;
-            var tint = dark ? Color.FromRgb(30, 30, 34) : Color.FromRgb(246, 246, 250);
+            //    Clear — лёгкое затемнение (так светлый текст читается над любым ярким фоном).
+            //    «Уменьшить прозрачность» в системе — почти непрозрачная заливка.
+            double a = Glass.ReduceTransparency ? 0.97
+                : clear ? (hasBackdrop ? 0.46 - 0.30 * t : 0.62 - 0.25 * t)
+                : hasBackdrop ? 0.86 - 0.62 * t : 0.97 - 0.40 * t;
+            var tint = clear ? Color.FromRgb(12, 12, 16) : dark ? Color.FromRgb(30, 30, 34) : Color.FromRgb(246, 246, 250);
             ctx.FillRectangle(new SolidColorBrush(tint, a), r);
 
             // 4. Блик сверху — как у выпуклого стекла.
@@ -289,7 +457,7 @@ public class GlassPanel : Decorator
             },
         };
         ctx.DrawRectangle(null, new Pen(new SolidColorBrush(Color.FromArgb((byte)(dark ? 70 : 28), 0, 0, 0)), 1), rr);
-        ctx.DrawRectangle(null, new Pen(rim, 1), new RoundedRect(r.Deflate(1), Deflate(CornerRadius, 1)));
+        ctx.DrawRectangle(null, new Pen(rim, 1), new RoundedRect(r.Deflate(1), Deflate(radius, 1)));
     }
 
     static CornerRadius Deflate(CornerRadius c, double d) =>

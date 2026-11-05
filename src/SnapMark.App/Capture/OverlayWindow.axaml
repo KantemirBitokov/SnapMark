@@ -23,7 +23,7 @@
       </Border>
 
       <!-- ═══════════ Панель Markup: инструменты ═══════════ -->
-      <ui:GlassPanel x:Name="ToolsBar" Classes="pill" IsVisible="False" Padding="6">
+      <ui:GlassPanel x:Name="ToolsBar" Classes="pill bar" IsVisible="False" Padding="6">
         <StackPanel Orientation="Horizontal" Spacing="2">
 
           <StackPanel x:Name="ToolButtons" Orientation="Horizontal" Spacing="2">
@@ -141,7 +141,7 @@
       </ui:GlassPanel>
 
       <!-- Действия -->
-      <ui:GlassPanel x:Name="ActionsBar" Classes="pill" IsVisible="False" Padding="6">
+      <ui:GlassPanel x:Name="ActionsBar" Classes="pill bar" IsVisible="False" Padding="6">
         <StackPanel Spacing="2">
           <Button Classes="tool" Click="OnCopyClick" ToolTip.Tip="{l:Tr 'Копировать (Ctrl+C). Если идёт серия — добавить и скопировать всю серию'}">
             <Path Data="{StaticResource Icon.Copy}"/>
@@ -175,7 +175,7 @@
       </ui:GlassPanel>
 
       <!-- Панель записи видео -->
-      <ui:GlassPanel x:Name="VideoBar" Classes="pill" IsVisible="False">
+      <ui:GlassPanel x:Name="VideoBar" Classes="pill bar" IsVisible="False">
         <StackPanel Orientation="Horizontal" Spacing="4">
           <Button x:Name="RecordButton" Classes="record" Click="OnRecordClick" ClickMode="Press" ToolTip.Tip="{l:Tr 'Начать запись (Enter)'}">
             <StackPanel Orientation="Horizontal" Spacing="7">

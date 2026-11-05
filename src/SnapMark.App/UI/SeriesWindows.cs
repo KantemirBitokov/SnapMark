@@ -106,6 +106,7 @@ public sealed class SeriesHud : Window
 
         var card = new GlassPanel { Margin = new Thickness(16), Padding = new Thickness(6), Child = stack };
         card.Classes.Add("pill");
+        card.Classes.Add("bar"); // капсула
         Content = card;
 
         // Перемещение: нажатие на ручку или на пустое место панели (кнопки нажатие забирают себе).

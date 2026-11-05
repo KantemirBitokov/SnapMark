@@ -30,10 +30,20 @@
   </Style>
 
   <!-- ═══════════ Стеклянные панели (тулбары, HUD, уведомления) — см. UI/Glass.cs ═══════════ -->
+  <!-- Панели: скругление 22, внутри — концентрично (22 − отступ). Тулбары (.bar) — капсулы. -->
   <Style Selector="ui|GlassPanel.pill">
-    <Setter Property="CornerRadius" Value="20"/>
-    <Setter Property="Padding" Value="5"/>
+    <Setter Property="CornerRadius" Value="22"/>
+    <Setter Property="Padding" Value="6"/>
     <Setter Property="BoxShadow" Value="0 18 44 0 #38000000, 0 2 8 0 #1F000000"/>
+  </Style>
+  <Style Selector="ui|GlassPanel.pill.bar">
+    <Setter Property="Capsule" Value="True"/>
+  </Style>
+  <!-- «Без украшений»: внутри стекла группы разделяет отступ, а не линия. -->
+  <Style Selector="ui|GlassPanel.pill Border.vsep">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Width" Value="2"/>
+    <Setter Property="Margin" Value="4,0"/>
   </Style>
   <Style Selector="ui|GlassPanel.pill TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
@@ -74,12 +84,22 @@
     <Setter Property="Width" Value="34"/>
     <Setter Property="Height" Value="34"/>
     <Setter Property="Padding" Value="0"/>
-    <Setter Property="CornerRadius" Value="11"/>
+    <Setter Property="CornerRadius" Value="17"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="RenderTransform" Value="scale(1)"/>
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.14" Easing="CubicEaseOut"/>
+      </Transitions>
+    </Setter>
+  </Style>
+  <!-- Отклик на нажатие — кнопка слегка «вдавливается», как у интерактивного стекла. -->
+  <Style Selector="Button.tool:pressed">
+    <Setter Property="RenderTransform" Value="scale(0.9)"/>
   </Style>
   <Style Selector="Button.tool /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent"/>
@@ -106,7 +126,7 @@
   <Style Selector="Button.tool.small">
     <Setter Property="Width" Value="26"/>
     <Setter Property="Height" Value="26"/>
-    <Setter Property="CornerRadius" Value="9"/>
+    <Setter Property="CornerRadius" Value="13"/>
   </Style>
   <Style Selector="Button.tool.wide">
     <Setter Property="Width" Value="NaN"/>
@@ -147,8 +167,8 @@
     <Setter Property="Foreground" Value="White"/>
     <Setter Property="BorderBrush" Value="#59FFFFFF"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="CornerRadius" Value="11"/>
-    <Setter Property="Padding" Value="14,6"/>
+    <Setter Property="CornerRadius" Value="16"/>
+    <Setter Property="Padding" Value="16,6"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
   </Style>
   <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -165,8 +185,8 @@
     <Setter Property="Foreground" Value="White"/>
     <Setter Property="BorderBrush" Value="#59FFFFFF"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="CornerRadius" Value="11"/>
-    <Setter Property="Padding" Value="12,7"/>
+    <Setter Property="CornerRadius" Value="17"/>
+    <Setter Property="Padding" Value="14,7"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
   </Style>
   <Style Selector="Button.record:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -201,8 +221,8 @@
     <Setter Property="Background" Value="{DynamicResource Sm.GlassField}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Sm.GlassRim}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="CornerRadius" Value="11"/>
-    <Setter Property="Padding" Value="12,6"/>
+    <Setter Property="CornerRadius" Value="16"/>
+    <Setter Property="Padding" Value="14,6"/>
   </Style>
   <Style Selector="Button.soft:pointerover /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
@@ -244,14 +264,15 @@
     <Setter Property="CornerRadius" Value="10"/>
     <Setter Property="Margin" Value="1.5"/>
   </Style>
+  <!-- Текущий цвет — нейтральное кольцо: цветом выделяем только главное действие. -->
   <Style Selector="Button.swatch.current">
     <Setter Property="BorderThickness" Value="2.5"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
 
   <!-- Маленькие переключатели (B, I, Подложка…). -->
   <Style Selector="ToggleButton.chip">
-    <Setter Property="CornerRadius" Value="10"/>
+    <Setter Property="CornerRadius" Value="13"/>
     <Setter Property="Background" Value="{DynamicResource Sm.GlassField}"/>
     <Setter Property="BorderBrush" Value="Transparent"/>
     <Setter Property="BorderThickness" Value="1"/>
