@@ -145,13 +145,21 @@ public static class Glass
 
     static GlassBackdrop Ensure(TopLevel topLevel) => Backdrops.GetValue(topLevel, _ => new GlassBackdrop());
 
+    /// <summary>Ошибка стекла: в журнал (один раз на вид ошибки) и в Trace — чтобы не проглатывать молча.</summary>
+    static readonly HashSet<string> Reported = new();
+    internal static void Report(Exception ex)
+    {
+        System.Diagnostics.Trace.WriteLine("[Glass] " + ex);
+        if (Reported.Add(ex.GetType().Name + ex.Message)) App.LogError(ex);
+    }
+
     /// <summary>Фон окна известен заранее (редактор скриншота: замороженный снимок экрана) — размываем один раз.</summary>
     public static void SetStaticBackdrop(TopLevel topLevel, Bitmap? fullWindowImage)
     {
         if (fullWindowImage is null) return;
         var backdrop = Ensure(topLevel);
         try { backdrop.Set(Blur(fullWindowImage, 12)); }
-        catch { /* без размытия — просто тонированное стекло */ }
+        catch (Exception ex) { Report(ex); /* без размытия — просто тонированное стекло */ }
         // Оптика (матовость и линзирование) — сразу после показа окна, чтобы не задерживать его появление.
         Dispatcher.UIThread.Post(() =>
         {
@@ -160,7 +168,7 @@ public static class Glass
                 if (GlassOptics.ToSkImage(fullWindowImage) is { } sharp)
                     backdrop.SetOptics(new SkiaBackdrop(sharp));
             }
-            catch { }
+            catch (Exception ex) { Report(ex); }
         }, DispatcherPriority.Background);
     }
 
@@ -192,7 +200,7 @@ public static class Glass
                     backdrop.SetOptics(new SkiaBackdrop(sharp), notify: false);
                 backdrop.Set(Blur(shot, 8));
             }
-            catch { }
+            catch (Exception ex) { Report(ex); }
         }
 
         void GrabSoon()

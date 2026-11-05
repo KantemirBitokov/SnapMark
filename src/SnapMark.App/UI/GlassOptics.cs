@@ -131,8 +131,9 @@ internal sealed class SkiaBackdrop
         {
             (Frosted, FrostScale) = GlassOptics.Frost(Sharp, frost);
         }
-        catch
+        catch (Exception ex)
         {
+            Glass.Report(ex);
             (Frosted, FrostScale) = (Sharp, 1f);
         }
         return true;
