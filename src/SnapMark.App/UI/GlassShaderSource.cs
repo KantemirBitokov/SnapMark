@@ -47,7 +47,9 @@ half4 shade(float2 p) {
 
     // Блики от источника света сверху-слева (и слабый отражённый снизу-справа).
     float2 L = normalize(float2(-0.55, -0.85));
-    float rim = 1.0 - smoothstep(0.0, edge * 0.6, -d);
+    // smoothstep вручную — в Skia 2.88 его нет.
+    float rx = clamp(-d / (edge * 0.6), 0.0, 1.0);
+    float rim = 1.0 - rx * rx * (3.0 - 2.0 * rx);
     float s = pow(max(dot(n, L), 0.0), 3.0) * rim * spec
             + pow(max(dot(n, -L), 0.0), 3.0) * rim * spec * 0.35;
     float g = (hash(floor(p)) - 0.5) * grain;
