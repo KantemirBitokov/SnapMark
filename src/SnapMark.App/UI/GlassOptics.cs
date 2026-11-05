@@ -165,8 +165,18 @@ internal sealed class GlassDrawOperation : ICustomDrawOperation
 
     public void Render(ImmediateDrawingContext context)
     {
+        try { RenderCore(context); }
+        catch (Exception ex) { Glass.Report(ex); } // ошибка в потоке отрисовки не должна ронять программу
+    }
+
+    void RenderCore(ImmediateDrawingContext context)
+    {
         var feature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-        if (feature is null) return;
+        if (feature is null)
+        {
+            Glass.Report(new InvalidOperationException("Liquid Glass: no Skia lease feature"));
+            return;
+        }
         using var lease = feature.Lease();
         var canvas = lease.SkCanvas;
 

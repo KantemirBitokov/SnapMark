@@ -8,6 +8,7 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using SkiaSharp;
 using SnapMark.Platform;
 
 namespace SnapMark.UI;
@@ -158,16 +159,20 @@ public static class Glass
     {
         if (fullWindowImage is null) return;
         var backdrop = Ensure(topLevel);
-        try { backdrop.Set(Blur(fullWindowImage, 12)); }
+        SKImage? sharp = null;
+        try
+        {
+            // Всё через Skia: Avalonia не умеет уменьшать WriteableBitmap (CreateScaledBitmap падает на нём,
+            // из-за этого раньше размытый фон не создавался вовсе и стекло было просто тонированным).
+            sharp = GlassOptics.ToSkImage(fullWindowImage);
+            if (sharp is not null) backdrop.Set(Blur(sharp, 12));
+        }
         catch (Exception ex) { Report(ex); /* без размытия — просто тонированное стекло */ }
+        if (sharp is null) return;
         // Оптика (матовость и линзирование) — сразу после показа окна, чтобы не задерживать его появление.
         Dispatcher.UIThread.Post(() =>
         {
-            try
-            {
-                if (GlassOptics.ToSkImage(fullWindowImage) is { } sharp)
-                    backdrop.SetOptics(new SkiaBackdrop(sharp));
-            }
+            try { backdrop.SetOptics(new SkiaBackdrop(sharp)); }
             catch (Exception ex) { Report(ex); }
         }, DispatcherPriority.Background);
     }
@@ -196,9 +201,9 @@ public static class Glass
                 var size = PixelSize.FromSize(window.ClientSize, scaling);
                 using var shot = PlatformServices.ScreenCapture.Capture(new PixelRect(window.Position, size));
                 if (shot is null) return;
-                if (GlassOptics.ToSkImage(shot) is { } sharp)
-                    backdrop.SetOptics(new SkiaBackdrop(sharp), notify: false);
-                backdrop.Set(Blur(shot, 8));
+                if (GlassOptics.ToSkImage(shot) is not { } sharp) return;
+                backdrop.SetOptics(new SkiaBackdrop(sharp), notify: false);
+                backdrop.Set(Blur(sharp, 8));
             }
             catch (Exception ex) { Report(ex); }
         }
@@ -221,17 +226,22 @@ public static class Glass
     }
 
     /// <summary>Размытие: уменьшаем в factor раз и трижды проходим box-blur — мягко и почти бесплатно.</summary>
-    static BlurredImage Blur(Bitmap source, int factor)
+    static BlurredImage Blur(SKImage source, int factor)
     {
-        int w = Math.Max(2, source.PixelSize.Width / factor), h = Math.Max(2, source.PixelSize.Height / factor);
-        using var small = source.CreateScaledBitmap(new PixelSize(w, h), BitmapInterpolationMode.MediumQuality);
-        var format = small.Format ?? PixelFormat.Bgra8888;
-        var alpha = small.AlphaFormat ?? AlphaFormat.Premul;
+        int w = Math.Max(2, source.Width / factor), h = Math.Max(2, source.Height / factor);
+        var format = PixelFormat.Bgra8888;
+        var alpha = AlphaFormat.Premul;
         int stride = w * 4;
         var pixels = new byte[stride * h];
-        var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
-        try { small.CopyPixels(new PixelRect(0, 0, w, h), handle.AddrOfPinnedObject(), pixels.Length, stride); }
-        finally { handle.Free(); }
+        var info = new SKImageInfo(w, h, SKColorType.Bgra8888, SKAlphaType.Premul);
+        using (var surface = SKSurface.Create(info))
+        {
+            using (var paint = new SKPaint { FilterQuality = SKFilterQuality.Medium })
+                surface.Canvas.DrawImage(source, new SKRect(0, 0, w, h), paint);
+            var handle = GCHandle.Alloc(pixels, GCHandleType.Pinned);
+            try { surface.ReadPixels(info, handle.AddrOfPinnedObject(), stride, 0, 0); }
+            finally { handle.Free(); }
+        }
 
         for (int pass = 0; pass < 3; pass++) BoxBlur(pixels, w, h, 2);
 
