@@ -1,0 +1,22 @@
+# Проверка шейдера Liquid Glass: компиляция на SkiaSharp 2.88.9 и картинка-образец (артефакт glass-test).
+name: Shader test
+
+on:
+  push:
+    paths: ['src/SnapMark.App/UI/GlassShaderSource.cs', 'tools/ShaderTest/**', '.github/workflows/shader-test.yml']
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: Render
+        shell: bash
+        working-directory: tools/ShaderTest
+        run: dotnet run -c Release -- ../../docs/media/markers.png glass-test.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: glass-test, path: tools/ShaderTest/glass-test.png }
