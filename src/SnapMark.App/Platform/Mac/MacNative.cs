@@ -35,11 +35,12 @@ internal static class MacNative
     [DllImport(ObjC, EntryPoint = "objc_msgSend")] static extern byte SendRetByte(IntPtr receiver, IntPtr selector);
 
     /// <summary>Системные «Уменьшить прозрачность» и «Увеличить контраст» (NSWorkspace).</summary>
-    public static (bool ReduceTransparency, bool IncreaseContrast) AccessibilityDisplay()
+    public static (bool ReduceTransparency, bool IncreaseContrast, bool ReduceMotion) AccessibilityDisplay()
     {
         var ws = Send(objc_getClass("NSWorkspace"), Sel("sharedWorkspace"));
         bool Get(string sel) => Responds(ws, sel) && SendRetByte(ws, Sel(sel)) != 0;
-        return (Get("accessibilityDisplayShouldReduceTransparency"), Get("accessibilityDisplayShouldIncreaseContrast"));
+        return (Get("accessibilityDisplayShouldReduceTransparency"), Get("accessibilityDisplayShouldIncreaseContrast"),
+            Get("accessibilityDisplayShouldReduceMotion"));
     }
 
     /// <summary>[obj respondsToSelector:] — защита от «unrecognized selector», который роняет процесс.</summary>

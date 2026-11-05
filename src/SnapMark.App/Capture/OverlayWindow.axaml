@@ -27,29 +27,29 @@
         <StackPanel Orientation="Horizontal" Spacing="2">
 
           <StackPanel x:Name="ToolButtons" Orientation="Horizontal" Spacing="2">
-            <Button Classes="tool" Tag="Select" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Выбор, перемещение и удаление объектов (V)'}">
+            <Button Classes="tool seg" Tag="Select" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Выбор, перемещение и удаление объектов (V)'}">
               <Path Data="{StaticResource Icon.Select}"/>
             </Button>
 
             <Border Classes="vsep"/>
 
-            <Button Classes="tool" Tag="Pen" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Перо (P): толщина зависит от скорости и нажима. Задержи в конце — станет ровной фигурой'}">
+            <Button Classes="tool seg" Tag="Pen" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Перо (P): толщина зависит от скорости и нажима. Задержи в конце — станет ровной фигурой'}">
               <Path Data="{StaticResource Icon.InkPen}"/>
             </Button>
-            <Button Classes="tool" Tag="Pencil" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Карандаш (C)'}">
+            <Button Classes="tool seg" Tag="Pencil" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Карандаш (C)'}">
               <Path Data="{StaticResource Icon.Pencil}"/>
             </Button>
-            <Button Classes="tool" Tag="Highlighter" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Маркер-выделитель (H)'}">
+            <Button Classes="tool seg" Tag="Highlighter" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Маркер-выделитель (H)'}">
               <Path Data="{StaticResource Icon.Marker}"/>
             </Button>
-            <Button Classes="tool" Tag="Eraser" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Ластик (E): проведи по объекту, чтобы удалить'}">
+            <Button Classes="tool seg" Tag="Eraser" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Ластик (E): проведи по объекту, чтобы удалить'}">
               <Path Data="{StaticResource Icon.Eraser}"/>
             </Button>
 
             <Border Classes="vsep"/>
 
             <!-- Кнопка фигуры показывает последнюю выбранную; стрелка рядом открывает выбор -->
-            <Button x:Name="ShapeButton" Classes="tool" Tag="Arrow" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Фигура (S)'}">
+            <Button x:Name="ShapeButton" Classes="tool seg" Tag="Arrow" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Фигура (S)'}">
               <Path x:Name="ShapeIcon" Data="{StaticResource Icon.Arrow}"/>
             </Button>
           </StackPanel>
@@ -59,13 +59,13 @@
           </Button>
 
           <StackPanel x:Name="ToolButtons2" Orientation="Horizontal" Spacing="2">
-            <Button Classes="tool" Tag="Text" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Текст (T)'}">
+            <Button Classes="tool seg" Tag="Text" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Текст (T)'}">
               <Path Data="{StaticResource Icon.Text}"/>
             </Button>
-            <Button Classes="tool" Tag="Marker" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка A, B, C… с комментарием (M)'}">
+            <Button Classes="tool seg" Tag="Marker" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка A, B, C… с комментарием (M)'}">
               <Path Classes="solid" Data="{StaticResource Icon.MarkerBadge}"/>
             </Button>
-            <Button Classes="tool" Tag="MarkerArrow" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка со стрелкой (N): нажми и тяни к цели'}">
+            <Button Classes="tool seg" Tag="MarkerArrow" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка со стрелкой (N): нажми и тяни к цели'}">
               <Grid Width="20" Height="20">
                 <Path Classes="solid" Data="{StaticResource Icon.MarkerBadgeSmall}"/>
                 <Path Data="{StaticResource Icon.MarkerTail}"/>

@@ -304,6 +304,12 @@
     <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
+  <!-- В группе инструментов (seg) на стекле линзу рисует сама панель и «перетекает» её между кнопками. -->
+  <Style Selector="ui|GlassPanel Button.tool.seg.selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BoxShadow" Value="0 0 0 0 #00000000"/>
+  </Style>
   <Style Selector="ToggleButton.chip:checked TextBlock">
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>

@@ -487,7 +487,7 @@ public sealed class RecordingHud : Window
         _drawToggle = UiKit.ToolButton("Icon.InkPen", L.T("Рисовать на видео: стрелки, метки, текст — всё видно в записи"), ToggleTools);
         stack.Children.Add(_drawToggle);
 
-        _cursorButton = UiKit.ToolButton("Icon.Mouse", L.T("Мышь: работать с программами — клики проходят сквозь рисунки (Esc)"), () => RecordingController.SetDrawTool(null));
+        _cursorButton = UiKit.ToolButton("Icon.Mouse", L.T("Мышь: работать с программами — клики проходят сквозь рисунки (Esc)"), () => RecordingController.SetDrawTool(null), "seg"); // seg — между ними «перетекает» линза
         _tools.Children.Add(_cursorButton);
         foreach (var (tool, icon, tip) in new[]
         {
@@ -507,7 +507,7 @@ public sealed class RecordingHud : Window
         })
         {
             var t = tool;
-            var b = UiKit.ToolButton(t == ToolKind.MarkerArrow ? "Icon.MarkerBadgeSmall" : icon, tip, () => RecordingController.SetDrawTool(t));
+            var b = UiKit.ToolButton(t == ToolKind.MarkerArrow ? "Icon.MarkerBadgeSmall" : icon, tip, () => RecordingController.SetDrawTool(t), "seg");
             if (t is ToolKind.Marker or ToolKind.MarkerArrow && b.Content is Avalonia.Controls.Shapes.Path path) path.Classes.Add("solid");
             if (t == ToolKind.MarkerArrow && b.Content is Avalonia.Controls.Shapes.Path badge)
             {

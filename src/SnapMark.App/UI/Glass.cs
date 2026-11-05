@@ -7,6 +7,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using SnapMark.Platform;
 
 namespace SnapMark.UI;
@@ -45,10 +46,13 @@ public static class Glass
     /// <summary>В системе включён высокий контраст — стекло непрозрачное с контрастным краем.</summary>
     public static bool HighContrast { get; private set; }
 
+    /// <summary>В системе выключена анимация («Уменьшить движение») — линза выделения переставляется без перетекания.</summary>
+    public static bool ReduceMotion { get; private set; }
+
     /// <summary>Перечитать системные настройки доступности (вызывается при запуске и периодически).</summary>
     public static void RefreshSystemAccessibility()
     {
-        bool reduce = false, contrast = false;
+        bool reduce = false, contrast = false, still = false;
         try
         {
             if (OperatingSystem.IsWindows())
@@ -57,13 +61,16 @@ public static class Glass
                 reduce = key?.GetValue("EnableTransparency") is int v && v == 0;
                 var hc = new HighContrastInfo { cbSize = (uint)Marshal.SizeOf<HighContrastInfo>() };
                 contrast = SystemParametersInfo(0x0042 /* SPI_GETHIGHCONTRAST */, hc.cbSize, ref hc, 0) && (hc.dwFlags & 1) != 0;
+                // «Показывать анимацию в Windows» выключено.
+                still = SystemParametersInfo(0x1042 /* SPI_GETCLIENTAREAANIMATION */, 0, out int anim, 0) && anim == 0;
             }
             else if (OperatingSystem.IsMacOS())
             {
-                (reduce, contrast) = Platform.Mac.MacNative.AccessibilityDisplay();
+                (reduce, contrast, still) = Platform.Mac.MacNative.AccessibilityDisplay();
             }
         }
         catch { }
+        ReduceMotion = still;
         if (reduce == ReduceTransparency && contrast == HighContrast) return;
         ReduceTransparency = reduce;
         HighContrast = contrast;
@@ -80,6 +87,9 @@ public static class Glass
 
     [DllImport("user32.dll", SetLastError = true)]
     static extern bool SystemParametersInfo(uint action, uint param, ref HighContrastInfo info, uint winIni);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    static extern bool SystemParametersInfo(uint action, uint param, out int value, uint winIni);
 
     /// <summary>0 — почти матовое стекло, 1 — почти прозрачное.</summary>
     public static double Transparency
@@ -284,6 +294,105 @@ public class GlassPanel : ThemeVariantScope
     GlassBackdrop? _backdrop;
     static readonly IBrush ShadowCaster = new SolidColorBrush(Color.FromArgb(1, 0, 0, 0));
 
+    // ── «Перетекающая» линза выделения ──────────────────────────────
+    // Кнопки с классом «seg» — одна группа инструментов: выбранную подсвечивает линза, которую рисует сама панель
+    // (под иконками). При выборе другой кнопки линза плавно переезжает к ней и по пути чуть растягивается — как капля.
+    static readonly TimeSpan LensDuration = TimeSpan.FromMilliseconds(300);
+    readonly HashSet<Button> _watched = new();
+    Rect? _lensRect;          // где линза сейчас (в координатах панели)
+    Rect _lensFrom, _lensTo;
+    DateTime _lensStart;
+    bool _lensAnimating;
+    Button? _lensTarget;
+
+    /// <summary>Найти выбранную кнопку группы и, если она сменилась или сдвинулась, повести к ней линзу.</summary>
+    void UpdateLens()
+    {
+        Button? target = null;
+        foreach (var b in this.GetVisualDescendants().OfType<Button>())
+        {
+            if (!b.Classes.Contains("seg")) continue;
+            if (_watched.Add(b)) b.Classes.CollectionChanged += (_, _) => Dispatcher.UIThread.Post(UpdateLens, DispatcherPriority.Render);
+            if (target is null && b.IsEffectivelyVisible && b.Classes.Contains("selected")) target = b;
+        }
+
+        if (target is null || target.TranslatePoint(default, this) is not Point p)
+        {
+            if (_lensRect is not null) { _lensRect = null; _lensAnimating = false; InvalidateVisual(); }
+            _lensTarget = null;
+            return;
+        }
+        var to = new Rect(p, target.Bounds.Size);
+        bool moved = _lensRect is not Rect cur || !Near(cur, to);
+        if (!moved && !_lensAnimating) return;
+
+        if (_lensRect is null || ReferenceEquals(target, _lensTarget) && !_lensAnimating || Glass.ReduceMotion)
+        {
+            // Первое появление, сдвиг раскладки той же кнопки или «Уменьшить движение» — сразу на место.
+            _lensRect = to;
+            _lensAnimating = false;
+        }
+        else if (!Near(_lensTo, to) || !_lensAnimating)
+        {
+            _lensFrom = _lensRect.Value;
+            _lensTo = to;
+            _lensStart = DateTime.UtcNow;
+            if (!_lensAnimating)
+            {
+                _lensAnimating = true;
+                TopLevel.GetTopLevel(this)?.RequestAnimationFrame(OnLensFrame);
+            }
+        }
+        _lensTarget = target;
+        InvalidateVisual();
+    }
+
+    void OnLensFrame(TimeSpan _)
+    {
+        if (!_lensAnimating) return;
+        InvalidateVisual();
+        if ((DateTime.UtcNow - _lensStart) < LensDuration) TopLevel.GetTopLevel(this)?.RequestAnimationFrame(OnLensFrame);
+        else
+        {
+            _lensAnimating = false;
+            _lensRect = _lensTo;
+        }
+    }
+
+    /// <summary>Текущее положение линзы: плавный «пружинный» переезд с растяжением в середине пути.</summary>
+    Rect? CurrentLens()
+    {
+        if (!_lensAnimating) return _lensRect;
+        double k = Math.Clamp((DateTime.UtcNow - _lensStart).TotalMilliseconds / LensDuration.TotalMilliseconds, 0, 1);
+        // ease-out-back: быстро стартует, чуть проскакивает цель и мягко возвращается — как пружина.
+        const double c1 = 1.25, c3 = c1 + 1;
+        double e = 1 + c3 * Math.Pow(k - 1, 3) + c1 * Math.Pow(k - 1, 2);
+        double x = _lensFrom.X + (_lensTo.X - _lensFrom.X) * e;
+        double y = _lensFrom.Y + (_lensTo.Y - _lensFrom.Y) * e;
+        double w = _lensFrom.Width + (_lensTo.Width - _lensFrom.Width) * e;
+        double h = _lensFrom.Height + (_lensTo.Height - _lensFrom.Height) * e;
+        // Растяжение по направлению движения — «жидкая» капля.
+        double stretch = Math.Sin(k * Math.PI) * 10;
+        bool horizontal = Math.Abs(_lensTo.X - _lensFrom.X) >= Math.Abs(_lensTo.Y - _lensFrom.Y);
+        _lensRect = horizontal ? new Rect(x - stretch / 2, y + stretch * 0.08, w + stretch, h - stretch * 0.16)
+                               : new Rect(x + stretch * 0.08, y - stretch / 2, w - stretch * 0.16, h + stretch);
+        return _lensRect;
+    }
+
+    static bool Near(Rect a, Rect b) =>
+        Math.Abs(a.X - b.X) < 0.5 && Math.Abs(a.Y - b.Y) < 0.5 && Math.Abs(a.Width - b.Width) < 0.5 && Math.Abs(a.Height - b.Height) < 0.5;
+
+    void DrawLens(DrawingContext ctx)
+    {
+        if (CurrentLens() is not Rect lens) return;
+        var radius = new CornerRadius(Math.Min(lens.Width, lens.Height) / 2);
+        var rr = new RoundedRect(lens, radius);
+        var theme = ActualThemeVariant;
+        IBrush fill = this.TryFindResource("Sm.LensBg", theme, out var f) && f is IBrush fb ? fb : new SolidColorBrush(Color.FromArgb(70, 255, 255, 255));
+        IBrush edge = this.TryFindResource("Sm.LensBorder", theme, out var b) && b is IBrush bb ? bb : Brushes.White;
+        ctx.DrawRectangle(fill, new Pen(edge, 1), rr, new BoxShadows(new BoxShadow { OffsetY = 3, Blur = 10, Color = Color.FromArgb(46, 0, 0, 0) }));
+    }
+
     static GlassPanel()
     {
         AffectsRender<GlassPanel>(CornerRadiusProperty, BoxShadowProperty, BoundsProperty, CapsuleProperty);
@@ -301,8 +410,12 @@ public class GlassPanel : ThemeVariantScope
         if (_backdrop is not null) _backdrop.Changed += OnBackdropChanged;
         Glass.TransparencyChanged += OnGlassChanged;
         ActualThemeVariantChanged += OnThemeChanged;
+        LayoutUpdated += OnLayoutUpdated;
         ScheduleAdapt();
+        Dispatcher.UIThread.Post(UpdateLens, DispatcherPriority.Loaded);
     }
+
+    void OnLayoutUpdated(object? sender, EventArgs e) => UpdateLens();
 
     void OnBackdropChanged()
     {
@@ -370,6 +483,7 @@ public class GlassPanel : ThemeVariantScope
         _backdrop = null;
         Glass.TransparencyChanged -= OnGlassChanged;
         ActualThemeVariantChanged -= OnThemeChanged;
+        LayoutUpdated -= OnLayoutUpdated;
     }
 
     void OnThemeChanged(object? sender, EventArgs e) => InvalidateVisual();
@@ -442,6 +556,9 @@ public class GlassPanel : ThemeVariantScope
                 },
             };
             ctx.FillRectangle(sheen, new Rect(r.X, r.Y, r.Width, Math.Min(r.Height, 120)));
+
+            // 4½. Линза выбранного инструмента — под иконками (дети рисуются поверх панели).
+            DrawLens(ctx);
         }
 
         // 5. Ободок: светлый, ярче сверху, плюс еле заметный тёмный контур для отделения от светлого фона.
