@@ -111,9 +111,9 @@ class PreviewApp : Application
     public override void Initialize()
     {
         RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
-        Styles.Add(new FluentTheme());
-        Styles.Add(new StyleInclude(new Uri("avares://SnapMark/")) { Source = new Uri("avares://SnapMark/Styles/MacStyles.axaml") });
         Resources.MergedDictionaries.Add(new ResourceInclude(new Uri("avares://SnapMark/")) { Source = new Uri("avares://SnapMark/Styles/Colors.axaml") });
         Resources.MergedDictionaries.Add(new ResourceInclude(new Uri("avares://SnapMark/")) { Source = new Uri("avares://SnapMark/Styles/Icons.axaml") });
+        Styles.Add(new FluentTheme());
+        Styles.Add(new StyleInclude(new Uri("avares://SnapMark/")) { Source = new Uri("avares://SnapMark/Styles/MacStyles.axaml") });
     }
 }
