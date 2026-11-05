@@ -14,6 +14,6 @@ pkgbase = snapmark-bin
 	conflicts = snapmark
 	options = !strip
 	source = SnapMark-1.5.2.AppImage::https://github.com/KantemirBitokov/SnapMark/releases/download/v1.5.2/SnapMark-1.5.2-linux-x64.AppImage
-	sha256sums = 6ef886263ae872e4e94130ef3b3fbd92b0ac45b598757a157acd5169323c0832
+	sha256sums = a7953cba0ea2d9f19fa8316e5ece6e5ab3fcc8c2f83e7e3038ef92863a247dcb
 
 pkgname = snapmark-bin
