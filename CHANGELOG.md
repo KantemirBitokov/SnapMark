@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.2
+- **Fixed: no frost on Windows.** With hardware (GPU) rendering, the glass shader drew the background shifted or transparent, so panels showed sharp content behind a dark tint. The frosted background is now always drawn with a plain image brush, and the shader only adds lensing and highlights at the edges, computing its own coordinates.
+- Glass is now also checked in CI in a real Windows window with GPU rendering (ANGLE).
+- Setting the environment variable `SNAPMARK_GLASS_NOSHADER=1` turns off the edge shader if a graphics driver misbehaves.
+
 ## 1.5.1
 - **Fixed: the glass was never frosted.** Since 1.3.0 the blurred background under the glass was silently not created (Avalonia can't resize the bitmap type SnapMark uses for screenshots), so panels were only tinted and the Frost and Transparency sliders seemed to do nothing. Backdrops are now built with Skia: frost, adaptive light/dark glass and the sliders work as intended.
 - Glass panels also pick up a background that appears after they're shown, and glass errors are written to the log instead of being swallowed.
