@@ -159,6 +159,14 @@ internal sealed class GlassDrawOperation : ICustomDrawOperation
     }
 
     public Rect Bounds => _bounds;
+
+    static bool _logged;
+    static void LogPathOnce(bool gpu, bool shader)
+    {
+        if (_logged) return;
+        _logged = true;
+        System.Diagnostics.Trace.WriteLine($"[Glass] render: gpu={gpu}, edge shader={shader}");
+    }
     public bool HitTest(Point p) => false;
     public bool Equals(ICustomDrawOperation? other) => false;
     public void Dispose() { }
@@ -185,35 +193,38 @@ internal sealed class GlassDrawOperation : ICustomDrawOperation
         double frost = Glass.EffectiveFrost;
         byte alpha = (byte)Math.Clamp(lease.CurrentOpacity * 255, 0, 255);
 
-        // Картинка фона → координаты панели (точки): (img − origin) / (пикселей на точку).
+        float rad = (float)Math.Min(_radius, minSide / 2);
+        var rect = new SKRect(0, 0, w, h);
+
+        // 1. Матовый фон — обычной кистью-картинкой. Это надёжно и на видеокарте, и без неё.
         var img = _backdrop.Frosted;
         float k = (float)(_pxPerDip * _backdrop.FrostScale);
         float ox = (float)(_originPx.X * _backdrop.FrostScale), oy = (float)(_originPx.Y * _backdrop.FrostScale);
         var local = SKMatrix.CreateScaleTranslation(1 / k, 1 / k, -ox / k, -oy / k);
-        using var imageShader = img.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, local);
+        using (var imageShader = img.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, local))
+        using (var plain = new SKPaint { Shader = imageShader, IsAntialias = true, FilterQuality = SKFilterQuality.Medium, Color = SKColors.White.WithAlpha(alpha) })
+            canvas.DrawRoundRect(rect, rad, rad, plain);
 
-        // Пользовательские шейдеры в Skia 2.88 падают при программной отрисовке (без видеокарты) — проверено
-        // тестом tools/ShaderTest. Там рисуем только матовый фон, без преломления.
-        var effect = lease.GrContext is not null ? GlassOptics.Effect : null;
-        if (effect is null)
-        {
-            float rad = (float)Math.Min(_radius, minSide / 2);
-            using var plain = new SKPaint { Shader = imageShader, IsAntialias = true, FilterQuality = SKFilterQuality.Medium, Color = SKColors.White.WithAlpha(alpha) };
-            canvas.DrawRoundRect(new SKRect(0, 0, w, h), rad, rad, plain);
-            return;
-        }
+        // 2. Кромка: линзирование и блики шейдером. Пользовательские шейдеры в Skia 2.88 падают при
+        //    программной отрисовке (проверено tools/ShaderTest) — там остаётся только матовый фон.
+        var effect = lease.GrContext is not null && Glass.EdgeOptics ? GlassOptics.Effect : null;
+        LogPathOnce(lease.GrContext is not null, effect is not null);
+        if (effect is null) return;
 
+        using var child = img.ToShader(SKShaderTileMode.Clamp, SKShaderTileMode.Clamp);
         var uniforms = new SKRuntimeEffectUniforms(effect)
         {
             ["size"] = new[] { w, h },
-            ["radius"] = (float)Math.Min(_radius, minSide / 2),
+            ["radius"] = rad,
             // Apple: у крупных элементов линзирование сильнее, у мелких — деликатнее.
             ["edge"] = Math.Clamp(minSide * 0.45f, 8f, 36f),
             ["strength"] = Math.Clamp(minSide * 0.12f, 3f, 14f),
             ["grain"] = (float)(frost * 0.035),
             ["spec"] = 0.14f,
+            ["origin"] = new[] { ox, oy },
+            ["scale"] = k,
         };
-        var children = new SKRuntimeEffectChildren(effect) { ["backdrop"] = imageShader };
+        var children = new SKRuntimeEffectChildren(effect) { ["backdrop"] = child };
         using var shader = effect.ToShader(false, uniforms, children);
         using var paint = new SKPaint
         {

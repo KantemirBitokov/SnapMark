@@ -107,6 +107,9 @@ public static class Glass
 
     public static event Action? TransparencyChanged;
 
+    /// <summary>Линзирование кромки шейдером (видеокарта). Отключается переменной SNAPMARK_GLASS_NOSHADER=1.</summary>
+    public static bool EdgeOptics { get; set; } = Environment.GetEnvironmentVariable("SNAPMARK_GLASS_NOSHADER") != "1";
+
     static double _frost = 0.45;
 
     /// <summary>Матовость стекла: 0 — прозрачное (фон резкий), 1 — полностью матовое (сильное размытие и зерно).</summary>

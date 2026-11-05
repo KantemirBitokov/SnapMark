@@ -1,0 +1,41 @@
+# Стекло в настоящем окне Windows (ANGLE, отрисовка на видеокарте/WARP): снимки экрана — в ветку ci-preview-win.
+name: Glass on Windows
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ['src/SnapMark.App/UI/Glass*.cs', 'tools/GlassWin/**', '.github/workflows/glass-win.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: Build
+        shell: bash
+        run: dotnet build -c Release tools/GlassWin
+      - name: Render
+        shell: bash
+        run: |
+          exe=$(ls tools/GlassWin/bin/Release/net8.0/GlassWin.exe)
+          mkdir -p out
+          "$exe" "$PWD/out" "$PWD/docs/media/markers.png" &
+          pid=$!
+          for i in $(seq 1 90); do kill -0 $pid 2>/dev/null || break; sleep 1; done
+          kill $pid 2>/dev/null || true
+          ls -la out; cat out/log.txt || true
+      - name: Publish
+        if: always()
+        shell: bash
+        run: |
+          cd out
+          git init -q -b ci-preview-win
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Glass win ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-preview-win

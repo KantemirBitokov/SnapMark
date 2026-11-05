@@ -15,6 +15,8 @@ uniform float edge;
 uniform float strength;
 uniform float grain;
 uniform float spec;
+uniform float2 origin; // левый верхний угол панели в пикселях картинки фона
+uniform float scale;   // пикселей картинки фона в одной точке панели
 
 float sdf(float2 p) {
     float2 c = size * 0.5;
@@ -28,7 +30,9 @@ float hash(float2 p) {
 
 half4 shade(float2 p) {
     float d = sdf(p);
-    if (d > 0.5) { return half4(0.0); }
+    // Снаружи — ничего; в середине — тоже ничего: там матовый фон уже нарисован обычной кистью,
+    // шейдер добавляет только кромку (линзирование, дисперсию, блики).
+    if (d > 0.5 || d < -edge) { return half4(0.0); }
     float e = 0.75;
     float2 n = float2(sdf(p + float2(e, 0.0)) - sdf(p - float2(e, 0.0)),
                       sdf(p + float2(0.0, e)) - sdf(p - float2(0.0, e)));
@@ -40,9 +44,11 @@ half4 shade(float2 p) {
     float bend = t * t * t * strength; // плавный изгиб: почти ноль в середине, сильнее к кромке
     // Линзирование: у края видно то, что лежит ЗА границей, — фон изгибается вокруг стекла.
     float2 q = p + n * bend;
-    half4 c = SAMPLE(q);
-    half r = SAMPLE(q + n * bend * 0.10).r;
-    half b = SAMPLE(q - n * bend * 0.10).b;
+    // Координаты в картинке фона считаем сами (без матрицы у вложенного шейдера — на видеокарте
+    // в Skia 2.88 она применяется ненадёжно).
+    half4 c = SAMPLE(origin + q * scale);
+    half r = SAMPLE(origin + (q + n * bend * 0.10) * scale).r;
+    half b = SAMPLE(origin + (q - n * bend * 0.10) * scale).b;
     c = half4(r, c.g, b, 1.0);
 
     // Блики от источника света сверху-слева (и слабый отражённый снизу-справа).
@@ -52,11 +58,10 @@ half4 shade(float2 p) {
     float rim = 1.0 - rx * rx * (3.0 - 2.0 * rx);
     float s = pow(max(dot(n, L), 0.0), 3.0) * rim * spec
             + pow(max(dot(n, -L), 0.0), 3.0) * rim * spec * 0.35;
-    float g = (hash(floor(p)) - 0.5) * grain;
-    c = half4(c.r + s + g, c.g + s + g, c.b + s + g, 1.0);
+    c = half4(c.r + s, c.g + s, c.b + s, 1.0);
 
-    // Мягкая кромка (сглаживание).
-    float aa = clamp(0.5 - d, 0.0, 1.0);
+    // Мягкая кромка снаружи и плавный переход к середине внутри (без шва).
+    float aa = clamp(0.5 - d, 0.0, 1.0) * clamp((d + edge) / (edge * 0.35), 0.0, 1.0);
     return half4(c.rgb * aa, aa);
 }
 ";
