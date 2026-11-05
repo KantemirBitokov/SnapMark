@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.6.0.schema.json
 
 PackageIdentifier: SadlyBear.SnapMark
-PackageVersion: 1.3.0
+PackageVersion: 1.4.0
 InstallerType: inno
 Scope: user
 InstallModes:
@@ -10,7 +10,7 @@ InstallModes:
 UpgradeBehavior: install
 Installers:
   - Architecture: x64
-    InstallerUrl: https://github.com/KantemirBitokov/SnapMark/releases/download/v1.3.0/SnapMark-1.3.0-Setup.exe
-    InstallerSha256: EED408F53AB5A0B29946F5F838B970036DFD1B1B72161331501424FEDEAFB740
+    InstallerUrl: https://github.com/KantemirBitokov/SnapMark/releases/download/v1.4.0/SnapMark-1.4.0-Setup.exe
+    InstallerSha256: B42FBBAA8092F46ADEC34ACAFD8A51381C7AA3039E614212EF18357B58533CFD
 ManifestType: installer
 ManifestVersion: 1.6.0

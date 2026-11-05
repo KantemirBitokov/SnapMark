@@ -1,6 +1,6 @@
 pkgbase = snapmark-bin
 	pkgdesc = Screenshots with A-B-C markers and comments, series in one Ctrl+C, screen recording with sound
-	pkgver = 1.3.0
+	pkgver = 1.4.0
 	pkgrel = 1
 	url = https://github.com/KantemirBitokov/SnapMark
 	arch = x86_64
@@ -13,7 +13,7 @@ pkgbase = snapmark-bin
 	provides = snapmark
 	conflicts = snapmark
 	options = !strip
-	source = SnapMark-1.3.0.AppImage::https://github.com/KantemirBitokov/SnapMark/releases/download/v1.3.0/SnapMark-1.3.0-linux-x64.AppImage
-	sha256sums = ed57eb7677b812a4150b9d69f2392a489e4109485617b22a90dec4ed2bb433e1
+	source = SnapMark-1.4.0.AppImage::https://github.com/KantemirBitokov/SnapMark/releases/download/v1.4.0/SnapMark-1.4.0-linux-x64.AppImage
+	sha256sums = d4f1d04112deee385b362683624412a33b19ef5bf00cb0295ca200d5bb4bd0e0
 
 pkgname = snapmark-bin
