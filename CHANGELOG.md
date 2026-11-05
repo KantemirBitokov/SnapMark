@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0 — Liquid Glass, by Apple's rules
+- **Adaptive glass (Regular):** each panel looks at what's under it — over a bright page it turns light with dark text, over a dark one it turns dark with light text, so everything stays readable over any screenshot.
+- **Clear glass** — a second style for bright backgrounds and video: almost transparent, with a light dimming layer and always-light content. Settings → General → Glass style. One style for the whole app, as Apple recommends.
+- **Apple's shape system:** toolbars, the recording and series bars are capsules; tool buttons, chips and buttons are capsules too; nested elements are concentric with their panel.
+- **No decorated bars:** groups inside glass are separated by space instead of lines; the current color is marked with a neutral ring — color is reserved for primary actions (Start recording, Stop).
+- **Press feedback:** tool buttons gently press in when clicked, like interactive glass.
+- **System accessibility:** with "Transparency effects" off (Windows) or "Reduce transparency" (macOS) the glass becomes frosted without blur; with High contrast / Increase contrast panels become solid with a contrasting edge.
+
 ## 1.3.0 — Liquid Glass
 - **New design in the style of iOS / macOS 26 Liquid Glass.** Toolbars, style panels, the recording bar, notifications and the series panel are now frosted glass: the screenshot (or, on Windows, whatever is behind a floating panel) shows through blurred, with a soft tint, a highlight at the top and a thin bright rim.
 - The selected tool, switched-on chips and the current Settings section are a glass "lens" with a highlight instead of a solid blue fill. Buttons, fields, drop-down lists and tooltips are translucent with larger rounded corners.
