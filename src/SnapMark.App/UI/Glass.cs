@@ -710,11 +710,14 @@ public class GlassPanel : ThemeVariantScope
                 : hasBackdrop ? 0.86 - 0.62 * t : 0.97 - 0.40 * t;
             // Прозрачное стекло в «только светлом» оформлении — лёгкая белая дымка вместо затемнения.
             // «Всегда светлое» над тёмным фоном (или «всегда тёмное» над светлым): фон просвечивает «чужой» яркостью,
-            // и текст теряется. Такое стекло делаем плотнее — тем сильнее, чем больше расходятся стекло и фон.
-            if (!Glass.ReduceTransparency && hasBackdrop && _backdropLum is double bl)
+            // и текст теряется. Только для выбранного вручную оформления (в «Авто» стекло и так под цвет фона)
+            // и только над явно противоположным фоном — стекло плотнее, но ползунки прозрачности и матовости
+            // по-прежнему работают: добавка пропорциональна, а не «до упора».
+            if (Glass.Appearance != GlassAppearance.Auto && !Glass.ReduceTransparency && hasBackdrop && _backdropLum is double bl)
             {
-                double mismatch = dark ? bl - 0.45 : 0.55 - bl; // >0 — фон «чужой» яркости
-                if (mismatch > 0) a = Math.Max(a, Math.Min(0.94, (clear ? 0.5 : 0.62) + mismatch * 0.9));
+                double mismatch = dark ? bl - 0.5 : 0.5 - bl;          // > 0 — фон «чужой» яркости
+                double k = Math.Clamp((mismatch - 0.15) / 0.3, 0, 1);  // 0 при небольшом расхождении, 1 при сильном
+                a += (0.9 - a) * k * 0.6;
             }
             var tint = clear ? (dark ? Color.FromRgb(12, 12, 16) : Color.FromRgb(250, 250, 252)) : dark ? Color.FromRgb(30, 30, 34) : Color.FromRgb(246, 246, 250);
             ctx.FillRectangle(new SolidColorBrush(tint, a), r);
