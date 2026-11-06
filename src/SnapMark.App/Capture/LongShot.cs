@@ -26,6 +26,7 @@ public sealed class Stitcher
     readonly int _width;
     readonly List<byte[]> _rows = new();      // результат по строкам (BGRA)
     Row[]? _prev;                             // ячейки прошлого удачного кадра
+    int _lastBand;                            // сколько нижних строк результата — «подвал» прошлого кадра
 
     /// <summary>Ячейки одной строки: средняя яркость, разброс, положение самой светлой и тёмной точки, отпечаток.</summary>
     sealed class Row
@@ -156,14 +157,44 @@ public sealed class Stitcher
             else return -1;
         }
 
-        int newRows = s;
-        // Результат всегда заканчивается хвостом прошлого кадра, а его нижние bottom строк — тот же подвал,
-        // что и у этого кадра: убираем их, добавляем новые строки и подвал заново (подвал остаётся в самом конце).
-        if (bottom > 0) _rows.RemoveRange(_rows.Count - bottom, bottom);
-        for (int i = top + zh - newRows; i < top + zh; i++) _rows.Add(rows[i]);
-        for (int i = h - bottom; i < h; i++) _rows.Add(rows[i]);
+        // «Подвал» этого кадра: закреплённые строки снизу плюс полоса, где поверх страницы висит что-то
+        // неподвижное (кнопка чата, «наверх», окно cookies, уведомление Windows). Его содержимое не добавляем
+        // сейчас — страница под ним покажется выше в следующем кадре, а сам подвал окажется в результате один раз, в конце.
+        int band = Math.Min(Math.Max(bottom, OverlayBand(a, cur, s, bottom)), h * 2 / 5);
+        // Результат заканчивается хвостом прошлого кадра (строки прошлого кадра до самого низа). Убираем столько,
+        // сколько было подвалом там или здесь, и добавляем страницу с того места, где она в прошлом кадре кончилась.
+        int remove = Math.Min(Math.Max(_lastBand, band), _rows.Count);
+        int start = Math.Max(top, h - remove - s);
+        _rows.RemoveRange(_rows.Count - remove, remove);
+        for (int i = start; i < h; i++) _rows.Add(rows[i]);
+        _lastBand = band;
         _prev = cur;
-        return newRows;
+        return s;
+    }
+
+    /// <summary>
+    /// Высота полосы снизу, где поверх прокручиваемой страницы висит неподвижный элемент: ячейки на том же месте
+    /// совпадают в обоих кадрах, хотя страница под ними сдвинулась на s. Вертикальные линии (рамки таблиц) и
+    /// повторяющееся содержимое не в счёт. Ищем в нижних 40 % кадра.
+    /// </summary>
+    static int OverlayBand(Row[] a, Row[] b, int s, int bottom)
+    {
+        int h = b.Length, limit = h * 3 / 5, clusterTop = -1, lastMarked = -1;
+        for (int y = h - 1 - bottom; y >= limit; y--)
+        {
+            bool marked = false;
+            for (int j = 0; j < Blocks && !marked; j++)
+            {
+                if (b[y].H[j] != a[y].H[j] || (b[y].V[j] <= 8 && a[y].V[j] <= 8)) continue;
+                if (y > 0 && b[y - 1].H[j] == b[y].H[j] && a[y - 1].H[j] == a[y].H[j]) continue; // вертикальная линия
+                if (y + s < h && a[y + s].H[j] == b[y].H[j]) continue;                         // то же и после сдвига
+                marked = true;
+            }
+            if (!marked) continue;
+            if (lastMarked >= 0 && lastMarked - y > 48) break;
+            clusterTop = lastMarked = y;
+        }
+        return clusterTop < 0 ? 0 : h - clusterTop;
     }
 
     /// <summary>

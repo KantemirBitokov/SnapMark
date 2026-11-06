@@ -400,9 +400,23 @@ class WinApp : Application
                 int want = pageKind == "anim" && rows[k].N == 30 ? (int)(300 * dsf) : pageKind == "anim" && rows[k].N == 60 ? (int)(1000 * dsf) : 0;
                 if (Math.Abs(gap - want) > Math.Max(3, want / 50)) { gapsOk = false; gaps.Add($"{rows[k].N}->{rows[k + 1].N}:{gap}(want {want})"); }
             }
-            bool pass = ordered && badLen == 0 && end && gapsOk && !manual;
+            // Плавающая кнопка чата (anim) должна оказаться в результате один раз, а не в каждом куске.
+            int bubbles = 0;
+            if (pageKind == "anim")
+            {
+                int bx = (int)Math.Round(512 * dsf) - rect.X;
+                bool inside = false;
+                for (int y = 0; y < result.Height; y++)
+                {
+                    var c = result.GetPixel(bx, y);
+                    bool blue = c.Red < 40 && c.Green > 110 && c.Green < 150 && c.Blue > 230;
+                    if (blue && !inside) bubbles++;
+                    inside = blue;
+                }
+            }
+            bool pass = ordered && badLen == 0 && end && gapsOk && !manual && bubbles <= 1;
             if (pass) ok++;
-            Program.Log.WriteLine($"{name}: {(pass ? "OK" : "FAIL")} frames={frames} size={result.Width}x{result.Height} rows={rows.Count} badLen={badLen} end={end} manual={manual} ready={ready} " +
+            Program.Log.WriteLine($"{name}: {(pass ? "OK" : "FAIL")} frames={frames} size={result.Width}x{result.Height} rows={rows.Count} badLen={badLen} end={end} manual={manual} ready={ready} bubbles={bubbles} " +
                 $"missing=[{string.Join(",", missing)}] dup=[{string.Join(",", dup)}] gaps=[{string.Join(" ", gaps.Take(6))}] time={timer.Elapsed.TotalSeconds:0.0}s");
         }
         Program.Log.WriteLine($"browser-longshot: {ok}/{total} OK");
@@ -433,7 +447,7 @@ class WinApp : Application
                 + "@keyframes p{from{width:0}to{width:100%}}"
                 + "#stars{height:1000px;position:relative;background:#000;color:#fff;text-align:center}#stars canvas{position:absolute;inset:0}"
                 + "#stars h1{position:relative;font-size:84px;margin:0;padding-top:330px;line-height:1.05}#stars b{position:relative;display:inline-block;margin-top:40px;background:#ff3d00;padding:18px 34px;border-radius:30px}"
-                + "#chat{position:fixed;right:24px;bottom:84px;width:64px;height:64px;border-radius:32px;background:#0a84ff;z-index:6}"
+                + "#chat{position:fixed;left:480px;bottom:84px;width:64px;height:64px;border-radius:32px;background:#0a84ff;z-index:6}"
                 + "#cookie{position:fixed;left:0;right:0;bottom:0;height:56px;background:#333;color:#fff;line-height:56px;padding-left:20px;z-index:6}"
                 + "</style></head><body>");
             sb.Append("<div id=sticky>Sticky header — appears after scrolling, like on GitHub</div>");
