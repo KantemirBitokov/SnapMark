@@ -107,22 +107,28 @@ public sealed class Stitcher
             if (best < 0) return -1;
             // Почти равные оценки (повторяющееся содержимое) — ближе к ожидаемому сдвигу, иначе — с большим перекрытием.
             double bestScore = sc[best];
+            // Уверенное совпадение (почти всё сошлось) — ожидаемый сдвиг не навязываем: в конце страницы прокрутка короче.
+            if (bestScore >= 0.85) tie = Math.Min(tie, 0.005);
+            int top1 = best;
             for (int sh = 1; sh < zh; sh++)
             {
-                if (cnt[sh] < 24 || sc[sh] < bestScore - tie || sh == best) continue;
+                if (cnt[sh] < 24 || sc[sh] < bestScore - tie || sh == top1) continue;
                 bool better = expected > 0 ? Math.Abs(sh - expected) < Math.Abs(best - expected) : cnt[sh] > cnt[best];
                 if (better) best = sh;
             }
             return best;
         }
 
-        int s = Pick(e, 0.005);
+        // Прокрутка стабильна — ожидаемому сдвигу доверяем сильнее: среди близких оценок (большие анимации вроде
+        // карусели во весь экран портят и верный сдвиг) берём ближайший к нему. Сдвиг ещё не известен — строже порог.
+        double tie = trustExpected ? 0.15 : 0.005;
+        int s = Pick(e, tie);
         string how = "exact";
         if (s < 0 || e[s] < 0.5 || e[s] < e[0] + 0.1)
         {
-            s = Pick(t, 0.01);
+            s = Pick(t, trustExpected ? 0.15 : 0.01);
             how = "soft";
-            if (s < 0 || t[s] < 0.7 || t[s] < t[0] + 0.1)
+            if (s < 0 || t[s] < (expected > 0 ? 0.7 : 0.8) || t[s] < t[0] + 0.1)
             {
                 s = -1;
                 how = "none";
