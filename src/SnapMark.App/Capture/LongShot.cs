@@ -129,11 +129,14 @@ public sealed class Stitcher
         double tie = trustExpected ? 0.15 : 0.005;
         int s = Pick(e, tie, true);
         string how = "exact";
-        if (s < 0 || e[s] < (near(s) ? 0.35 : 0.5) || e[s] < e[0] + 0.1)
+        // Сдвиг должен объяснять кадр лучше, чем «ничего не сдвинулось». В таблицах и списках (Проводник, почта,
+        // Excel) строки похожи, и «на месте» тоже многое совпадает — тогда хватит небольшого перевеса.
+        double Margin(double at0) => at0 >= 0.9 ? 0.1 : 0.03;
+        if (s < 0 || e[s] < (near(s) ? 0.35 : 0.5) || e[s] < e[0] + Margin(e[0]))
         {
             s = Pick(t, trustExpected ? 0.15 : 0.01, false);
             how = "soft";
-            if (s < 0 || t[s] < (near(s) ? 0.55 : expected > 0 ? 0.7 : 0.8) || t[s] < t[0] + 0.1)
+            if (s < 0 || t[s] < (near(s) ? 0.55 : expected > 0 ? 0.7 : 0.8) || t[s] < t[0] + Margin(t[0]))
             {
                 s = -1;
                 how = "none";
@@ -148,7 +151,7 @@ public sealed class Stitcher
         LastInfo = $"{how} s={s} e={(s > 0 ? e[s] : 0):0.00} t={(s > 0 ? t[s] : 0):0.00} e0={e[0]:0.00} t0={t[0]:0.00} moving={movingCount}/{evidence} expected={expected}";
         if (s < 0)
         {
-            if (t[0] >= 0.7 || e[0] >= 0.5) return 0; // на месте — значит, не сдвинулось
+            if (t[0] >= 0.85 || e[0] >= 0.75) return 0; // на месте — значит, не сдвинулось
             if (trustExpected && expected > 0 && expected < zh)
             {
                 s = expected;
