@@ -1,0 +1,43 @@
+# Скриншоты для README и сайта: настоящие окна SnapMark (Avalonia Headless) на Windows.
+# Сырые кадры и позиции окон — в ветку ci-screenshots; итоговые картинки собираются из них.
+name: Screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ['tools/Screenshots/**', '.github/workflows/screenshots.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  shots:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with: { dotnet-version: '8.0.x' }
+      - name: ffmpeg and a demo video
+        shell: bash
+        run: |
+          ffmpeg -version >/dev/null 2>&1 || choco install ffmpeg -y --no-progress
+          ffmpeg -hide_banner -loglevel error -y -loop 1 -i tools/Screenshots/page.png \
+            -vf "zoompan=z='1+0.25*on/180':x='iw/2-(iw/zoom/2)+on*1.2':y='ih/2-(ih/zoom/2)':d=1:s=1280x720:fps=30" \
+            -t 6 -c:v libx264 -pix_fmt yuv420p "$RUNNER_TEMP/demo.mp4"
+      - name: Render
+        shell: bash
+        timeout-minutes: 10
+        run: |
+          dotnet build -c Release tools/Screenshots
+          mkdir -p out
+          dotnet tools/Screenshots/bin/Release/net8.0/SnapMarkShots.dll "$PWD/out" "$PWD/tools/Screenshots" "$RUNNER_TEMP/demo.mp4" 2>&1 | tee out/log.txt
+      - name: Publish
+        if: always()
+        shell: bash
+        run: |
+          cd out
+          git init -q -b ci-screenshots
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Screenshots ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-screenshots
