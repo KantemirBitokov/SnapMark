@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
 
 PackageIdentifier: SadlyBear.SnapMark
-PackageVersion: 1.6.0
+PackageVersion: 1.7.0
 PackageLocale: en-US
 Publisher: SadlyBear.pro
 PublisherUrl: https://github.com/KantemirBitokov
@@ -22,6 +22,6 @@ Tags:
   - screen-recorder
   - bug-report
   - printscreen
-ReleaseNotesUrl: https://github.com/KantemirBitokov/SnapMark/releases/tag/v1.6.0
+ReleaseNotesUrl: https://github.com/KantemirBitokov/SnapMark/releases/tag/v1.7.0
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0
