@@ -31,7 +31,7 @@ public sealed class Stitcher
         if (frame.Width != _width) throw new ArgumentException("width");
         int h = frame.Height;
         var rows = ReadRows(frame);
-        var (hash, info) = Fingerprints(rows);
+        var (hash, info) = Fingerprints(rows, _width);
         Frames++;
         if (_prevHash is null)
         {
@@ -74,7 +74,10 @@ public sealed class Stitcher
             }
         }
 
-        int newRows = bestS > 0 && bestScore >= 0.8 ? bestS : zh; // не нашли перекрытия — добавляем зону целиком
+        // Не нашли надёжного перекрытия (анимация, всплывшая подсказка…) — кадр пропускаем и сравниваем
+        // следующий с последним удачным: шаг прокрутки меньше высоты области, перекрытие найдётся.
+        if (bestS <= 0 || bestScore < 0.8) return 0;
+        int newRows = bestS;
         // Результат всегда заканчивается хвостом прошлого кадра, а его нижние bottom строк — тот же подвал,
         // что и у этого кадра: убираем их, добавляем новые строки и подвал заново (подвал остаётся в самом конце).
         if (bottom > 0) _rows.RemoveRange(_rows.Count - bottom, bottom);
@@ -110,8 +113,13 @@ public sealed class Stitcher
     }
 
     /// <summary>Отпечаток строки (FNV по слегка огрублённым пикселям) и «содержательность» (не однотонная).</summary>
-    static (ulong[] Hash, bool[] Informative) Fingerprints(List<byte[]> rows)
+    /// <remarks>
+    /// Правый край (полоса прокрутки: ползунок двигается и появляется/гаснет) и узкая левая кромка в отпечаток
+    /// не входят — иначе строки двух кадров никогда не совпадут.
+    /// </remarks>
+    static (ulong[] Hash, bool[] Informative) Fingerprints(List<byte[]> rows, int width)
     {
+        int from = Math.Min(width / 50, 8) * 4, to = Math.Max(from + 4, (width - Math.Max(24, width / 20)) * 4);
         var hash = new ulong[rows.Count];
         var info = new bool[rows.Count];
         for (int y = 0; y < rows.Count; y++)
@@ -119,7 +127,7 @@ public sealed class Stitcher
             var r = rows[y];
             ulong hv = 1469598103934665603UL;
             int minL = 255, maxL = 0;
-            for (int x = 0; x < r.Length; x += 4)
+            for (int x = from; x < to && x < r.Length; x += 4)
             {
                 byte b = (byte)(r[x] >> 3), g = (byte)(r[x + 1] >> 3), rr = (byte)(r[x + 2] >> 3);
                 hv = (hv ^ b) * 1099511628211UL;
