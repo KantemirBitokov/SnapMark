@@ -385,8 +385,13 @@ public static class AutoScroll
             }
         }
         SetCursorPos(x, y);
-        var input = new INPUT { type = 0, mi = new MOUSEINPUT { dwFlags = 0x0800 /*WHEEL*/, mouseData = -120 * notches } };
-        return SendInput(1, new[] { input }, Marshal.SizeOf<INPUT>()) == 1;
+        // По одному «щелчку» на событие: многие программы считают любое событие колеса за один щелчок,
+        // сколько бы в нём ни было.
+        int n = Math.Abs(notches);
+        var inputs = new INPUT[n];
+        for (int i = 0; i < n; i++)
+            inputs[i] = new INPUT { type = 0, mi = new MOUSEINPUT { dwFlags = 0x0800 /*WHEEL*/, mouseData = notches > 0 ? -120 : 120 } };
+        return n == 0 || SendInput((uint)n, inputs, Marshal.SizeOf<INPUT>()) == n;
     }
 
     // ── macOS ──
@@ -401,10 +406,13 @@ public static class AutoScroll
     static bool Mac(double x, double y, int notches)
     {
         CGWarpMouseCursorPosition(new CGPoint { X = x, Y = y });
-        var ev = CGEventCreateScrollWheelEvent(IntPtr.Zero, 1 /*line*/, 1, -3 * notches);
-        if (ev == IntPtr.Zero) return false;
-        CGEventPost(0 /*HID*/, ev);
-        CFRelease(ev);
+        for (int i = 0; i < Math.Abs(notches); i++)
+        {
+            var ev = CGEventCreateScrollWheelEvent(IntPtr.Zero, 1 /*line*/, 1, notches > 0 ? -3 : 3);
+            if (ev == IntPtr.Zero) return false;
+            CGEventPost(0 /*HID*/, ev);
+            CFRelease(ev);
+        }
         return true;
     }
 

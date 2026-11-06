@@ -80,6 +80,7 @@ public static class LongShotController
         double lastPerNotch = 0;       // последний замер — для ожидаемого сдвига
         bool steady = false;           // два последних замера совпали — прокрутке можно верить вслепую
         bool moved = false;
+        bool triedOther = false;       // перед тем как решить «конец страницы» — одна попытка в другой точке
         int target = Math.Max(1, (int)(rect.Height * 0.45));
         // Точки, где крутим колесо: центр, затем левее и выше (если в центре — элемент, который сам ловит колесо).
         var points = new[]
@@ -139,6 +140,7 @@ public static class LongShotController
             {
                 still = misses = 0;
                 moved = true;
+                triedOther = false;
                 // Сдвиг на step щелчков = added строк (если не упёрлись в конец страницы — тогда сдвиг меньше).
                 double measured = added / (double)step;
                 steady = lastPerNotch > 0 && Math.Abs(measured - lastPerNotch) <= lastPerNotch * 0.03;
@@ -158,8 +160,16 @@ public static class LongShotController
                     manual?.Invoke();
                     continue;
                 }
-                // Конец страницы: несколько раз подряд ничего не сдвинулось.
-                if (++still >= 3) break;
+                // Конец страницы: несколько раз подряд ничего не сдвинулось. Но сначала — ещё одна точка
+                // и мелкий шаг: бывает, что окно перестало принимать колесо в этом месте (всплыло что-то поверх).
+                if (++still >= 3)
+                {
+                    if (triedOther) break;
+                    triedOther = true;
+                    still = 0;
+                    point = (point + 1) % points.Length;
+                    notches = 1;
+                }
             }
             else
             {
