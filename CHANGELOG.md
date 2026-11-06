@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.2
+- **Scrolling screenshots work on web pages at 125–150 % display scale.** Browsers scroll 100 px × the display scale per wheel notch (Edge — even more), so the fixed step jumped past the captured area: no overlap was found and the result was a plain screenshot, or capture stopped halfway. Now SnapMark measures how far one notch actually scrolls and picks the step from that; if it ever jumps too far, it scrolls back and continues with a smaller step.
+- **Sticky headers that appear while scrolling** (GitHub and many other sites) no longer break stitching.
+- Frames are taken once smooth scrolling has finished, so nothing is skipped or doubled.
+- Tested in CI on real Chrome and Edge at 100 %, 125 % and 150 %: all 200 rows of the test page, in order, with no gaps or duplicates.
+
 ## 1.9.1
 - Scrolling screenshot: moving the mouse pauses auto-scrolling, so the **Done** button is easy to reach (the cursor is no longer pulled back to the area); faster scrolling for tall areas.
 - Trimming GIFs and videos with odd width or height no longer fails (H.264 needs even dimensions).
