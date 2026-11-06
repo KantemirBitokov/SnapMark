@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.1
+- Sharper icon in the Settings sidebar, the About page and notifications: they now use renders made for their exact size (with 2× detail for 150–200 % displays) and high-quality scaling, instead of a shrunken 256 px image.
+
 ## 1.7.0 — new icon
 - **New app icon** in the iOS 26 / macOS 26 Liquid Glass style: a dark plum tile with a frosted glass frame, a glowing neon stroke drawn by a marker, a red recording dot and an A marker — capture, recording, drawing and markers in one picture.
 - Every size is drawn from vector: a simplified version for 32 px and below (taskbar, tray), the Apple icon grid with margins for macOS, and a larger tile for Windows and Linux so it matches neighbouring icons.

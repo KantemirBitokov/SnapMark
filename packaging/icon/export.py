@@ -41,6 +41,9 @@ def main():
         page = b.new_page()
         win = {s: render(page, s, True) for s in (16, 20, 24, 32, 40, 48, 64, 96, 128, 256, 512, 1024)}
         tray = render(page, 64, True, small=True)  # трей показывается в 16–32 px — упрощённая версия
+        # Иконки внутри окон: под точный размер показа ×2 (чётко и на экранах 150–200 %).
+        ui_small = render(page, 64, True, small=True)   # шапка настроек, 30–32 точки
+        ui_large = render(page, 192, True)              # «О программе», 96 точек
         mac = {s: render(page, s, False) for s in (16, 32, 64, 128, 256, 512, 1024)}
         b.close()
 
@@ -51,6 +54,8 @@ def main():
     win[256].save(assets / "snapmark.png")
     win[1024].save(assets / "snapmark_1024.png")
     tray.save(assets / "tray.png")
+    ui_small.save(assets / "snapmark-32@2x.png")
+    ui_large.save(assets / "snapmark-96@2x.png")
     win[512].save(ROOT / "packaging/linux/snapmark.png")
     win[256].save(ROOT / "docs/icon.png")
     mac[1024].save(ROOT / "packaging/macos/snapmark.icns", format="ICNS",

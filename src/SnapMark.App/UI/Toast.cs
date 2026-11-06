@@ -36,11 +36,12 @@ public sealed class Toast : Window
 
         var icon = new Image
         {
-            Source = App.Logo,
+            Source = App.SmallLogo ?? App.Logo,
             Width = 24,
             Height = 24,
             VerticalAlignment = VerticalAlignment.Top,
         };
+        RenderOptions.SetBitmapInterpolationMode(icon, Avalonia.Media.Imaging.BitmapInterpolationMode.HighQuality);
 
         var titleBlock = new TextBlock { Text = title }.Style("headline");
         var messageBlock = UiKit.Caption(message);

@@ -23,6 +23,8 @@ public partial class App : Application
 
     /// <summary>Логотип для уведомлений и окон.</summary>
     public static Bitmap? Logo { get; private set; }
+    /// <summary>Упрощённая иконка для показа в 16–32 точках (уведомления, шапки) — чётче уменьшенной большой.</summary>
+    public static Bitmap? SmallLogo { get; private set; }
 
     /// <summary>Невидимое окно: через него получаем список мониторов и буфер обмена (на macOS/Linux).</summary>
     public static TopLevel? ClipboardHost => _probe;
@@ -171,6 +173,8 @@ public partial class App : Application
         {
             using var s = AssetLoader.Open(new Uri("avares://SnapMark/Assets/snapmark.png"));
             Logo = new Bitmap(s);
+            using var small = AssetLoader.Open(new Uri("avares://SnapMark/Assets/snapmark-32@2x.png"));
+            SmallLogo = new Bitmap(small);
         }
         catch { }
     }
