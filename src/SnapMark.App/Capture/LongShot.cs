@@ -164,7 +164,8 @@ public static class AutoScroll
     }
 
     // ── Windows ──
-    [StructLayout(LayoutKind.Sequential)] struct INPUT { public uint type; public MOUSEINPUT mi; public uint pad1, pad2; }
+    // Размер должен быть ровно sizeof(INPUT) (40 байт на x64), иначе SendInput молча ничего не делает.
+    [StructLayout(LayoutKind.Sequential)] struct INPUT { public uint type; public MOUSEINPUT mi; }
     [StructLayout(LayoutKind.Sequential)] struct MOUSEINPUT { public int dx, dy; public int mouseData; public uint dwFlags, time; public IntPtr extra; }
     [DllImport("user32.dll")] static extern uint SendInput(uint n, INPUT[] inputs, int size);
     [DllImport("user32.dll")] static extern bool SetCursorPos(int x, int y);

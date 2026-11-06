@@ -264,7 +264,7 @@ class WinApp : Application
         using (var img = SkiaSharp.SKImage.FromBitmap(result))
         using (var data = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
             File.WriteAllBytes(Path.Combine(Program.OutDir, "longshot.png"), data.ToArray());
-        Program.Log.WriteLine($"longshot: frames={frames} size={result.Width}x{result.Height}");
+        Program.Log.WriteLine($"longshot: frames={frames} size={result.Width}x{result.Height} scrollOk={SnapMark.Capture.AutoScroll.Scroll(310, 270, 0, 1)}");
     }
 
     /// <summary>Окно обрезки видео (нужен ffmpeg и тестовое видео).</summary>
