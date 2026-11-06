@@ -100,6 +100,20 @@ async Task Save(TopLevel w, string name)
     Console.WriteLine($"saved {name} {w.ClientSize.Width}x{w.ClientSize.Height} at {pos}");
 }
 
+// Окна с прозрачным фоном: снимок на чёрном и на белом — по разнице потом восстанавливается альфа.
+async Task SaveMatte(Window w, string name)
+{
+    var old = w.Background;
+    foreach (var (brush, suffix) in new[] { (Brushes.Black, ".k"), (Brushes.White, ".w") })
+    {
+        w.Background = brush;
+        await Pump(150);
+        w.CaptureRenderedFrame()?.Save(Path.Combine(outDir, name + suffix + ".png"));
+    }
+    w.Background = old;
+    await Save(w, name);
+}
+
 void Click(Control c) => c.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
 
 Button ToolButton(OverlayWindow ov, string tag) =>
@@ -222,7 +236,7 @@ async Task OcrScene(Bitmap page)
     // Выделить «Ethiopia Yirgacheffe … Oat milk» протяжкой (картинка внутри окна сдвинута на поле 14 + рамку).
     double ox = 15.5, oy = 15.5;
     await Drag(w, new Point(ox + 88, oy + 84), new Point(ox + 150, oy + 165));
-    await Save(w, "ocr");
+    await SaveMatte(w, "ocr");
     w.Close();
 }
 
@@ -263,7 +277,7 @@ async Task StepsScene(Bitmap page)
     hud.Position = new PixelPoint((1920 - (int)hud.ClientSize.Width) / 2, 4);
     Backdrop(hud, page);
     await Pump(300);
-    await Save(hud, "stephud");
+    await SaveMatte(hud, "stephud");
     hud.Close();
 }
 
