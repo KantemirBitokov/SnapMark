@@ -156,6 +156,8 @@ public partial class SettingsWindow : Window
         CursorToggle.IsChecked = S.VideoShowCursor;
         ClicksToggle.IsChecked = S.VideoHighlightClicks;
         KeysToggle.IsChecked = S.VideoShowKeyCombos;
+        CameraToggle.IsChecked = S.VideoCamera;
+        _ = FillCamerasAsync();
         AudioCombo.SelectedIndex = (int)S.Audio;
         // Звук компьютера: Windows — WASAPI, Linux — PulseAudio, macOS 13+ — ScreenCaptureKit (11–12 — BlackHole).
         SystemDeviceRow.IsVisible = OperatingSystem.IsWindows();
@@ -307,6 +309,12 @@ public partial class SettingsWindow : Window
         CursorToggle.IsCheckedChanged += (_, _) => Change(() => S.VideoShowCursor = CursorToggle.IsChecked == true);
         ClicksToggle.IsCheckedChanged += (_, _) => Change(() => S.VideoHighlightClicks = ClicksToggle.IsChecked == true);
         KeysToggle.IsCheckedChanged += (_, _) => Change(() => S.VideoShowKeyCombos = KeysToggle.IsChecked == true);
+        CameraToggle.IsCheckedChanged += (_, _) => Change(() => S.VideoCamera = CameraToggle.IsChecked == true);
+        CameraCombo.SelectionChanged += (_, _) =>
+        {
+            if (_fillingCameras || CameraCombo.SelectedItem is not ComboBoxItem { Tag: string dev }) return;
+            Change(() => S.VideoCameraDevice = dev);
+        };
         AudioCombo.SelectionChanged += (_, _) => Change(() => S.Audio = (AudioSource)Math.Max(0, AudioCombo.SelectedIndex));
         MicCombo.SelectionChanged += (_, _) =>
         {
@@ -598,5 +606,28 @@ public partial class SettingsWindow : Window
         catch { }
         var result = await StorageProvider.OpenFolderPickerAsync(options);
         return result.FirstOrDefault()?.TryGetLocalPath();
+    }
+
+    bool _fillingCameras;
+
+    /// <summary>Список камер — в фоне: ffmpeg перечисляет устройства секунду-две.</summary>
+    async Task FillCamerasAsync()
+    {
+        _fillingCameras = true;
+        CameraCombo.Items.Clear();
+        CameraCombo.Items.Add(new ComboBoxItem { Content = L.T("Камера по умолчанию"), Tag = "" });
+        CameraCombo.SelectedIndex = 0;
+        var ffmpeg = Recording.VideoTools.Ffmpeg;
+        if (ffmpeg is not null)
+        {
+            var cams = await Task.Run(() => Recording.CameraBubble.ListCameras(ffmpeg));
+            foreach (var c in cams)
+            {
+                var item = new ComboBoxItem { Content = c, Tag = c };
+                CameraCombo.Items.Add(item);
+                if (c == S.VideoCameraDevice) CameraCombo.SelectedItem = item;
+            }
+        }
+        _fillingCameras = false;
     }
 }

@@ -117,6 +117,12 @@ public sealed class AppSettings
     public bool VideoHighlightClicks { get; set; } = true;
     /// <summary>Показывать на видео нажатые сочетания клавиш (только сочетания и служебные клавиши, не набор текста).</summary>
     public bool VideoShowKeyCombos { get; set; } = true;
+    /// <summary>Камера в углу видео.</summary>
+    public bool VideoCamera { get; set; }
+    /// <summary>Имя камеры ("" — первая найденная).</summary>
+    public string VideoCameraDevice { get; set; } = "";
+    public double VideoCameraSize { get; set; } = 200;
+    public bool VideoCameraRound { get; set; } = true;
 
     // ── Пошаговая инструкция ─────────────────────────────────────────
     /// <summary>Подписывать шаги названием окна, по которому кликнули («Клик: Блокнот»).</summary>

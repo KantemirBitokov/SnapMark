@@ -310,6 +310,8 @@ public static class RecordingController
         try
         {
             if (s.ShowRecordingFrame) ShowFrame(rect, scaling);
+            // Камера — заранее: ей нужна секунда на запуск, а в первый кадр она попадёт уже живой.
+            if (s.VideoCamera) CameraBubble.Start(rect, scaling);
             await recorder.StartAsync(ffmpeg, rect, s, withMic, withSystem, output);
             _hud?.SetRecording();
             ShowEffects(rect, scaling);
@@ -328,6 +330,7 @@ public static class RecordingController
             HideFrame();
             CloseDrawWindow();
             CloseEffects();
+            CameraBubble.Stop();
             Toast.Show(L.T("Запись не запустилась"), ex.Message.Length > 300 ? ex.Message[..300] + "…" : ex.Message);
         }
         finally
@@ -347,6 +350,7 @@ public static class RecordingController
         HideFrame();
         CloseDrawWindow();
         CloseEffects();
+        CameraBubble.Stop();
 
         Toast.Show(L.T("Запись остановлена"), AppServices.Settings.VideoFormat == VideoFileFormat.Gif
             ? L.T("Собираю GIF…")
@@ -356,7 +360,8 @@ public static class RecordingController
         {
             var path = await recorder.StopAsync();
             if (File.Exists(path))
-                Toast.Show(L.T("Видео сохранено"), Path.GetFileName(path), L.T("Показать"), () => ShellOpen.ShowInFolder(path));
+                Toast.Show(L.T("Видео сохранено"), Path.GetFileName(path), L.T("Обрезать"), () => TrimWindow.Open(path),
+                    L.T("Показать"), () => ShellOpen.ShowInFolder(path));
             else
                 Toast.Show(L.T("Видео не сохранилось"), recorder.LastLog());
         }

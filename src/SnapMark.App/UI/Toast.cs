@@ -15,19 +15,20 @@ public sealed class Toast : Window
     static Toast? _current;
     readonly DispatcherTimer _timer;
 
-    public static void Show(string title, string message, string? actionText = null, Action? action = null)
+    public static void Show(string title, string message, string? actionText = null, Action? action = null,
+        string? action2Text = null, Action? action2 = null)
     {
         Dispatcher.UIThread.Post(() =>
         {
             if (!AppServices.Settings.ShowNotifications && action is null) return;
             _current?.Close();
-            var toast = new Toast(title, message, actionText, action);
+            var toast = new Toast(title, message, actionText, action, action2Text, action2);
             _current = toast;
             toast.Show();
         });
     }
 
-    Toast(string title, string message, string? actionText, Action? action)
+    Toast(string title, string message, string? actionText, Action? action, string? action2Text, Action? action2)
     {
         UiKit.MakeFloating(this);
         ShowActivated = false;
@@ -58,14 +59,21 @@ public sealed class Toast : Window
 
         if (actionText is not null && action is not null)
         {
+            var buttons = new StackPanel { Spacing = 4, VerticalAlignment = VerticalAlignment.Center };
             var btn = UiKit.SoftButton(actionText, () =>
             {
                 action();
                 Close();
-            });
-            btn.VerticalAlignment = VerticalAlignment.Center;
-            Grid.SetColumn(btn, 2);
-            grid.Children.Add(btn);
+            }, primary: action2 is not null);
+            buttons.Children.Add(btn);
+            if (action2Text is not null && action2 is not null)
+                buttons.Children.Add(UiKit.SoftButton(action2Text, () =>
+                {
+                    action2();
+                    Close();
+                }));
+            Grid.SetColumn(buttons, 2);
+            grid.Children.Add(buttons);
         }
 
         var card = new GlassPanel { Padding = new Thickness(10, 8), Margin = new Thickness(12), Width = 300, Child = grid };

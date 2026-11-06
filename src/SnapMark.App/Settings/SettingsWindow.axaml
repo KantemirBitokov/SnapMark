@@ -422,6 +422,15 @@
                     </StackPanel>
                     <ToggleSwitch x:Name="KeysToggle" Grid.Column="1"/>
                   </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto,Auto">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{l:Tr 'Камера в углу видео'}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'Круглое окошко с веб-камерой: двигай мышью, колесо — размер, правый клик — форма'}"/>
+                    </StackPanel>
+                    <ComboBox x:Name="CameraCombo" Grid.Column="1" Width="200" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <ToggleSwitch x:Name="CameraToggle" Grid.Column="2"/>
+                  </Grid>
                 </StackPanel>
               </Border>
             </StackPanel>

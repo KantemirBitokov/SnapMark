@@ -238,6 +238,7 @@
           <WrapPanel>
             <ToggleButton x:Name="VideoClicksChip" Classes="chip" Content="{l:Tr 'Подсветка кликов'}" Click="OnVideoEffectsChip" ToolTip.Tip="{l:Tr 'Круги на месте каждого клика — видно, куда нажали'}"/>
             <ToggleButton x:Name="VideoKeysChip" Classes="chip" Content="{l:Tr 'Показ клавиш'}" Click="OnVideoEffectsChip" ToolTip.Tip="{l:Tr 'Внизу видео — нажатые сочетания (Ctrl+C, Enter…). Обычный набор текста не показывается'}"/>
+            <ToggleButton x:Name="VideoCameraChip" Classes="chip" Content="{l:Tr 'Камера'}" Click="OnVideoEffectsChip" ToolTip.Tip="{l:Tr 'Веб-камера в углу видео. Окошко можно двигать и менять колесом мыши; камера — в Настройках → Видео'}"/>
           </WrapPanel>
           <TextBlock Classes="group" Text="{l:Tr 'КАЧЕСТВО'}"/>
           <WrapPanel x:Name="VideoQualityChips">

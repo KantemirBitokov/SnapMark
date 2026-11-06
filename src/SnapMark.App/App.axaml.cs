@@ -224,6 +224,7 @@ public partial class App : Application
             }));
         menu.Items.Add(Item(() => L.F("Пошаговая инструкция\t{0}", AppServices.Settings.StepGuideHotkey),
             () => Delay(Steps.StepRecorder.Toggle)));
+        menu.Items.Add(Item(() => L.T("Обрезать видео / в GIF…"), () => Recording.TrimWindow.Open(null)));
         menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(Item(() => L.T("Серия скриншотов…"), SeriesWindow.ShowSingle));
         menu.Items.Add(Item(() => L.T("Открыть папку скриншотов"), () => ShellOpen.OpenFolder(AppServices.Settings.SaveFolder)));
