@@ -159,7 +159,7 @@ async Task EditorScene(Bitmap page, Screen screen)
     var marks = new (string Color, Point Center, Point Tail, string Comment)[]
     {
         ("#FF3B30", new Point(690, 118), new Point(586, 118), "Typo in the heading"),
-        ("#FF9500", new Point(1190, 842), new Point(1226, 758), "Pay button is barely visible"),
+        ("#FF9500", new Point(1190, 842), new Point(1236, 742), "Pay button is barely visible"),
         ("#0A84FF", new Point(1548, 660), new Point(1478, 660), "Total should be $30.50"),
         ("#34C759", new Point(1612, 523), new Point(1570, 523), "Overflows the card"),
     };
