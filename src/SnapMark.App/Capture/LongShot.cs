@@ -134,6 +134,12 @@ public sealed class Stitcher
                 how = "none";
             }
         }
+        if (how == "none")
+        {
+            int be = 1, bt = 1;
+            for (int sh = 1; sh < zh; sh++) { if (e[sh] > e[be]) be = sh; if (t[sh] > t[bt]) bt = sh; }
+            how = $"none(bestE {be}:{e[be]:0.00}/{cnt[be]} bestT {bt}:{t[bt]:0.00}/{cnt[bt]} top={top} bottom={bottom})";
+        }
         LastInfo = $"{how} s={s} e={(s > 0 ? e[s] : 0):0.00} t={(s > 0 ? t[s] : 0):0.00} e0={e[0]:0.00} t0={t[0]:0.00} moving={movingCount}/{evidence} expected={expected}";
         if (s < 0)
         {

@@ -357,7 +357,14 @@ class WinApp : Application
             bool manual = false;
             SnapMark.Capture.LongShotController.Trace = m => Program.Log.WriteLine($"  {name}: {m}");
             var timer = System.Diagnostics.Stopwatch.StartNew();
-            using var result = await SnapMark.Capture.LongShotController.CaptureAsync(rect, dsf, true, cts.Token, (f, _) => frames = f, () => { manual = true; cts.CancelAfter(3000); });
+            int shot = 0;
+            using var result = await SnapMark.Capture.LongShotController.CaptureAsync(rect, dsf, true, cts.Token, (f, _) =>
+            {
+                frames = f;
+                // Первые кадры — для разбора, если что-то пойдёт не так.
+                if (++shot <= 4 && browser == "firefox" && pageKind == "anim")
+                    using (var g = Grab(rect.X, rect.Y, rect.Width, rect.Height)) g.Save(Path.Combine(Program.OutDir, $"{name}-f{shot}.png"));
+            }, () => { manual = true; cts.CancelAfter(3000); });
             using (var post = Grab(rect.X, rect.Y, rect.Width, rect.Height)) post.Save(Path.Combine(Program.OutDir, name + "-end.png"));
             try { proc.Kill(true); } catch { }
             foreach (var bp in System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exe))) try { bp.Kill(true); } catch { }
