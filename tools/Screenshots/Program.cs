@@ -46,14 +46,17 @@ async Task RunAll()
 {
     var s = AppServices.Settings;
     s.CommentsOnImage = true;
+    s.CommentSize = 18;
     s.Language = "en";
     Glass.Transparency = 0.5;
     Glass.Frost = 0.45;
-    var page = new Bitmap(Path.Combine(assets, "page.png"));
+    // Свой снимок для каждой сцены: редактор при закрытии освобождает свой.
+    Bitmap Page() => new(Path.Combine(assets, "page.png"));
+    var page = Page();
     var screen = new Screen(1.0, new PixelRect(0, 0, 1920, 1080), new PixelRect(0, 0, 1920, 1040), true);
 
-    await Scene("editor", () => EditorScene(page, screen));
-    await Scene("record", () => RecordScene(page, screen));
+    await Scene("editor", () => EditorScene(Page(), screen));
+    await Scene("record", () => RecordScene(Page(), screen));
     await Scene("ocr", () => OcrScene(page));
     await Scene("steps", () => StepsScene(page));
     await Scene("longshot", () => LongShotScene());
@@ -149,16 +152,16 @@ async Task EditorScene(Bitmap page, Screen screen)
     var ov = new OverlayWindow(screen, page, CaptureMode.Region) { Width = 1920, Height = 1080 };
     ov.Show();
     await Pump(400);
-    ov.Surface.SetSelection(new PixelRect(404, 82, 1186, 748));
+    ov.Surface.SetSelection(new PixelRect(404, 82, 1396, 838));
     await Pump(300);
 
     // Метки со стрелками и комментарии — как пользователь: инструмент «Метка со стрелкой», тянем к цели, печатаем.
     var marks = new (string Color, Point Center, Point Tail, string Comment)[]
     {
         ("#FF3B30", new Point(690, 118), new Point(586, 118), "Typo in the heading"),
-        ("#FF9500", new Point(1150, 812 - 150), new Point(1180, 712), "Pay button is barely visible"),
-        ("#0A84FF", new Point(1300, 640), new Point(1394, 660), "Total doesn't match: should be $30.50"),
-        ("#34C759", new Point(1540, 460), new Point(1540, 508), "Promo field overflows the card"),
+        ("#FF9500", new Point(1190, 842), new Point(1226, 758), "Pay button is barely visible"),
+        ("#0A84FF", new Point(1548, 660), new Point(1478, 660), "Total should be $30.50"),
+        ("#34C759", new Point(1612, 523), new Point(1570, 523), "Overflows the card"),
     };
     foreach (var (color, center, tail, comment) in marks)
     {
