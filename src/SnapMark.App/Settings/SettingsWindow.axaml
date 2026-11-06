@@ -171,6 +171,14 @@
                     <TextBlock Text="{l:Tr 'Запись видео (старт / стоп)'}"/>
                     <ui:HotkeyBox x:Name="HkVideo" Grid.Column="1"/>
                   </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{l:Tr 'Пошаговая инструкция (старт / готово)'}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'Каждый клик — скриншот с меткой на месте нажатия; шаги собираются в серию'}"/>
+                    </StackPanel>
+                    <ui:HotkeyBox x:Name="HkSteps" Grid.Column="1"/>
+                  </Grid>
                 </StackPanel>
               </Border>
               <TextBlock Classes="caption" Margin="4,8,4,0"

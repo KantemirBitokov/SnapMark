@@ -94,6 +94,7 @@ internal sealed class MacHotkeys : IGlobalHotkeys
                          (HotkeyAction.CaptureRegion, s.CaptureRegionHotkey),
                          (HotkeyAction.CaptureFull, s.CaptureFullHotkey),
                          (HotkeyAction.RecordVideo, s.RecordVideoHotkey),
+                         (HotkeyAction.StepGuide, s.StepGuideHotkey),
                      })
             {
                 if (hk.IsEmpty) continue;

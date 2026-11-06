@@ -10,7 +10,7 @@ namespace SnapMark.Platform;
 // нужно реализовать их в Platform/Unix (сейчас там упрощённые реализации и заглушки).
 // ─────────────────────────────────────────────────────────────────────────────
 
-public enum HotkeyAction { CaptureRegion, CaptureFull, RecordVideo }
+public enum HotkeyAction { CaptureRegion, CaptureFull, RecordVideo, StepGuide }
 
 /// <summary>Снимок экрана. Координаты — физические пиксели виртуального рабочего стола.</summary>
 public interface IScreenCapture

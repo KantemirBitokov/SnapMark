@@ -195,6 +195,9 @@ public partial class App : Application
                 if (RecordingController.IsRecording) _ = RecordingController.StopAsync();
                 else CaptureController.Start(CaptureMode.VideoRegion);
                 break;
+            case HotkeyAction.StepGuide:
+                Steps.StepRecorder.Toggle();
+                break;
         }
     }
 
@@ -219,6 +222,8 @@ public partial class App : Application
                 if (RecordingController.IsRecording) _ = RecordingController.StopAsync();
                 else Delay(() => CaptureController.Start(CaptureMode.VideoRegion));
             }));
+        menu.Items.Add(Item(() => L.F("Пошаговая инструкция\t{0}", AppServices.Settings.StepGuideHotkey),
+            () => Delay(Steps.StepRecorder.Toggle)));
         menu.Items.Add(new NativeMenuItemSeparator());
         menu.Items.Add(Item(() => L.T("Серия скриншотов…"), SeriesWindow.ShowSingle));
         menu.Items.Add(Item(() => L.T("Открыть папку скриншотов"), () => ShellOpen.OpenFolder(AppServices.Settings.SaveFolder)));

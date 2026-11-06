@@ -76,6 +76,7 @@ public static class CommandLine
             case "--region": App.RunHotkeyAction(HotkeyAction.CaptureRegion); break;
             case "--full": App.RunHotkeyAction(HotkeyAction.CaptureFull); break;
             case "--record": App.RunHotkeyAction(HotkeyAction.RecordVideo); break;
+            case "--steps": App.RunHotkeyAction(HotkeyAction.StepGuide); break;
             case "--series": UI.SeriesWindow.ShowSingle(); break;
             case "--settings": Settings.SettingsWindow.ShowSingle(); break;
         }

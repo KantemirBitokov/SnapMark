@@ -52,6 +52,10 @@ public sealed class AppSettings
     public Hotkey RecordVideoHotkey { get; set; } = OperatingSystem.IsMacOS()
         ? new() { Key = "D9", Win = true, Shift = true }
         : new() { Key = "PrintScreen", Ctrl = true };
+    /// <summary>Пошаговая инструкция: старт / готово.</summary>
+    public Hotkey StepGuideHotkey { get; set; } = OperatingSystem.IsMacOS()
+        ? new() { Key = "D8", Win = true, Shift = true }
+        : new() { Key = "PrintScreen", Ctrl = true, Shift = true };
 
     // ── Основные ─────────────────────────────────────────────────────
     /// <summary>Язык интерфейса: en, ru, de, fr, it, es. По умолчанию — английский.</summary>
@@ -109,6 +113,21 @@ public sealed class AppSettings
     public bool ShowRecordingFrame { get; set; } = true;
     /// <summary>Курсор мыши в видео (и подсветка кликов на macOS).</summary>
     public bool VideoShowCursor { get; set; } = true;
+    /// <summary>Подсвечивать клики кругами на видео.</summary>
+    public bool VideoHighlightClicks { get; set; } = true;
+    /// <summary>Показывать на видео нажатые сочетания клавиш (только сочетания и служебные клавиши, не набор текста).</summary>
+    public bool VideoShowKeys { get; set; }
+
+    // ── Пошаговая инструкция ─────────────────────────────────────────
+    /// <summary>Подписывать шаги названием окна, по которому кликнули («Клик: Блокнот»).</summary>
+    public bool StepsWindowTitles { get; set; } = true;
+
+    // ── Распознавание текста ─────────────────────────────────────────
+    /// <summary>Склеивать строки в абзацы (без переносов внутри абзаца).</summary>
+    public bool OcrJoinLines { get; set; }
+
+    // ── Скрытие (размытие / пикселизация) ───────────────────────────
+    public string LastRedactMode { get; set; } = "Blur";
 
     // ── Последний стиль аннотаций (запоминаем между запусками) ──────
     public string LastColor { get; set; } = "#FF3B30";

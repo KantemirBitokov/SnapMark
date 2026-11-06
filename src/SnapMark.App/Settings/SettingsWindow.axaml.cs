@@ -129,6 +129,7 @@ public partial class SettingsWindow : Window
         HkRegion.Value = S.CaptureRegionHotkey.Clone();
         HkFull.Value = S.CaptureFullHotkey.Clone();
         HkVideo.Value = S.RecordVideoHotkey.Clone();
+        HkSteps.Value = S.StepGuideHotkey.Clone();
 
         FormatCombo.SelectedIndex = (int)S.ImageFormat;
         QualitySlider.Value = S.ImageQuality;
@@ -229,6 +230,7 @@ public partial class SettingsWindow : Window
         HkRegion.ValueChanged += hk => SetHotkey(hk, h => S.CaptureRegionHotkey = h);
         HkFull.ValueChanged += hk => SetHotkey(hk, h => S.CaptureFullHotkey = h);
         HkVideo.ValueChanged += hk => SetHotkey(hk, h => S.RecordVideoHotkey = h);
+        HkSteps.ValueChanged += hk => SetHotkey(hk, h => S.StepGuideHotkey = h);
 
         DisableSnippingButton.Click += (_, _) =>
         {
@@ -427,7 +429,7 @@ public partial class SettingsWindow : Window
             : hk.Status;
 
         var conflict = PlatformServices.PrintScreenConflict;
-        bool usesPrtSc = new[] { S.CaptureRegionHotkey, S.CaptureFullHotkey, S.RecordVideoHotkey }
+        bool usesPrtSc = new[] { S.CaptureRegionHotkey, S.CaptureFullHotkey, S.RecordVideoHotkey, S.StepGuideHotkey }
             .Any(h => h.Key is "PrintScreen" or "Snapshot");
         PrtScCard.IsVisible = conflict.IsSupported && usesPrtSc && conflict.IsSystemToolBoundToPrintScreen();
     }

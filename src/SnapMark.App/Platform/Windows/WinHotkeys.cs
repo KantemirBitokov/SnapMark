@@ -64,6 +64,7 @@ internal sealed class WinHotkeys : IGlobalHotkeys, IPasteSupport
         Add(list, HotkeyAction.CaptureRegion, s.CaptureRegionHotkey);
         Add(list, HotkeyAction.CaptureFull, s.CaptureFullHotkey);
         Add(list, HotkeyAction.RecordVideo, s.RecordVideoHotkey);
+        Add(list, HotkeyAction.StepGuide, s.StepGuideHotkey);
         lock (_lock) _pending = list;
         if (_hwnd != IntPtr.Zero) PostMessage(_hwnd, WM_REAPPLY, IntPtr.Zero, IntPtr.Zero);
     }

@@ -120,6 +120,7 @@ internal sealed class X11Hotkeys : IGlobalHotkeys
             (HotkeyAction.CaptureRegion, settings.CaptureRegionHotkey.Clone()),
             (HotkeyAction.CaptureFull, settings.CaptureFullHotkey.Clone()),
             (HotkeyAction.RecordVideo, settings.RecordVideoHotkey.Clone()),
+            (HotkeyAction.StepGuide, settings.StepGuideHotkey.Clone()),
         };
         _queue.Enqueue(() => Grab(bindings));
     }
