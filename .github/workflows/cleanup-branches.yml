@@ -1,0 +1,28 @@
+# Уборка: удаляет рабочие ветки feature/* и fix/*, которые уже целиком влиты в main.
+# Ветки с невлитыми изменениями и служебные ci-* не трогает. Запуск вручную: Actions → Cleanup branches → Run workflow.
+name: Cleanup branches
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with: { fetch-depth: 0 }
+      - name: Delete merged feature/fix branches
+        shell: bash
+        run: |
+          git fetch -q origin '+refs/heads/*:refs/remotes/origin/*'
+          for ref in $(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -E '^(feature|fix)/'); do
+            if git merge-base --is-ancestor "origin/$ref" origin/main; then
+              echo "delete  $ref"
+              git push -q origin --delete "$ref"
+            else
+              echo "keep    $ref (has commits not in main)"
+            fi
+          done
