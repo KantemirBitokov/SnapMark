@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.8.0 — pro tools
+- **Step-by-step guide in one hotkey** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>PrtSc</kbd>, ⌘⇧8 on Mac, or the tray menu). Work as usual: every click becomes a screenshot with an A, B, C marker and an arrow pointing at what you clicked, captioned with the window name (“Click: Notepad”). On Windows the frame is taken at the moment of the click — before menus open. A small bar shows the step count, pause and **Done**: the whole guide — images and “Screenshot_1_A — Click: …” lines — goes to the clipboard and pastes with one Ctrl+V. Steps stay in the series, so you can caption or delete them.
+- **Copy text from the screen (OCR)** — the new button in the editor (<kbd>Ctrl</kbd>+<kbd>T</kbd>) recognizes the text in the selected area and copies it. Offline: Windows OCR (languages from Windows), Vision on macOS, tesseract on Linux.
+- **Redact: blur and pixelate** — new tool (<kbd>B</kbd>; click again to switch mode) for passwords, emails and faces. Strength 1–10 in the object panel; the saved image contains no original pixels under the area.
+- **Click highlights and shortcut keys in videos** — circles at every click and a caption with pressed shortcuts (Ctrl+C, Enter, F5…) at the bottom of the video. Regular typing is never shown, so passwords don't get into recordings. Toggles in the recording options and Settings → Video.
+- **Pin a screenshot on top of all windows** (<kbd>Ctrl</kbd>+<kbd>F</kbd> in the editor) — drag to move, wheel to zoom, Ctrl+wheel for opacity, double-click or Esc to unpin, right-click for copy/save.
+- New command: `snapmark --steps`.
+- macOS needs the *Input Monitoring* permission for step guides and key captions.
+
 ## 1.7.1
 - Sharper icon in the Settings sidebar, the About page and notifications: they now use renders made for their exact size (with 2× detail for 150–200 % displays) and high-quality scaling, instead of a shrunken 256 px image.
 
