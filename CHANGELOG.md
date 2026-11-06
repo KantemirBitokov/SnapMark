@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.0 — typography
+- **Apple type scale.** All text now follows one scale based on Apple's macOS text styles (body 13 pt): Large Title 26, Title 1 22, Title 2 17, Title 3 15, Headline 13, Body 13, Callout 12, Footnote 12, Caption 11. Buttons, fields and lists use the same body size as labels (they used to be 14).
+- **Optical sizes, like San Francisco.** On Windows SnapMark uses Segoe UI Variable with its three optical sizes: Display for titles from 20 pt, Text for regular text, Small for tiny labels. macOS uses San Francisco; Linux uses Inter, Ubuntu or Cantarell.
+- **Tracking and leading.** Large text is set slightly tighter and small text slightly looser, as in SF; wrapped descriptions get even line spacing. Settings section titles are stronger, and the recording timer uses the system font.
+- **System text size.** The Windows setting Accessibility → Text size now enlarges SnapMark's text too (up to 140 %), like Dynamic Type.
+
 ## 1.5.3
 - **Glass appearance.** New option in Settings → General → Glass appearance: *Auto* (light glass over light content, dark over dark — as before), *Always light* or *Always dark*.
 - **Fixed: bars overlapping on small selections.** For a small capture area the tool bar is wider than the selection and used to run under the action bar. The action bar now looks for a free spot next to the selection, and the tool bar moves aside (or below the action bar) when space is tight.
