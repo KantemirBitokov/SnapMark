@@ -21,6 +21,22 @@ void Check(string name, bool ok, string detail = "")
 
 AppBuilder.Configure<Avalonia.Application>().UseSkia().UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false }).SetupWithoutStarting();
 
+// Avalonia поставила свой контекст синхронизации: продолжения await идут в очередь UI-потока,
+// поэтому тесты запускаем внутри цикла событий (как в настоящем приложении).
+var exitCode = 1;
+var done = new CancellationTokenSource();
+Avalonia.Threading.Dispatcher.UIThread.Post(async () =>
+{
+    try { exitCode = await RunAll(); }
+    catch (Exception ex) { Console.WriteLine("FATAL " + ex); }
+    finally { done.Cancel(); }
+});
+Avalonia.Threading.Dispatcher.UIThread.MainLoop(done.Token);
+return exitCode;
+
+async Task<int> RunAll()
+{
+
 // ── Картинка с известным текстом ──
 byte[] Sample()
 {
@@ -101,6 +117,7 @@ if (OperatingSystem.IsWindows())
 
 Console.WriteLine(failures == 0 ? "ALL PASSED" : $"{failures} FAILED");
 return failures == 0 ? 0 : 1;
+}
 
 static class Win
 {

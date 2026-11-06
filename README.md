@@ -49,7 +49,15 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 - Hold the stroke to snap it into a clean line, arrow, rectangle or ellipse
 - Lines, arrows, double arrows, rectangles, ellipses (filled — e.g. to hide private data)
 - Text with any font, weight, size, color, frame/plate and shadow
+- **Redact** — blur or pixelate passwords, emails and faces; the original pixels never get into the saved image
 - Every object has its own little style panel; undo/redo, duplicate, delete
+
+**Step-by-step guides**
+- One hotkey and work as usual: **every click becomes a screenshot with an A, B, C marker** pointing at what you clicked, captioned with the window name. “Done” — the whole guide is on the clipboard, one Ctrl+V into a chat, doc or Word
+
+**Text & reference**
+- **Copy text from the screen (OCR)** — select an area, the text goes to the clipboard; offline (Windows OCR, macOS Vision, tesseract on Linux)
+- **Pin a screenshot** on top of all windows — move, zoom with the wheel, Ctrl+wheel for opacity
 
 **Share**
 - **Series mode** — collect several screenshots with comments and copy everything at once
@@ -59,6 +67,7 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 **Record**
 - Record a region or the full screen to MP4, MKV, WebM or GIF, 15–60 fps
 - **Draw live while recording**: pen, highlighter, arrows, shapes, A-B-C markers with comments and text appear in the video as you draw and type — with the same style settings as the editor (fonts, frames, shadows…); the recording bar and panels never get into the video; switch to the mouse to keep working in your apps
+- **Click highlights and shortcut keys in the video** for tutorials (regular typing is never shown)
 - Quality presets (Low → Maximum) and an exact area size: 1280×720, 1920×1080, square, vertical 1080×1920 or any W × H
 - Microphone, computer audio or both — with device selection and a mic level test
 - No time limit; crash-safe recording (nothing is lost if the PC freezes)
@@ -111,12 +120,13 @@ SnapMark is free and not (yet) signed with a paid certificate, so the system ask
 | Region screenshot | <kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>1</kbd> |
 | Full screen | <kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>2</kbd> |
 | Record video (start/stop) | <kbd>Ctrl</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>9</kbd> |
+| Step-by-step guide (start/done) | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>8</kbd> |
 
 In the editor: <kbd>Ctrl+C</kbd> copy · <kbd>Ctrl+S</kbd> save · <kbd>Ctrl+D</kbd> add to series ·
-<kbd>Ctrl+Z</kbd> undo · <kbd>M</kbd> marker · <kbd>T</kbd> text · <kbd>P</kbd> pen · <kbd>A</kbd> arrow · <kbd>Esc</kbd> close.
+<kbd>Ctrl+T</kbd> copy text (OCR) · <kbd>Ctrl+F</kbd> pin on top · <kbd>Ctrl+Z</kbd> undo · <kbd>M</kbd> marker · <kbd>T</kbd> text · <kbd>P</kbd> pen · <kbd>A</kbd> arrow · <kbd>B</kbd> redact · <kbd>Esc</kbd> close.
 
 On Wayland (and anywhere you prefer system shortcuts) bind a key to a command:
-`snapmark --region`, `--full`, `--record`, `--series`, `--settings`.
+`snapmark --region`, `--full`, `--record`, `--steps`, `--series`, `--settings`.
 
 ## Building from source
 

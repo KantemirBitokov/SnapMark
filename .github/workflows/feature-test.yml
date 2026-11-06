@@ -25,6 +25,7 @@ jobs:
       - name: Unit-style checks (OCR, redact, input hooks)
         shell: bash
         continue-on-error: true
+        timeout-minutes: 6
         run: |
           mkdir -p out
           export SNAPMARK_TEST_INPUT=1
@@ -32,6 +33,7 @@ jobs:
       - name: End-to-end step guide
         shell: pwsh
         continue-on-error: true
+        timeout-minutes: 4
         run: |
           $ErrorActionPreference = 'Continue'
           $env:SNAPMARK_TEST_INPUT = '1'
