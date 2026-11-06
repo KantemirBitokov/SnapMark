@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0 — new icon
+- **New app icon** in the iOS 26 / macOS 26 Liquid Glass style: a dark plum tile with a frosted glass frame, a glowing neon stroke drawn by a marker, a red recording dot and an A marker — capture, recording, drawing and markers in one picture.
+- Every size is drawn from vector: a simplified version for 32 px and below (taskbar, tray), the Apple icon grid with margins for macOS, and a larger tile for Windows and Linux so it matches neighbouring icons.
+- Icon sources (SVG) and the export script live in `packaging/icon/`.
+
 ## 1.6.0 — typography
 - **Apple type scale.** All text now follows one scale based on Apple's macOS text styles (body 13 pt): Large Title 26, Title 1 22, Title 2 17, Title 3 15, Headline 13, Body 13, Callout 12, Footnote 12, Caption 11. Buttons, fields and lists use the same body size as labels (they used to be 14).
 - **Optical sizes, like San Francisco.** On Windows SnapMark uses Segoe UI Variable with its three optical sizes: Display for titles from 20 pt, Text for regular text, Small for tiny labels. macOS uses San Francisco; Linux uses Inter, Ubuntu or Cantarell.
