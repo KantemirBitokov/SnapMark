@@ -78,6 +78,7 @@ public static class LongShotController
         int notches = 1;               // первый шаг — один щелчок: заодно меряем, сколько он даёт
         double pxPerNotch = 0;         // замер (с запасом в большую сторону)
         double lastPerNotch = 0;       // последний замер — для ожидаемого сдвига
+        bool steady = false;           // два последних замера совпали — прокрутке можно верить вслепую
         bool moved = false;
         int target = Math.Max(1, (int)(rect.Height * 0.45));
         // Точки, где крутим колесо: центр, затем левее и выше (если в центре — элемент, который сам ловит колесо).
@@ -108,7 +109,7 @@ public static class LongShotController
             if (frame is null) break;
             int expected = auto && lastPerNotch > 0 ? (int)Math.Round(step * lastPerNotch) : 0;
             int added;
-            using (frame) added = stitcher.Add(frame, expected);
+            using (frame) added = stitcher.Add(frame, expected, steady);
             Trace?.Invoke($"step={step} point={point} added={added} height={stitcher.Height} pxPerNotch={pxPerNotch:0.#} still={still} misses={misses} | {stitcher.LastInfo}");
             progress?.Invoke(stitcher.Frames, stitcher.Height);
             if (!auto) continue; // ручной режим: снимаем, пока не нажмут «Готово»
@@ -118,6 +119,7 @@ public static class LongShotController
                 moved = true;
                 // Сдвиг на step щелчков = added строк (если не упёрлись в конец страницы — тогда сдвиг меньше).
                 double measured = added / (double)step;
+                steady = lastPerNotch > 0 && Math.Abs(measured - lastPerNotch) <= lastPerNotch * 0.03;
                 lastPerNotch = measured;
                 pxPerNotch = pxPerNotch <= 0 ? measured : Math.Max(measured, pxPerNotch * 0.7 + measured * 0.3);
                 notches = Math.Clamp((int)(target / pxPerNotch), 1, 20);

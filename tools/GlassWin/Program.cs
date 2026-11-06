@@ -322,6 +322,12 @@ class WinApp : Application
                     "user_pref(\"toolkit.telemetry.reportingpolicy.firstRun\", false);",
                     "user_pref(\"browser.startup.homepage_override.mstone\", \"ignore\");",
                     "user_pref(\"trailhead.firstrun.didSeeAboutWelcome\", true);",
+                    "user_pref(\"browser.startup.upgradeDialog.enabled\", false);",
+                    "user_pref(\"browser.shell.skipDefaultBrowserCheckOnFirstRun\", true);",
+                    "user_pref(\"browser.messaging-system.whatsNewPanel.enabled\", false);",
+                    "user_pref(\"messaging-system.rsexperimentloader.enabled\", false);",
+                    "user_pref(\"browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features\", false);",
+                    "user_pref(\"datareporting.policy.firstRunURL\", \"\");",
                 }));
                 foreach (var a in new[] { "-kiosk", "-no-remote", "-new-instance", "-profile", profile, url }) psi.ArgumentList.Add(a);
             }
@@ -505,6 +511,7 @@ class WinApp : Application
                 using var pi = SkiaSharp.SKImage.FromBitmap(part);
                 using var pd = pi.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
                 var ocr = await SnapMark.Services.TextRecognizer.RecognizeAsync(pd.ToArray());
+                if (y0 == 0) Program.Log.WriteLine($"  app-{name} ocr: {ocr.Lines.Count} lines, first: {ocr.Lines.FirstOrDefault()?.Text}");
                 foreach (var line in ocr.Lines)
                 {
                     var m = System.Text.RegularExpressions.Regex.Match(line.Text, @"Line\s*(\d{4})");

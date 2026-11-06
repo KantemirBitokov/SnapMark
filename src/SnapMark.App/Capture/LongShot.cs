@@ -8,22 +8,31 @@ using SkiaSharp;
 namespace SnapMark.Capture;
 
 /// <summary>
-/// Склейка кадров длинного скриншота. Кадр делится на ячейки (строка пикселей × 1/64 ширины), у каждой —
-/// средняя яркость и разброс. Сдвиг между кадрами ищется по совпадению ячеек с допуском, поэтому склейку
-/// не ломают:
-///   • анимации (мерцающие звёзды, карусели, видео, мигающий курсор) — меняется малая доля ячеек;
-///   • закреплённые шапка и подвал (одинаковые строки сверху и снизу) — не дублируются, подвал уходит в конец;
-///   • шапка, которая появляется при прокрутке (GitHub и др.), — сдвиг оценивается и без верхней полосы кадра;
-///   • неподвижные колонки (боковое меню, кнопка чата) — в оценке сдвига не участвуют;
-///   • однообразное содержимое (звёздное небо, таблица из одинаковых строк) — при равных оценках берётся
-///     сдвиг, ближайший к ожидаемому (сколько обычно даёт прокрутка).
+/// Склейка кадров длинного скриншота. Кадр делится на ячейки (строка пикселей × 1/64 ширины). Сдвиг между
+/// кадрами ищется в три ступени:
+///   1. точное совпадение ячеек (отпечаток пикселей) — надёжно для обычных страниц, различает даже похожие строки
+///      списка; анимации (карусели, видео, курсор) портят лишь свои ячейки, остальные совпадают;
+///   2. мягкое совпадение — та же яркость и разброс или то же положение самой светлой и тёмной точки:
+///      выдерживает мерцание (звёздное небо, переливы), когда точных совпадений мало;
+///   3. если содержимое совсем не за что зацепить, а прокрутка стабильно даёт одно и то же число пикселей —
+///      берётся этот ожидаемый сдвиг.
+/// Кроме того: закреплённые шапка и подвал не дублируются (подвал уходит в конец); шапка, появляющаяся при
+/// прокрутке (GitHub), не мешает — оценка идёт и без верхней полосы кадра; неподвижные колонки (меню сбоку,
+/// плавающие кнопки, всплывшее уведомление) в поиске сдвига не участвуют.
 /// </summary>
 public sealed class Stitcher
 {
     const int Blocks = 64;
     readonly int _width;
     readonly List<byte[]> _rows = new();      // результат по строкам (BGRA)
-    byte[][]? _prev;                          // ячейки прошлого удачного кадра: [строка][2·блок] = яркость, разброс
+    Row[]? _prev;                             // ячейки прошлого удачного кадра
+
+    /// <summary>Ячейки одной строки: средняя яркость, разброс, положение самой светлой и тёмной точки, отпечаток.</summary>
+    sealed class Row
+    {
+        public readonly byte[] M = new byte[Blocks], V = new byte[Blocks], Hi = new byte[Blocks], Lo = new byte[Blocks];
+        public readonly ushort[] H = new ushort[Blocks];
+    }
 
     public Stitcher(int width) => _width = width;
 
@@ -35,9 +44,10 @@ public sealed class Stitcher
 
     /// <summary>
     /// Добавить кадр. Возвращает число новых строк: 0 — страница не сдвинулась, -1 — сдвинулась, но надёжного
-    /// перекрытия с прошлым кадром нет (прокрутили слишком далеко и т. п.). expected — ожидаемый сдвиг (0 — неизвестен).
+    /// перекрытия с прошлым кадром нет. expected — ожидаемый сдвиг (0 — неизвестен); trustExpected — прокрутка
+    /// стабильна, и если сопоставить нечего (однородная или сплошь анимированная область), можно взять его.
     /// </summary>
-    public int Add(SKBitmap frame, int expected = 0)
+    public int Add(SKBitmap frame, int expected = 0, bool trustExpected = false)
     {
         if (frame.Width != _width) throw new ArgumentException("width");
         int h = frame.Height;
@@ -54,7 +64,6 @@ public sealed class Stitcher
         if (a.Length != h) throw new ArgumentException("height");
 
         // Неподвижные строки сверху и снизу (закреплённые шапка и подвал).
-        var all = Enumerable.Repeat(true, Blocks).ToArray();
         int top = 0;
         while (top < h && RowSame(a[top], cur[top])) top++;
         if (top == h) { LastInfo = "same"; return 0; }
@@ -62,54 +71,76 @@ public sealed class Stitcher
         while (bottom < h - top && RowSame(a[h - 1 - bottom], cur[h - 1 - bottom])) bottom++;
         int zh = h - top - bottom;
 
-        // Какие колонки ячеек изменились на месте (s = 0). Неподвижные (меню сбоку, фон, плавающие кнопки)
-        // в поиске сдвига не участвуют. Если изменилась только малая часть (анимация) — страница стоит.
+        // Какие колонки ячеек изменились на месте. Неподвижные (меню сбоку, фон, плавающие кнопки, уведомления)
+        // в поиске сдвига не участвуют. Изменилась только малая часть (анимация на месте) — страница стоит.
         var moving = new bool[Blocks];
         int evidence = 0, movingCount = 0;
         for (int j = 0; j < Blocks; j++)
         {
             int counted = 0, matched = 0;
             for (int y = top; y < top + zh; y++)
-                Cell(a[y], cur[y], j, ref counted, ref matched);
+                if (Evidence(a[y], cur[y], j)) { counted++; if (Soft(a[y], cur[y], j)) matched++; }
             if (counted == 0) continue;
             evidence++;
             if (matched < counted * 0.95) { moving[j] = true; movingCount++; }
         }
-        if (evidence == 0 || movingCount < Math.Max(2, evidence * 0.15)) { LastInfo = $"anim moving={movingCount}/{evidence}"; return 0; }
+        if (evidence == 0 || movingCount < Math.Max(2, evidence * 0.15)) { LastInfo = $"still moving={movingCount}/{evidence}"; return 0; }
 
-        var (score0, _, _, _) = Score(a, cur, top, zh, 0, moving, 0);
+        var e = new double[zh];
+        var t = new double[zh];
+        var cnt = new int[zh];
         int band = h / 4;
-        int bestS = -1, bestCounted = 0;
-        double bestScore = 0;
-        var scores = new double[zh];
-        var counts = new int[zh];
-        for (int s = 1; s < zh; s++)
+        for (int sh = 0; sh < zh; sh++)
         {
-            int overlap = zh - s;
-            var (full, cf, low, cl) = Score(a, cur, top, zh, s, moving, Math.Min(band, overlap / 2));
-            double sc = cf >= 24 ? full : 0;
-            if (cl >= 24 && low > sc) sc = low;
-            scores[s] = sc;
-            counts[s] = Math.Max(cf, cl);
-            if (sc > bestScore) { bestScore = sc; bestS = s; }
+            int overlap = zh - sh;
+            var r = Score(a, cur, top, zh, sh, moving, sh == 0 ? 0 : Math.Min(band, overlap / 2));
+            e[sh] = r.Exact;
+            t[sh] = r.Soft;
+            cnt[sh] = r.Counted;
         }
-        if (bestS > 0)
+
+        int Pick(double[] sc, double tie)
         {
-            // Почти равные оценки (однообразное содержимое) — ближе к ожидаемому сдвигу, иначе — с большим перекрытием.
-            for (int s = 1; s < zh; s++)
+            int best = -1;
+            for (int sh = 1; sh < zh; sh++)
+                if (cnt[sh] >= 24 && (best < 0 || sc[sh] > sc[best])) best = sh;
+            if (best < 0) return -1;
+            // Почти равные оценки (повторяющееся содержимое) — ближе к ожидаемому сдвигу, иначе — с большим перекрытием.
+            double bestScore = sc[best];
+            for (int sh = 1; sh < zh; sh++)
             {
-                if (scores[s] < bestScore - 0.03) continue;
-                bool better = expected > 0
-                    ? Math.Abs(s - expected) < Math.Abs(bestS - expected)
-                    : counts[s] > bestCounted;
-                if (better || s == bestS) { bestS = s; bestCounted = counts[s]; }
+                if (cnt[sh] < 24 || sc[sh] < bestScore - tie || sh == best) continue;
+                bool better = expected > 0 ? Math.Abs(sh - expected) < Math.Abs(best - expected) : cnt[sh] > cnt[best];
+                if (better) best = sh;
+            }
+            return best;
+        }
+
+        int s = Pick(e, 0.005);
+        string how = "exact";
+        if (s < 0 || e[s] < 0.5 || e[s] < e[0] + 0.1)
+        {
+            s = Pick(t, 0.01);
+            how = "soft";
+            if (s < 0 || t[s] < 0.7 || t[s] < t[0] + 0.1)
+            {
+                s = -1;
+                how = "none";
             }
         }
-        LastInfo = $"s={bestS} score={bestScore:0.00} s0={score0:0.00} moving={movingCount}/{evidence} expected={expected}";
-        if (bestS <= 0 || bestScore < 0.6 || bestScore < score0 + 0.05)
-            return score0 >= 0.6 ? 0 : -1;
+        LastInfo = $"{how} s={s} e={(s > 0 ? e[s] : 0):0.00} t={(s > 0 ? t[s] : 0):0.00} e0={e[0]:0.00} t0={t[0]:0.00} moving={movingCount}/{evidence} expected={expected}";
+        if (s < 0)
+        {
+            if (t[0] >= 0.7 || e[0] >= 0.5) return 0; // на месте — значит, не сдвинулось
+            if (trustExpected && expected > 0 && expected < zh)
+            {
+                s = expected;
+                LastInfo += " → blind";
+            }
+            else return -1;
+        }
 
-        int newRows = bestS;
+        int newRows = s;
         // Результат всегда заканчивается хвостом прошлого кадра, а его нижние bottom строк — тот же подвал,
         // что и у этого кадра: убираем их, добавляем новые строки и подвал заново (подвал остаётся в самом конце).
         if (bottom > 0) _rows.RemoveRange(_rows.Count - bottom, bottom);
@@ -120,39 +151,53 @@ public sealed class Stitcher
     }
 
     /// <summary>
-    /// Доля совпавших ячеек: строка нового кадра top+i против строки прошлого top+s+i — по всему перекрытию
-    /// и без верхней полосы нового кадра (i ≥ skip, там могла появиться прилипающая шапка).
+    /// Доли совпавших ячеек (точно и мягко): строка нового кадра top+i против строки прошлого top+s+i.
+    /// Берётся лучшее из двух — по всему перекрытию и без верхней полосы нового кадра (i ≥ skip),
+    /// где могла появиться прилипающая шапка.
     /// </summary>
-    static (double Full, int CountedFull, double Low, int CountedLow) Score(byte[][] a, byte[][] b, int top, int zh, int s, bool[] moving, int skip)
+    static (double Exact, double Soft, int Counted) Score(Row[] a, Row[] b, int top, int zh, int s, bool[] moving, int skip)
     {
-        int cHigh = 0, mHigh = 0, cLow = 0, mLow = 0;
+        int cAll = 0, eAll = 0, tAll = 0, cLow = 0, eLow = 0, tLow = 0;
         for (int i = 0; i < zh - s; i++)
         {
             var ra = a[top + s + i];
             var rb = b[top + i];
-            if (i < skip)
-                for (int j = 0; j < Blocks; j++) { if (moving[j]) Cell(ra, rb, j, ref cHigh, ref mHigh); }
-            else
-                for (int j = 0; j < Blocks; j++) { if (moving[j]) Cell(ra, rb, j, ref cLow, ref mLow); }
+            bool low = i >= skip;
+            for (int j = 0; j < Blocks; j++)
+            {
+                if (!moving[j] || !Evidence(ra, rb, j)) continue;
+                bool ex = ra.H[j] == rb.H[j];
+                bool so = ex || Soft(ra, rb, j);
+                cAll++; if (ex) eAll++; if (so) tAll++;
+                if (low) { cLow++; if (ex) eLow++; if (so) tLow++; }
+            }
         }
-        int c = cHigh + cLow, m = mHigh + mLow;
-        return (c == 0 ? 0 : m / (double)c, c, cLow == 0 ? 0 : mLow / (double)cLow, cLow);
+        double ea = cAll == 0 ? 0 : eAll / (double)cAll, ta = cAll == 0 ? 0 : tAll / (double)cAll;
+        if (cLow >= 24 && cLow < cAll)
+        {
+            ea = Math.Max(ea, eLow / (double)cLow);
+            ta = Math.Max(ta, tLow / (double)cLow);
+        }
+        return (ea, ta, cAll);
     }
 
-    static void Cell(byte[] ra, byte[] rb, int j, ref int counted, ref int matched)
+    /// <summary>Обе ячейки ровные и одинаковые — ни за, ни против.</summary>
+    static bool Evidence(Row a, Row b, int j) => !(a.V[j] <= 8 && b.V[j] <= 8 && Math.Abs(a.M[j] - b.M[j]) <= 4);
+
+    /// <summary>Мягкое совпадение: та же яркость и разброс — или те же места самой светлой и тёмной точки (мерцание).</summary>
+    static bool Soft(Row a, Row b, int j)
     {
-        int ma = ra[2 * j], va = ra[2 * j + 1], mb = rb[2 * j], vb = rb[2 * j + 1];
-        int dm = Math.Abs(ma - mb);
-        if (va <= 8 && vb <= 8 && dm <= 4) return; // обе ячейки ровные и одинаковые — ни за, ни против
-        counted++;
-        if (dm <= 5 && Math.Abs(va - vb) <= 16) matched++;
+        if (a.H[j] == b.H[j]) return true;
+        if (Math.Abs(a.M[j] - b.M[j]) <= 5 && Math.Abs(a.V[j] - b.V[j]) <= 16) return true;
+        return a.V[j] > 24 && b.V[j] > 24 && Math.Abs(a.Hi[j] - b.Hi[j]) <= 1 && Math.Abs(a.Lo[j] - b.Lo[j]) <= 1;
     }
 
-    static bool RowSame(byte[] a, byte[] b)
+    static bool RowSame(Row a, Row b)
     {
-        int counted = 0, matched = 0;
-        for (int j = 0; j < Blocks; j++) Cell(a, b, j, ref counted, ref matched);
-        return counted - matched <= 1;
+        int diff = 0;
+        for (int j = 0; j < Blocks; j++)
+            if (a.H[j] != b.H[j] && Evidence(a, b, j) && ++diff > 1) return false;
+        return true;
     }
 
     public SKBitmap Result()
@@ -179,34 +224,41 @@ public sealed class Stitcher
         return rows;
     }
 
-    /// <summary>Ячейки строки: средняя яркость и разброс (max − min) по 64 полосам ширины.</summary>
+    /// <summary>Ячейки строки по 64 полосам ширины.</summary>
     /// <remarks>
     /// Правый край (полоса прокрутки: ползунок двигается и появляется/гаснет) и узкая левая кромка не входят —
     /// иначе строки двух кадров никогда не совпадут.
     /// </remarks>
-    static byte[][] Cells(List<byte[]> rows, int width)
+    static Row[] Cells(List<byte[]> rows, int width)
     {
         int from = Math.Min(width / 50, 8), to = Math.Max(from + Blocks, width - Math.Max(24, width / 20));
         to = Math.Min(to, width);
-        var result = new byte[rows.Count][];
+        var result = new Row[rows.Count];
         for (int y = 0; y < rows.Count; y++)
         {
             var r = rows[y];
-            var c = new byte[2 * Blocks];
+            var c = new Row();
             for (int j = 0; j < Blocks; j++)
             {
                 int x0 = from + (to - from) * j / Blocks, x1 = Math.Max(x0 + 1, from + (to - from) * (j + 1) / Blocks);
-                int sum = 0, min = 255, max = 0;
+                int sum = 0, min = 256, max = -1, hi = 0, lo = 0;
+                uint hv = 2166136261;
                 for (int x = x0; x < x1; x++)
                 {
                     int p = x * 4;
                     int l = (r[p] + r[p + 1] * 2 + r[p + 2]) >> 2;
                     sum += l;
-                    if (l < min) min = l;
-                    if (l > max) max = l;
+                    if (l < min) { min = l; lo = x - x0; }
+                    if (l > max) { max = l; hi = x - x0; }
+                    hv = (hv ^ (uint)(r[p] >> 3)) * 16777619;
+                    hv = (hv ^ (uint)(r[p + 1] >> 3)) * 16777619;
+                    hv = (hv ^ (uint)(r[p + 2] >> 3)) * 16777619;
                 }
-                c[2 * j] = (byte)(sum / (x1 - x0));
-                c[2 * j + 1] = (byte)(max - min);
+                c.M[j] = (byte)(sum / (x1 - x0));
+                c.V[j] = (byte)(max - min);
+                c.Hi[j] = (byte)Math.Min(hi, 255);
+                c.Lo[j] = (byte)Math.Min(lo, 255);
+                c.H[j] = (ushort)(hv ^ (hv >> 16));
             }
             result[y] = c;
         }
@@ -247,10 +299,24 @@ public static class AutoScroll
     [StructLayout(LayoutKind.Sequential)] struct MOUSEINPUT { public int dx, dy; public int mouseData; public uint dwFlags, time; public IntPtr extra; }
     [DllImport("user32.dll")] static extern uint SendInput(uint n, INPUT[] inputs, int size);
     [DllImport("user32.dll")] static extern bool SetCursorPos(int x, int y);
+    [StructLayout(LayoutKind.Sequential)] struct WPOINT { public int X, Y; }
+    [DllImport("user32.dll")] static extern IntPtr WindowFromPoint(WPOINT p);
+    [DllImport("user32.dll")] static extern IntPtr GetAncestor(IntPtr h, uint flags);
+    [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
+    [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
 
     [SupportedOSPlatform("windows")]
     static bool Win(int x, int y, int notches)
     {
+        // Если в Windows выключено «Прокручивать неактивные окна», колесо уходит активному окну, а не тому,
+        // что под курсором, — делаем окно под точкой активным (только чужое: свои панели не трогаем).
+        var root = GetAncestor(WindowFromPoint(new WPOINT { X = x, Y = y }), 2 /*GA_ROOT*/);
+        if (root != IntPtr.Zero && root != GetForegroundWindow())
+        {
+            GetWindowThreadProcessId(root, out var pid);
+            if (pid != (uint)Environment.ProcessId) SetForegroundWindow(root);
+        }
         SetCursorPos(x, y);
         var input = new INPUT { type = 0, mi = new MOUSEINPUT { dwFlags = 0x0800 /*WHEEL*/, mouseData = -120 * notches } };
         return SendInput(1, new[] { input }, Marshal.SizeOf<INPUT>()) == 1;
