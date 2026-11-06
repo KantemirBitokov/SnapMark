@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.1
+- **Select text on the image, like in a text editor.** “Recognize text” (<kbd>Ctrl</kbd>+<kbd>T</kbd>) now keeps the captured area in place and highlights the recognized words: drag to select, double-click for a word, triple-click for a line, Shift+click to extend, <kbd>Ctrl</kbd>+<kbd>C</kbd> copies the selection, <kbd>Ctrl</kbd>+<kbd>A</kbd> selects all; buttons “Copy selection” and “Copy all”.
+- **Blur really hides text now.** It used to leave the original faintly visible (Skia made the blurred layer semi-transparent); now it's computed in separate passes and is fully opaque, much stronger by default, and grows with the area and the strength (1–10, remembered).
+- **Readable notifications and panels with “Always light” / “Always dark” glass.** Over a background of the opposite brightness the glass becomes denser automatically, and secondary text on glass has more contrast.
+- **Shortcut keys in videos are on by default** (Ctrl+Z, Enter… at the bottom of the video; regular typing is never shown).
+
 ## 1.8.0 — pro tools
 - **Step-by-step guide in one hotkey** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>PrtSc</kbd>, ⌘⇧8 on Mac, or the tray menu). Work as usual: every click becomes a screenshot with an A, B, C marker and an arrow pointing at what you clicked, captioned with the window name (“Click: Notepad”). On Windows the frame is taken at the moment of the click — before menus open. A small bar shows the step count, pause and **Done**: the whole guide — images and “Screenshot_1_A — Click: …” lines — goes to the clipboard and pastes with one Ctrl+V. Steps stay in the series, so you can caption or delete them.
 - **Copy text from the screen (OCR)** — the new button in the editor (<kbd>Ctrl</kbd>+<kbd>T</kbd>) recognizes the text in the selected area and copies it. Offline: Windows OCR (languages from Windows), Vision on macOS, tesseract on Linux.
