@@ -208,12 +208,20 @@ public sealed class Stitcher
         return a.V[j] > 24 && b.V[j] > 24 && Math.Abs(a.Hi[j] - b.Hi[j]) <= 1 && Math.Abs(a.Lo[j] - b.Lo[j]) <= 1;
     }
 
+    /// <summary>
+    /// Строка на месте (для закреплённых шапки и подвала): почти все ячейки совпали. Допуск — на плавающие
+    /// поверх них кнопки, уведомления и анимацию, которые портят отдельные ячейки.
+    /// </summary>
     static bool RowSame(Row a, Row b)
     {
-        int diff = 0;
+        int diff = 0, ev = 0;
         for (int j = 0; j < Blocks; j++)
-            if (a.H[j] != b.H[j] && Evidence(a, b, j) && ++diff > 1) return false;
-        return true;
+        {
+            if (!Evidence(a, b, j)) continue;
+            ev++;
+            if (a.H[j] != b.H[j] && !Soft(a, b, j)) diff++;
+        }
+        return diff <= Math.Max(1, ev / 10);
     }
 
     public SKBitmap Result()
