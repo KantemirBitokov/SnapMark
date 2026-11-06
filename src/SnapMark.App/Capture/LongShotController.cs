@@ -110,6 +110,16 @@ public static class LongShotController
             int expected = auto && lastPerNotch > 0 ? (int)Math.Round(step * lastPerNotch) : 0;
             int added;
             using (frame) added = stitcher.Add(frame, expected, steady);
+            if (added == 0 && auto)
+            {
+                // Firefox и некоторые программы начинают плавную прокрутку с задержкой — посмотрим ещё раз чуть позже.
+                try { await Task.Delay(600, ct); } catch (OperationCanceledException) { break; }
+                SKBitmap? again;
+                try { again = await SettledFrameAsync(rect, 0, ct); }
+                catch (OperationCanceledException) { break; }
+                if (again is null) break;
+                using (again) added = stitcher.Add(again, expected, steady);
+            }
             Trace?.Invoke($"step={step} point={point} added={added} height={stitcher.Height} pxPerNotch={pxPerNotch:0.#} still={still} misses={misses} | {stitcher.LastInfo}");
             progress?.Invoke(stitcher.Frames, stitcher.Height);
             if (!auto) continue; // ручной режим: снимаем, пока не нажмут «Готово»
@@ -121,7 +131,8 @@ public static class LongShotController
                 double measured = added / (double)step;
                 steady = lastPerNotch > 0 && Math.Abs(measured - lastPerNotch) <= lastPerNotch * 0.03;
                 lastPerNotch = measured;
-                pxPerNotch = pxPerNotch <= 0 ? measured : Math.Max(measured, pxPerNotch * 0.7 + measured * 0.3);
+                // Заметно меньше прежнего — скорее всего, упёрлись в конец страницы: замер не обновляем.
+                if (pxPerNotch <= 0 || measured >= pxPerNotch * 0.6) pxPerNotch = measured;
                 notches = Math.Clamp((int)(target / pxPerNotch), 1, 20);
             }
             else if (added == 0)

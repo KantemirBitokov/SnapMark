@@ -368,7 +368,7 @@ class WinApp : Application
                 File.WriteAllBytes(Path.Combine(Program.OutDir, name + ".png"), data.ToArray());
 
             // Разбор колонки результата (левее текста строк): номера строк, их высота и промежутки между ними.
-            int sampleX = (int)Math.Round((pageKind == "sidebar" ? 250 : 10) * dsf) - rect.X + 4;
+            int sampleX = pageKind == "sidebar" ? (int)Math.Round(250 * dsf) - rect.X : 12;
             var seq = new List<(int N, int Start, int Len)>();
             for (int y = 0; y < result.Height; y++)
             {
@@ -512,11 +512,11 @@ class WinApp : Application
                 using var pd = pi.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
                 var ocr = await SnapMark.Services.TextRecognizer.RecognizeAsync(pd.ToArray());
                 if (y0 == 0) Program.Log.WriteLine($"  app-{name} ocr: {ocr.Lines.Count} lines, first: {ocr.Lines.FirstOrDefault()?.Text}");
+                // Номер — отдельное слово из 4 цифр у левого края (распознавание может разбить строку на части).
                 foreach (var line in ocr.Lines)
-                {
-                    var m = System.Text.RegularExpressions.Regex.Match(line.Text, @"Line\s*(\d{4})");
-                    if (m.Success && line.Words.Count > 0 && line.Words[0].Y + y0 >= (y0 == 0 ? 0 : y0 + 100)) numbers.Add(int.Parse(m.Groups[1].Value));
-                }
+                    foreach (var w in line.Words)
+                        if (w.X < 160 && (y0 == 0 || w.Y >= 100) && System.Text.RegularExpressions.Regex.IsMatch(w.Text, @"^\d{4}$"))
+                            numbers.Add(int.Parse(w.Text));
             }
             var distinct = numbers.Distinct().OrderBy(x => x).ToList();
             int max = distinct.Count > 0 ? distinct[^1] : 0, min = distinct.Count > 0 ? distinct[0] : 0;
