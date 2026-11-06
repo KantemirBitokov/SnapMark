@@ -226,14 +226,14 @@ public static class RecordingController
     {
         var s = AppServices.Settings;
         bool clicks = s.VideoHighlightClicks && !OperatingSystem.IsMacOS(); // на Mac клики рисует ffmpeg
-        if (!clicks && !s.VideoShowKeys) return;
+        if (!clicks && !s.VideoShowKeyCombos) return;
         var monitor = InputMonitor.Instance;
         if (!monitor.IsSupported)
         {
             Toast.Show(L.T("Подсветка кликов и клавиш недоступна"), L.T(monitor.Problem ?? ""));
             return;
         }
-        var w = new RecordingEffectsWindow(rect, scaling, s.VideoHighlightClicks, s.VideoShowKeys);
+        var w = new RecordingEffectsWindow(rect, scaling, s.VideoHighlightClicks, s.VideoShowKeyCombos);
         w.Show();
         _effects = w;
         if (monitor.Problem is { } problem)

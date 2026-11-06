@@ -68,6 +68,12 @@ class WinApp : Application
                 }
             }
             catch (Exception ex) { Program.Log.WriteLine("ERROR " + ex); }
+            try { await EffectsTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("EFFECTS ERROR " + ex); }
+            try { await OcrTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("OCR ERROR " + ex); }
+            try { await ToastTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("TOAST ERROR " + ex); }
             life.Shutdown();
         });
         base.OnFrameworkInitializationCompleted();
@@ -127,6 +133,73 @@ class WinApp : Application
         await Task.Delay(300);
     }
 
+    /// <summary>Окно эффектов записи: клик и Ctrl+Z должны появиться на экране (и, значит, в видео).</summary>
+    static async Task EffectsTest()
+    {
+        using var bg = new Bitmap(Program.BgPath);
+        var back = new Window { Width = 900, Height = 600, Position = new PixelPoint(0, 0), SystemDecorations = SystemDecorations.None,
+            Content = new Image { Source = bg, Stretch = Stretch.Fill } };
+        back.Show();
+        await Task.Delay(500);
+        var fx = new SnapMark.Recording.RecordingEffectsWindow(new PixelRect(0, 0, 900, 600), 1, clicks: true, keys: true);
+        fx.Show();
+        await Task.Delay(800);
+        Program.Log.WriteLine($"effects problem={fx.Problem}");
+        Input.Click(420, 260);
+        await Task.Delay(120);
+        Input.Combo(0x11, 0x5A); // Ctrl+Z
+        await Task.Delay(200);
+        using (var shot = Grab(0, 0, 900, 600)) shot.Save(Path.Combine(Program.OutDir, "effects-1.png"));
+        Input.Combo(0x11, 0x5A);
+        Input.Combo(0x11, 0x5A);
+        await Task.Delay(250);
+        using (var shot = Grab(0, 0, 900, 600)) shot.Save(Path.Combine(Program.OutDir, "effects-2.png"));
+        fx.Close();
+        back.Close();
+        Program.Log.WriteLine("saved effects");
+    }
+
+    /// <summary>Окно «текст с картинки»: распознать, протянуть мышью по части слов, снять экран.</summary>
+    static async Task OcrTest()
+    {
+        using var surface = SkiaSharp.SKSurface.Create(new SkiaSharp.SKImageInfo(760, 220));
+        var c = surface.Canvas;
+        c.Clear(SkiaSharp.SKColors.White);
+        using (var font = new SkiaSharp.SKFont(SkiaSharp.SKTypeface.FromFamilyName("Segoe UI"), 38))
+        using (var paint = new SkiaSharp.SKPaint { Color = SkiaSharp.SKColors.Black, IsAntialias = true })
+        {
+            c.DrawText("Order number: 4815-1623-42", 30, 80, font, paint);
+            c.DrawText("Delivery to Baker Street 221b", 30, 160, font, paint);
+        }
+        byte[] png;
+        using (var img = surface.Snapshot()) using (var data = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100)) png = data.ToArray();
+        SnapMark.UI.OcrWindow.Open(png, new PixelRect(80, 80, 760, 220));
+        await Task.Delay(6000); // распознавание
+        // Протянуть от «4815…» до «Baker»: окно сдвинуто на поле тени (14) относительно картинки.
+        Input.Drag(80 + 270, 80 + 60, 80 + 300, 80 + 140);
+        await Task.Delay(400);
+        using (var shot = Grab(0, 0, 900, 420)) shot.Save(Path.Combine(Program.OutDir, "ocr-select.png"));
+        Program.Log.WriteLine("saved ocr");
+    }
+
+    /// <summary>Уведомление при «всегда светлом» стекле поверх тёмного фона.</summary>
+    static async Task ToastTest()
+    {
+        Glass.Appearance = GlassAppearance.Light;
+        Glass.Transparency = 0.65;
+        var screen = new Window { Position = new PixelPoint(0, 0), WindowState = WindowState.FullScreen, SystemDecorations = SystemDecorations.None,
+            Background = new SolidColorBrush(Color.Parse("#202024")) };
+        screen.Show();
+        await Task.Delay(700);
+        SnapMark.UI.Toast.Show("Скопировано", "Скриншот в буфере обмена. Вставь в чат или документ.");
+        await Task.Delay(1500);
+        var b = screen.Screens.Primary!.Bounds;
+        using (var shot = Grab(b.Width - 420, b.Height - 220, 420, 220)) shot.Save(Path.Combine(Program.OutDir, "toast-light-on-dark.png"));
+        screen.Close();
+        Glass.Appearance = GlassAppearance.Auto;
+        Program.Log.WriteLine("saved toast");
+    }
+
     static Button Sel(Button b) { b.Classes.Add("selected"); return b; }
 
     // Снимок экрана через GDI — то, что реально вывела видеокарта.
@@ -156,4 +229,29 @@ class WinApp : Application
     [DllImport("gdi32")] static extern int GetDIBits(IntPtr dc, IntPtr bmp, uint start, uint lines, IntPtr bits, ref BITMAPINFOHEADER bi, uint usage);
     [DllImport("gdi32")] static extern bool DeleteObject(IntPtr o);
     [DllImport("gdi32")] static extern bool DeleteDC(IntPtr dc);
+}
+
+static class Input
+{
+    [StructLayout(LayoutKind.Sequential)] struct INPUT { public uint type; public U u; }
+    [StructLayout(LayoutKind.Explicit)] struct U { [FieldOffset(0)] public MI mi; [FieldOffset(0)] public KI ki; }
+    [StructLayout(LayoutKind.Sequential)] struct MI { public int dx, dy; public uint data, flags, time; public IntPtr extra; }
+    [StructLayout(LayoutKind.Sequential)] struct KI { public ushort vk, scan; public uint flags, time; public IntPtr extra; }
+    [DllImport("user32.dll")] static extern uint SendInput(uint n, INPUT[] i, int size);
+    [DllImport("user32.dll")] static extern bool SetCursorPos(int x, int y);
+    static void Send(params INPUT[] i) => SendInput((uint)i.Length, i, Marshal.SizeOf<INPUT>());
+    static INPUT M(uint f) => new() { type = 0, u = new U { mi = new MI { flags = f } } };
+    static INPUT K(ushort vk, bool up) => new() { type = 1, u = new U { ki = new KI { vk = vk, flags = up ? 2u : 0u } } };
+    public static void Click(int x, int y) { SetCursorPos(x, y); Thread.Sleep(40); Send(M(2), M(4)); }
+    public static void Drag(int x1, int y1, int x2, int y2)
+    {
+        SetCursorPos(x1, y1); Thread.Sleep(60); Send(M(2));
+        for (int i = 1; i <= 12; i++) { SetCursorPos(x1 + (x2 - x1) * i / 12, y1 + (y2 - y1) * i / 12); Send(M(1)); Thread.Sleep(25); }
+        Send(M(4));
+    }
+    public static void Combo(params ushort[] vks)
+    {
+        Send(vks.Select(v => K(v, false)).ToArray());
+        Send(vks.Reverse().Select(v => K(v, true)).ToArray());
+    }
 }

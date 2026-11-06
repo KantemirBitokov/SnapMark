@@ -18,7 +18,7 @@ public sealed class RedactAnnotation : BoxAnnotation
 {
     public RedactMode Mode { get; set; } = RedactMode.Blur;
     /// <summary>Сила 1…10.</summary>
-    public double Strength { get; set; } = 6;
+    public double Strength { get; set; } = 7;
     /// <summary>Снимок экрана, из которого считается эффект (координаты аннотаций = пиксели снимка).</summary>
     public Bitmap? Source { get; set; }
 
@@ -104,12 +104,24 @@ internal static class RedactEffect
             }
             else
             {
-                // Сильное размытие (текст не читается) + края без прозрачной каймы (Clamp).
-                float sigma = (float)(4 + s * 3.6);
-                using var p = new SKPaint { ImageFilter = SKImageFilter.CreateBlur(sigma, sigma, SKShaderTileMode.Clamp, null) };
-                canvas.DrawImage(sub, 0, 0, p);
+                // Сильное размытие: текст под ним не читается уже на средней силе, на 10 — почти ровный цвет.
+                // Радиус растёт квадратично (1 → ~10 px, 5 → ~45, 7 → ~80, 10 → ~150) и не меньше трети высоты области,
+                // иначе крупный шрифт на мониторах с масштабом 150–200 % «просвечивает».
+                double sigma = Math.Max(8 + s * s * 1.45, Math.Min(r.Width, r.Height) * (0.12 + s * 0.025));
+                // Считаем на уменьшенной копии — быстро даже для больших областей и ещё сильнее «съедает» детали.
+                double down = Math.Max(1, sigma / 6);
+                int w = Math.Max(2, (int)Math.Ceiling(r.Width / down)), h = Math.Max(2, (int)Math.Ceiling(r.Height / down));
+                using var small = SKSurface.Create(new SKImageInfo(w, h, SKColorType.Bgra8888, SKAlphaType.Premul));
+                float ss = (float)(sigma / down);
+                using (var p = new SKPaint { FilterQuality = SKFilterQuality.High, ImageFilter = SKImageFilter.CreateBlur(ss, ss, SKShaderTileMode.Clamp, null) })
+                    small.Canvas.DrawImage(sub, new SKRect(0, 0, w, h), p);
+                using var smallImg = small.Snapshot();
+                // Второй проход после увеличения — без «квадратиков» от масштабирования.
+                float fine = (float)Math.Max(2, down * 0.8);
+                using (var p = new SKPaint { FilterQuality = SKFilterQuality.High, ImageFilter = SKImageFilter.CreateBlur(fine, fine, SKShaderTileMode.Clamp, null) })
+                    canvas.DrawImage(smallImg, new SKRect(0, 0, r.Width, r.Height), p);
                 // Лёгкая «матовая» дымка, как у стекла: размытое не выглядит грязным.
-                using var haze = new SKPaint { Color = new SKColor(255, 255, 255, 18) };
+                using var haze = new SKPaint { Color = new SKColor(255, 255, 255, 22) };
                 canvas.DrawRect(new SKRect(0, 0, r.Width, r.Height), haze);
             }
 

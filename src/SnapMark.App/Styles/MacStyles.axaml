@@ -97,7 +97,7 @@
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
   <Style Selector="ui|GlassPanel.pill TextBlock.caption">
-    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondaryGlass}"/>
   </Style>
 
   <Style Selector="Border.hud">
@@ -292,7 +292,7 @@
     <Setter Property="Margin" Value="0,4,0,0"/>
   </Style>
   <Style Selector="ui|GlassPanel.pill TextBlock.group">
-    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondaryGlass}"/>
   </Style>
 
 

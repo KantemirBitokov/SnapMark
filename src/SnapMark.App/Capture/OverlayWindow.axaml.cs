@@ -100,6 +100,7 @@ public partial class OverlayWindow : Window
         cs.BorderColor = Color.TryParse(s.CommentBorderColor, out var cbc) ? cbc : null;
         if (Enum.TryParse<ToolKind>(s.LastShape, out var shape) && ToolKinds.IsShape(shape)) _currentShape = shape;
         SetRedactMode(Enum.TryParse<RedactMode>(s.LastRedactMode, out var rm) ? rm : RedactMode.Blur, announce: false);
+        Surface.RedactStrength = Math.Clamp(s.LastRedactStrength, 1, 10);
         _withMic = s.Audio is AudioSource.Microphone or AudioSource.MicrophoneAndSystem;
         _withSystem = s.Audio is AudioSource.System or AudioSource.MicrophoneAndSystem;
 
@@ -1337,37 +1338,21 @@ public partial class OverlayWindow : Window
         catch (Exception ex) { Toast.Show(L.T("Поиск не удался"), ex.Message); }
     }
 
-    /// <summary>Распознать текст в выделенной области (по чистому снимку, без рисунков) и скопировать.</summary>
+    /// <summary>
+    /// Текст с картинки: снимок области остаётся на месте экрана, распознанные слова можно выделять
+    /// мышью и копировать, как в текстовом редакторе (по чистому снимку, без рисунков).
+    /// </summary>
     async Task DoOcrAsync()
     {
         CommitTextEdit();
-        if (_shot is null || Surface.Selection is not PixelRect sel || sel.Width < 4 || sel.Height < 4) return;
+        if (_shot is null || _screen is null || Surface.Selection is not PixelRect sel || sel.Width < 4 || sel.Height < 4) return;
         byte[] png;
         using (var rtb = ImageRenderer.Render(_shot, sel, Array.Empty<Annotation>()))
             png = ImageEncoder.ToPng(rtb);
+        var at = new PixelRect(_screen.Bounds.X + sel.X, _screen.Bounds.Y + sel.Y, sel.Width, sel.Height);
         Finish();
-        Toast.Show(L.T("Распознаю текст…"), L.T("Обычно это занимает секунду-две."));
-        try
-        {
-            var text = await TextRecognizer.RecognizeAsync(png);
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                Toast.Show(L.T("Текст не найден"), L.T("Попробуй выделить область покрупнее или с более контрастным текстом."));
-                return;
-            }
-            await SmartPaste.CopyPlainAsync(new ClipboardPayload { Text = text });
-            var preview = text.Replace(Environment.NewLine, " ");
-            if (preview.Length > 140) preview = preview[..140] + "…";
-            Toast.Show(L.T("Текст скопирован"), preview);
-        }
-        catch (TextRecognizer.OcrException ex)
-        {
-            Toast.Show(L.T("Не удалось распознать текст"), ex.Message);
-        }
-        catch (Exception ex)
-        {
-            Toast.Show(L.T("Не удалось распознать текст"), ex.Message);
-        }
+        await Task.Yield();
+        OcrWindow.Open(png, at);
     }
 
     /// <summary>Закрепить скриншот поверх окон — на том же месте экрана, где он был выделен.</summary>

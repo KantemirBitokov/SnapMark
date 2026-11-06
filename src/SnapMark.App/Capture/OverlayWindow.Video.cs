@@ -65,7 +65,7 @@ public partial class OverlayWindow
     {
         var s = AppServices.Settings;
         s.VideoHighlightClicks = VideoClicksChip.IsChecked == true;
-        s.VideoShowKeys = VideoKeysChip.IsChecked == true;
+        s.VideoShowKeyCombos = VideoKeysChip.IsChecked == true;
         AppServices.SaveSettings();
         SyncVideoOptions();
     }
@@ -247,7 +247,7 @@ public partial class OverlayWindow
         CheckChips(VideoQualityChips, s.VideoQuality.ToString());
         CheckChips(VideoCursorChips, s.VideoShowCursor ? "Show" : "Hide");
         VideoClicksChip.IsChecked = s.VideoHighlightClicks;
-        VideoKeysChip.IsChecked = s.VideoShowKeys;
+        VideoKeysChip.IsChecked = s.VideoShowKeyCombos;
         SyncVideoSize();
         var audio = (_withMic, _withSystem) switch
         {

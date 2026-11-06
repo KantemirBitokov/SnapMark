@@ -57,7 +57,10 @@ File.WriteAllBytes(Path.Combine(outDir, "sample.png"), png);
 // ── 1. OCR ──
 try
 {
-    var text = await TextRecognizer.RecognizeAsync(png);
+    var res = await TextRecognizer.RecognizeAsync(png);
+    var text = res.Text;
+    Console.WriteLine("words: " + string.Join(" ", res.Lines.SelectMany(l => l.Words).Select(w => $"{w.Text}@{w.X:0},{w.Y:0},{w.W:0}x{w.H:0}")));
+    Check("ocr-boxes", res.Lines.Count == 2 && res.Lines[0].Words.Count >= 3 && res.Lines[0].Words[0].X is > 20 and < 70 && res.Lines[1].Words[0].Y is > 120 and < 170);
     File.WriteAllText(Path.Combine(outDir, "ocr.txt"), text);
     Check("ocr", text.Contains("SnapMark") && text.Contains("secret42"), "→ " + text.Replace(Environment.NewLine, " | "));
 }
@@ -79,7 +82,7 @@ using (var ms = new MemoryStream(png))
         // Под областью не должно остаться резкого текста: OCR его не находит, а верхняя строка цела.
         try
         {
-            var text = await TextRecognizer.RecognizeAsync(outPng);
+            var text = (await TextRecognizer.RecognizeAsync(outPng)).Text;
             Check($"redact-{mode}", text.Contains("SnapMark") && !text.Contains("secret42"), "→ " + text.Replace(Environment.NewLine, " | "));
         }
         catch (Exception ex)

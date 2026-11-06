@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using SnapMark.Annotations;
 using SnapMark.Core;
+using SnapMark.Services;
 using SnapMark.UI;
 
 namespace SnapMark.Capture;
@@ -202,7 +203,13 @@ public partial class OverlayWindow
     {
         var blur = Chip(L.T("Размытие"), r.Mode == RedactMode.Blur, _ => SetMode(RedactMode.Blur), tip: L.T("Мягкое размытие"));
         var pixels = Chip(L.T("Пиксели"), r.Mode == RedactMode.Pixelate, _ => SetMode(RedactMode.Pixelate), tip: L.T("Крупные квадраты"));
-        var strength = Stepper(r.Strength, 1, 10, 1, v => Mutate(a => ((RedactAnnotation)a).Strength = v), L.T("Сила эффекта"));
+        var strength = Stepper(r.Strength, 1, 10, 1, v =>
+        {
+            Mutate(a => ((RedactAnnotation)a).Strength = v);
+            Surface.RedactStrength = v; // следующие области — с той же силой
+            AppServices.Settings.LastRedactStrength = v;
+            AppServices.SaveSettings();
+        }, L.T("Сила эффекта"));
         ContextContent.Children.Add(Row(blur, pixels, strength, Spacer(), ObjectActions()));
 
         void SetMode(RedactMode mode)

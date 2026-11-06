@@ -11,6 +11,8 @@
       <SolidColorBrush x:Key="Sm.CardBorder" Color="#E6FFFFFF"/>
       <SolidColorBrush x:Key="Sm.TextPrimary" Color="#1D1D1F"/>
       <SolidColorBrush x:Key="Sm.TextSecondary" Color="#6E6E73"/>
+      <!-- Вторичный текст на стекле — контрастнее обычного: стекло пропускает фон. -->
+      <SolidColorBrush x:Key="Sm.TextSecondaryGlass" Color="#48484D"/>
       <SolidColorBrush x:Key="Sm.Separator" Color="#1A000000"/>
       <SolidColorBrush x:Key="Sm.PillBg" Color="#F7FBFBFD"/>
       <SolidColorBrush x:Key="Sm.PillBorder" Color="#24000000"/>
@@ -54,6 +56,7 @@
       <SolidColorBrush x:Key="Sm.CardBorder" Color="#2EFFFFFF"/>
       <SolidColorBrush x:Key="Sm.TextPrimary" Color="#F5F5F7"/>
       <SolidColorBrush x:Key="Sm.TextSecondary" Color="#98989D"/>
+      <SolidColorBrush x:Key="Sm.TextSecondaryGlass" Color="#C2C2C7"/>
       <SolidColorBrush x:Key="Sm.Separator" Color="#24FFFFFF"/>
       <SolidColorBrush x:Key="Sm.PillBg" Color="#F2262628"/>
       <SolidColorBrush x:Key="Sm.PillBorder" Color="#33FFFFFF"/>

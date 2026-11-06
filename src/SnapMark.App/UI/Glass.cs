@@ -571,6 +571,8 @@ public class GlassPanel : ThemeVariantScope
 
     bool _adaptPending;
     bool? _lightGlass;
+    /// <summary>Яркость фона под панелью 0…1 (null — неизвестна).</summary>
+    double? _backdropLum;
     double _shadowBoost = 1;
 
     BoxShadows ScaledShadows()
@@ -615,6 +617,7 @@ public class GlassPanel : ThemeVariantScope
         {
             double cw = top.ClientSize.Width, ch = top.ClientSize.Height;
             double lum = img.Luminance(o.X / cw, o.Y / ch, (o.X + Bounds.Width) / cw, (o.Y + Bounds.Height) / ch);
+            if (_backdropLum is not double prevLum || Math.Abs(prevLum - lum) > 0.03) { _backdropLum = lum; InvalidateVisual(); }
             // Гистерезис: не «мигать» на границе светлого и тёмного.
             _lightGlass = _lightGlass switch
             {
@@ -706,6 +709,13 @@ public class GlassPanel : ThemeVariantScope
                 : clear ? (hasBackdrop ? 0.46 - 0.30 * t : 0.62 - 0.25 * t)
                 : hasBackdrop ? 0.86 - 0.62 * t : 0.97 - 0.40 * t;
             // Прозрачное стекло в «только светлом» оформлении — лёгкая белая дымка вместо затемнения.
+            // «Всегда светлое» над тёмным фоном (или «всегда тёмное» над светлым): фон просвечивает «чужой» яркостью,
+            // и текст теряется. Такое стекло делаем плотнее — тем сильнее, чем больше расходятся стекло и фон.
+            if (!Glass.ReduceTransparency && hasBackdrop && _backdropLum is double bl)
+            {
+                double mismatch = dark ? bl - 0.45 : 0.55 - bl; // >0 — фон «чужой» яркости
+                if (mismatch > 0) a = Math.Max(a, Math.Min(0.94, (clear ? 0.5 : 0.62) + mismatch * 0.9));
+            }
             var tint = clear ? (dark ? Color.FromRgb(12, 12, 16) : Color.FromRgb(250, 250, 252)) : dark ? Color.FromRgb(30, 30, 34) : Color.FromRgb(246, 246, 250);
             ctx.FillRectangle(new SolidColorBrush(tint, a), r);
 

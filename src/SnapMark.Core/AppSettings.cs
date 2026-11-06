@@ -116,7 +116,7 @@ public sealed class AppSettings
     /// <summary>Подсвечивать клики кругами на видео.</summary>
     public bool VideoHighlightClicks { get; set; } = true;
     /// <summary>Показывать на видео нажатые сочетания клавиш (только сочетания и служебные клавиши, не набор текста).</summary>
-    public bool VideoShowKeys { get; set; }
+    public bool VideoShowKeyCombos { get; set; } = true;
 
     // ── Пошаговая инструкция ─────────────────────────────────────────
     /// <summary>Подписывать шаги названием окна, по которому кликнули («Клик: Блокнот»).</summary>
@@ -124,6 +124,8 @@ public sealed class AppSettings
 
     // ── Скрытие (размытие / пикселизация) ───────────────────────────
     public string LastRedactMode { get; set; } = "Blur";
+    /// <summary>Сила «Скрыть» 1…10.</summary>
+    public double LastRedactStrength { get; set; } = 7;
 
     // ── Последний стиль аннотаций (запоминаем между запусками) ──────
     public string LastColor { get; set; } = "#FF3B30";

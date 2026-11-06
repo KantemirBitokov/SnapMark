@@ -16,19 +16,61 @@ public static class TextRecognizer
 {
     public sealed class OcrException(string message) : Exception(message);
 
-    public static async Task<string> RecognizeAsync(byte[] png)
+    /// <summary>Слово и его рамка в пикселях исходной картинки.</summary>
+    public sealed record OcrWord(string Text, double X, double Y, double W, double H);
+
+    public sealed class OcrLine
+    {
+        public List<OcrWord> Words { get; } = new();
+        public string Text => Join(Words);
+    }
+
+    public sealed class OcrResult
+    {
+        public List<OcrLine> Lines { get; } = new();
+        public string Text => string.Join(Environment.NewLine, Lines.Select(l => l.Text).Where(t => t.Length > 0));
+        public bool IsEmpty => Lines.All(l => l.Words.Count == 0);
+    }
+
+    /// <summary>Слова через пробел; для китайского, японского и тайского — без пробелов.</summary>
+    public static string Join(IEnumerable<OcrWord> words)
+    {
+        var sb = new StringBuilder();
+        OcrWord? prev = null;
+        foreach (var w in words)
+        {
+            if (prev is not null && !(IsCjk(prev.Text) && IsCjk(w.Text))) sb.Append(' ');
+            sb.Append(w.Text);
+            prev = w;
+        }
+        return sb.ToString();
+    }
+
+    static bool IsCjk(string s) => s.Length > 0 && s.All(c => c is >= '\u3040' and <= '\u30FF' or >= '\u3400' and <= '\u9FFF' or >= '\uAC00' and <= '\uD7AF' or >= '\u0E00' and <= '\u0E7F');
+
+    public static async Task<OcrResult> RecognizeAsync(byte[] png)
     {
         var dir = Path.Combine(Path.GetTempPath(), "SnapMark");
         Directory.CreateDirectory(dir);
         var image = Path.Combine(dir, $"ocr_{Guid.NewGuid():N}.png");
-        await File.WriteAllBytesAsync(image, Prepare(png));
+        var (prepared, k, w, h) = Prepare(png);
+        await File.WriteAllBytesAsync(image, prepared);
         try
         {
-            string text;
-            if (OperatingSystem.IsWindows()) text = await WindowsAsync(image, dir);
-            else if (OperatingSystem.IsMacOS()) text = await MacAsync(image, dir);
-            else text = await TesseractAsync(image);
-            return Clean(text);
+            OcrResult result;
+            if (OperatingSystem.IsWindows()) result = ParseWords(await WindowsAsync(image, dir));
+            else if (OperatingSystem.IsMacOS()) result = ParseMac(await MacAsync(image, dir), w * k, h * k);
+            else result = ParseTesseract(await TesseractAsync(image));
+            // Рамки — обратно в пиксели исходной картинки.
+            if (Math.Abs(k - 1) > 0.001)
+                foreach (var line in result.Lines)
+                    for (int i = 0; i < line.Words.Count; i++)
+                    {
+                        var wd = line.Words[i];
+                        line.Words[i] = wd with { X = wd.X / k, Y = wd.Y / k, W = wd.W / k, H = wd.H / k };
+                    }
+            result.Lines.RemoveAll(l => l.Words.Count == 0);
+            return result;
         }
         finally
         {
@@ -37,35 +79,95 @@ public static class TextRecognizer
     }
 
     /// <summary>Мелкий текст движки читают хуже — небольшие области увеличиваем в 2 раза; огромные — уменьшаем.</summary>
-    static byte[] Prepare(byte[] png)
+    static (byte[] Png, double Scale, int Width, int Height) Prepare(byte[] png)
     {
         try
         {
             using var bmp = SKBitmap.Decode(png);
-            if (bmp is null) return png;
+            if (bmp is null) return (png, 1, 0, 0);
             double k = 1;
             if (Math.Max(bmp.Width, bmp.Height) < 1200) k = 2;
             if (Math.Max(bmp.Width, bmp.Height) * k > 8000) k = 8000.0 / Math.Max(bmp.Width, bmp.Height);
-            if (Math.Abs(k - 1) < 0.01) return png;
+            if (Math.Abs(k - 1) < 0.01) return (png, 1, bmp.Width, bmp.Height);
             var info = new SKImageInfo((int)(bmp.Width * k), (int)(bmp.Height * k), SKColorType.Bgra8888, SKAlphaType.Premul);
             using var scaled = bmp.Resize(info, SKFilterQuality.High);
-            if (scaled is null) return png;
+            if (scaled is null) return (png, 1, bmp.Width, bmp.Height);
             using var img = SKImage.FromBitmap(scaled);
             using var data = img.Encode(SKEncodedImageFormat.Png, 100);
-            return data.ToArray();
+            // Точный масштаб по ширине (размер округлён до целых пикселей).
+            return (data.ToArray(), info.Width / (double)bmp.Width, bmp.Width, bmp.Height);
         }
         catch
         {
-            return png;
+            return (png, 1, 0, 0);
         }
     }
 
-    static string Clean(string text)
+    static double Num(string s) => double.Parse(s, System.Globalization.CultureInfo.InvariantCulture);
+
+    /// <summary>Формат Windows-скрипта: «L» — новая строка, «W x y w h текст» — слово.</summary>
+    static OcrResult ParseWords(string output)
     {
-        var lines = text.Replace("\r\n", "\n").Split('\n').Select(l => l.TrimEnd()).ToList();
-        while (lines.Count > 0 && lines[^1].Length == 0) lines.RemoveAt(lines.Count - 1);
-        while (lines.Count > 0 && lines[0].Length == 0) lines.RemoveAt(0);
-        return string.Join(Environment.NewLine, lines);
+        var r = new OcrResult();
+        OcrLine? line = null;
+        foreach (var raw in output.Replace("\r", "").Split('\n'))
+        {
+            if (raw == "L") { line = new OcrLine(); r.Lines.Add(line); continue; }
+            var p = raw.Split('\t');
+            if (p.Length < 6 || p[0] != "W") continue;
+            if (line is null) { line = new OcrLine(); r.Lines.Add(line); }
+            var text = string.Join("\t", p.Skip(5));
+            if (text.Length > 0) line.Words.Add(new OcrWord(text, Num(p[1]), Num(p[2]), Num(p[3]), Num(p[4])));
+        }
+        return r;
+    }
+
+    /// <summary>
+    /// macOS Vision отдаёт строки с рамками в долях картинки (начало координат внизу слева).
+    /// Слова внутри строки — по пробелам, ширина пропорциональна числу символов.
+    /// </summary>
+    static OcrResult ParseMac(string output, double imgW, double imgH)
+    {
+        var r = new OcrResult();
+        foreach (var raw in output.Replace("\r", "").Split('\n'))
+        {
+            var p = raw.Split('\t');
+            if (p.Length < 6 || p[0] != "N") continue;
+            double x = Num(p[1]) * imgW, w = Num(p[3]) * imgW, h = Num(p[4]) * imgH;
+            double y = (1 - Num(p[2]) - Num(p[4])) * imgH;
+            var text = string.Join("\t", p.Skip(5)).Trim();
+            if (text.Length == 0) continue;
+            var line = new OcrLine();
+            var parts = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            double perChar = w / Math.Max(1, text.Length), cx = x;
+            foreach (var part in parts)
+            {
+                double pw = perChar * part.Length;
+                line.Words.Add(new OcrWord(part, cx, y, pw, h));
+                cx += pw + perChar;
+            }
+            r.Lines.Add(line);
+        }
+        return r;
+    }
+
+    /// <summary>tesseract … tsv: уровень 5 — слова; строки — по (блок, абзац, строка).</summary>
+    static OcrResult ParseTesseract(string tsv)
+    {
+        var r = new OcrResult();
+        string? key = null;
+        OcrLine? line = null;
+        foreach (var raw in tsv.Replace("\r", "").Split('\n').Skip(1))
+        {
+            var p = raw.Split('\t');
+            if (p.Length < 12 || p[0] != "5") continue;
+            var text = p[11].Trim();
+            if (text.Length == 0) continue;
+            var k = $"{p[2]}.{p[3]}.{p[4]}";
+            if (k != key) { key = k; line = new OcrLine(); r.Lines.Add(line); }
+            line!.Words.Add(new OcrWord(text, Num(p[6]), Num(p[7]), Num(p[8]), Num(p[9])));
+        }
+        return r;
     }
 
     // ── Windows: Windows.Media.Ocr ─────────────────────────────────────────────
@@ -95,7 +197,14 @@ public static class TextRecognizer
         $decoder = Await ([Windows.Graphics.Imaging.BitmapDecoder]::CreateAsync($stream)) ([Windows.Graphics.Imaging.BitmapDecoder])
         $bitmap = Await ($decoder.GetSoftwareBitmapAsync()) ([Windows.Graphics.Imaging.SoftwareBitmap])
         $result = Await ($engine.RecognizeAsync($bitmap)) ([Windows.Media.Ocr.OcrResult])
-        foreach ($line in $result.Lines) { [Console]::Out.WriteLine($line.Text) }
+        $inv = [System.Globalization.CultureInfo]::InvariantCulture
+        foreach ($line in $result.Lines) {
+            [Console]::Out.WriteLine('L')
+            foreach ($w in $line.Words) {
+                $r = $w.BoundingRect
+                [Console]::Out.WriteLine(('W' + "`t" + $r.X.ToString($inv) + "`t" + $r.Y.ToString($inv) + "`t" + $r.Width.ToString($inv) + "`t" + $r.Height.ToString($inv) + "`t" + $w.Text))
+            }
+        }
         $stream.Dispose()
         """;
 
@@ -126,8 +235,11 @@ public static class TextRecognizer
           var results = req.results;
           var out = [];
           for (var i = 0; i < results.count; i++) {
-            var c = results.objectAtIndex(i).topCandidates(1);
-            if (c.count > 0) out.push(c.objectAtIndex(0).string.js);
+            var o = results.objectAtIndex(i);
+            var c = o.topCandidates(1);
+            if (c.count == 0) continue;
+            var b = o.boundingBox;
+            out.push(['N', b.origin.x, b.origin.y, b.size.width, b.size.height, c.objectAtIndex(0).string.js].join('\t'));
           }
           return out.join('\n');
         }
@@ -159,6 +271,7 @@ public static class TextRecognizer
         }
         var args = new List<string> { image, "stdout" };
         if (langs is not null) { args.Add("-l"); args.Add(langs); }
+        args.Add("tsv");
         var (code, stdout, stderr) = await RunAsync("tesseract", args);
         if (code != 0) throw new OcrException(FirstLine(stderr) ?? L.T("Распознавание текста не сработало."));
         return stdout;

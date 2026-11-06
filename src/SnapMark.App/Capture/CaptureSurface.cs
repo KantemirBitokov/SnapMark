@@ -59,6 +59,7 @@ public sealed class CaptureSurface : Control
     public AnnotationStyle DrawStyle { get; } = new();
     /// <summary>Режим инструмента «Скрыть».</summary>
     public RedactMode RedactMode { get; set; } = RedactMode.Blur;
+    public double RedactStrength { get; set; } = 7;
     public AnnotationDocument Document { get; } = new();
     /// <summary>Подписи-комментарии на картинке (если включены).</summary>
     public CommentLabelStyle CommentStyle { get; } = new();
@@ -723,7 +724,7 @@ public sealed class CaptureSurface : Control
             ToolKind.DoubleArrow => new LineAnnotation { Start = p, End = p, ArrowStart = true, ArrowEnd = true },
             ToolKind.Rectangle => new RectAnnotation { Start = p, End = p },
             ToolKind.Ellipse => new EllipseAnnotation { Start = p, End = p },
-            ToolKind.Redact => new RedactAnnotation { Start = p, End = p, Mode = RedactMode, Source = Screenshot },
+            ToolKind.Redact => new RedactAnnotation { Start = p, End = p, Mode = RedactMode, Strength = RedactStrength, Source = Screenshot },
             _ => new FreehandAnnotation { Kind = StrokeKind.Ink },
         };
         a.ApplyStyle(DrawStyle);

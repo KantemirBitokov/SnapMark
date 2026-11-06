@@ -4,7 +4,7 @@ name: Glass on Windows
 on:
   workflow_dispatch:
   push:
-    paths: ['src/SnapMark.App/UI/Glass*.cs', 'tools/GlassWin/**', '.github/workflows/glass-win.yml']
+    paths: ['src/SnapMark.App/UI/Glass*.cs', 'src/SnapMark.App/Recording/RecordingEffects.cs', 'src/SnapMark.App/Platform/InputMonitor.cs', 'tools/GlassWin/**', '.github/workflows/glass-win.yml']
 
 permissions:
   contents: write
@@ -23,6 +23,7 @@ jobs:
         shell: bash
         run: |
           exe=$(ls tools/GlassWin/bin/Release/net8.0/GlassWin.exe)
+          export SNAPMARK_TEST_INPUT=1
           mkdir -p out
           "$exe" "$PWD/out" "$PWD/docs/media/markers.png" &
           pid=$!
