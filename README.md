@@ -86,8 +86,12 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 |---|---|
 | <img src="docs/media/paste-chat.png" alt="One Ctrl+V — the image and the comments arrive together"> | <img src="docs/media/tools.png" alt="Every object has its own style panel"> |
 | One Ctrl+V — the image and the comments arrive together | Every object has its own style panel |
-| <img src="docs/media/recording.png" alt="Screen recording: format, frame rate, audio and devices"> | |
-| Screen recording: format, frame rate, audio and devices | |
+| <img src="docs/media/steps.png" alt="Step-by-step guide: every click becomes a screenshot with a marker"> | <img src="docs/media/ocr.png" alt="Text recognition: select words right on the picture, like in an editor"> |
+| Step-by-step guide: every click becomes a screenshot with a marker | Text recognition: select words right on the picture, like in an editor |
+| <img src="docs/media/recording.png" alt="Screen recording: clicks, keys and webcam for tutorials"> | <img src="docs/media/trim.png" alt="Trim a recording and export the clip as a GIF"> |
+| Screen recording: clicks, keys and webcam for tutorials | Trim a recording and export the clip as a GIF |
+| <img src="docs/media/longshot.png" alt="Scrolling screenshot of a whole page"> | <img src="docs/media/settings.png" alt="Settings in a native macOS-like style"> |
+| Scrolling screenshot of a whole page | Settings in a native macOS-like style |
 
 ## Download
 

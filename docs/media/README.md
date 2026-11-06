@@ -1,6 +1,6 @@
 # Media for README, website and posts
 
-Record these with SnapMark itself (video → GIF) or ScreenToGif, ~800 px wide, 5–10 s each, light theme.
+Screenshots are rendered by `tools/Screenshots` (workflow "Screenshots") on a demo page and composed into these PNGs. `paste-chat.png` was made by hand.
 Put the files here with exactly these names, then uncomment the `<img>` lines in README.md / README.ru.md.
 
 | File | What to show |
