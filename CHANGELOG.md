@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.4
+- Scrolling screenshot: in long lists of very similar rows (file lists, tables) a rare wrong match could skip a few rows when the browser started scrolling late — such matches are now rejected and the step is retried.
+
 ## 1.9.3 — scrolling screenshots that don't give up
 - **Animated pages.** Twinkling backgrounds, carousels with progress bars, videos and blinking cursors no longer stop the capture (it used to halt at such blocks — e.g. the starry “Members save 90%” banner on yellowimages.com). Frames are compared cell by cell with tolerance for what moves on its own; when a block has nothing to match at all, the measured scroll distance is used.
 - **Floating elements appear once.** Chat buttons, “back to top”, cookie popups and Windows notifications that hover over the page are no longer repeated in every chunk of the picture.
