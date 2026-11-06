@@ -304,7 +304,7 @@ public sealed class CaptureSurface : Control
         int w = sel.Width, h = sel.Height;
         if (Mode == CaptureMode.VideoRegion) { w &= ~1; h &= ~1; }
         var ft = new FormattedText($"{w} × {h}", CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
-            new Typeface(UiFonts.Family, FontStyle.Normal, FontWeight.SemiBold), 11.5, Brushes.White);
+            new Typeface(UiFonts.Small, FontStyle.Normal, FontWeight.SemiBold), SnapMark.UI.UiType.Scaled(SnapMark.UI.UiType.Caption), Brushes.White);
         var box = new Rect(0, 0, ft.Width + 14, ft.Height + 6);
         double x = v.Left, y = v.Top - box.Height - 8;
         if (y < 4) y = v.Top + 8;

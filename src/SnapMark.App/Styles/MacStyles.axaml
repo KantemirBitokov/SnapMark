@@ -5,28 +5,76 @@
   <!-- ═══════════ Базовое ═══════════ -->
   <Style Selector="Window">
     <Setter Property="FontFamily" Value="{StaticResource Sm.Font}"/>
-    <Setter Property="FontSize" Value="13"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Body}"/>
   </Style>
 
   <Style Selector="Window.sm">
     <Setter Property="Background" Value="{DynamicResource Sm.WindowBg}"/>
   </Style>
 
-  <Style Selector="TextBlock.caption">
-    <Setter Property="FontSize" Value="11.5"/>
+  <!-- ═══════════ Текстовые стили (шкала Apple для macOS, см. UI/Typography.cs) ═══════════
+       Иерархия — размером, начертанием и цветом; крупное — плотнее (отрицательный трекинг),
+       мелкое — свободнее. Тонких начертаний в интерфейсе нет: они плохо читаются. -->
+  <Style Selector="TextBlock.largetitle">
+    <Setter Property="FontFamily" Value="{StaticResource Sm.Font.Display}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.LargeTitle}"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="LetterSpacing" Value="-0.5"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="TextBlock.pagetitle, TextBlock.title1">
+    <Setter Property="FontFamily" Value="{StaticResource Sm.Font.Display}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Title1}"/>
+    <Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="LetterSpacing" Value="-0.35"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="TextBlock.title2">
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Title2}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="LetterSpacing" Value="-0.2"/>
+  </Style>
+  <Style Selector="TextBlock.title3">
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Title3}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="LetterSpacing" Value="-0.1"/>
+  </Style>
+  <Style Selector="TextBlock.headline">
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Headline}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+  </Style>
+  <Style Selector="TextBlock.body">
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Body}"/>
+  </Style>
+  <Style Selector="TextBlock.callout">
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Callout}"/>
+    <Setter Property="LetterSpacing" Value="0.05"/>
+  </Style>
+  <!-- Описания под настройками: вторичный цвет, переносы, ровный межстрочный интервал. -->
+  <Style Selector="TextBlock.caption, TextBlock.footnote">
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Footnote}"/>
+    <Setter Property="LineHeight" Value="{DynamicResource Sm.Line.Footnote}"/>
+    <Setter Property="LetterSpacing" Value="0.05"/>
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
     <Setter Property="TextWrapping" Value="Wrap"/>
   </Style>
-  <Style Selector="TextBlock.section">
-    <Setter Property="FontSize" Value="12"/>
-    <Setter Property="FontWeight" Value="SemiBold"/>
+  <!-- Мелкие подписи (размеры, время, метаданные) — оптический размер Small. -->
+  <Style Selector="TextBlock.caption1">
+    <Setter Property="FontFamily" Value="{StaticResource Sm.Font.Small}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Caption}"/>
+    <Setter Property="LetterSpacing" Value="0.15"/>
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
-    <Setter Property="Margin" Value="4,0,0,6"/>
   </Style>
-  <Style Selector="TextBlock.pagetitle">
-    <Setter Property="FontSize" Value="22"/>
-    <Setter Property="FontWeight" Value="Bold"/>
+  <!-- Заголовок группы настроек (как в «Системных настройках»). -->
+  <Style Selector="TextBlock.section">
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Headline}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+    <Setter Property="Margin" Value="4,0,0,8"/>
+  </Style>
+  <Style Selector="TextBlock.mono, SelectableTextBlock.mono">
+    <Setter Property="FontFamily" Value="{StaticResource Sm.Font.Mono}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Callout}"/>
   </Style>
 
   <!-- ═══════════ Стеклянные панели (тулбары, HUD, уведомления) — см. UI/Glass.cs ═══════════ -->
@@ -60,7 +108,7 @@
   </Style>
   <Style Selector="Border.hud TextBlock">
     <Setter Property="Foreground" Value="White"/>
-    <Setter Property="FontSize" Value="13"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Body}"/>
   </Style>
 
   <Style Selector="Border.vsep">
@@ -201,7 +249,7 @@
     <Setter Property="Padding" Value="4,2"/>
     <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="Foreground" Value="{DynamicResource Sm.Accent}"/>
-    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Body}"/>
   </Style>
   <Style Selector="Button.link /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent"/>
@@ -236,8 +284,10 @@
 
   <!-- Подзаголовок секции во всплывающих панелях. -->
   <Style Selector="TextBlock.group">
-    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontFamily" Value="{StaticResource Sm.Font.Small}"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Caption}"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="LetterSpacing" Value="0.4"/>
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextSecondary}"/>
     <Setter Property="Margin" Value="0,4,0,0"/>
   </Style>
@@ -279,7 +329,7 @@
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
     <Setter Property="Padding" Value="9,4"/>
     <Setter Property="MinWidth" Value="30"/>
-    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Callout}"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="Margin" Value="0,0,4,4"/>
   </Style>
@@ -319,7 +369,7 @@
     <Setter Property="CornerRadius" Value="10"/>
     <Setter Property="Padding" Value="10,6"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Callout}"/>
   </Style>
 
   <!-- ═══════════ Встроенный редактор текста на скриншоте ═══════════ -->
@@ -350,7 +400,7 @@
     <Setter Property="MinHeight" Value="30"/>
     <Setter Property="Padding" Value="8,5"/>
     <Setter Property="CornerRadius" Value="7"/>
-    <Setter Property="FontSize" Value="12.5"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Body}"/>
     <Setter Property="TextWrapping" Value="Wrap"/>
   </Style>
 
@@ -429,7 +479,7 @@
     <Setter Property="MinWidth" Value="180"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="CornerRadius" Value="7"/>
-    <Setter Property="FontFamily" Value="Cascadia Mono, Consolas, SF Mono, Menlo, monospace"/>
+    <Setter Property="FontWeight" Value="Medium"/>
   </Style>
   <Style Selector="Button.hotkey.listening">
     <Setter Property="BorderBrush" Value="{DynamicResource Sm.Accent}"/>
@@ -448,7 +498,7 @@
   <Style Selector="Border.badge TextBlock">
     <Setter Property="Foreground" Value="White"/>
     <Setter Property="FontWeight" Value="Bold"/>
-    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Callout}"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
   </Style>

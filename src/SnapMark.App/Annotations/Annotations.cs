@@ -136,10 +136,14 @@ public static class TextPlate
 
 public static class UiFonts
 {
+    // Те же семейства, что Sm.Font* в Styles/Colors.axaml (оптические размеры, как у San Francisco).
     public static readonly FontFamily Family =
-        new("Segoe UI Variable Text, Segoe UI, SF Pro Text, Helvetica Neue, Ubuntu, Cantarell, Arial");
+        new("Segoe UI Variable Text, Segoe UI, SF Pro Text, .AppleSystemUIFont, Helvetica Neue, Inter, Ubuntu, Cantarell, Arial");
     public static readonly FontFamily Display =
-        new("Segoe UI Variable Display, Segoe UI, SF Pro Display, Helvetica Neue, Ubuntu, Cantarell, Arial");
+        new("Segoe UI Variable Display, Segoe UI, SF Pro Display, .AppleSystemUIFont, Helvetica Neue, Inter Display, Inter, Ubuntu, Cantarell, Arial");
+    /// <summary>Для мелких подписей до 11 pt.</summary>
+    public static readonly FontFamily Small =
+        new("Segoe UI Variable Small, Segoe UI, SF Pro Text, .AppleSystemUIFont, Helvetica Neue, Inter, Ubuntu, Cantarell, Arial");
 }
 
 public abstract class Annotation

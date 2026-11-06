@@ -412,7 +412,8 @@ public sealed class RecordingHud : Window
     readonly double _scaling;
     readonly Stopwatch _clock = Stopwatch.StartNew();
     readonly DispatcherTimer _timer;
-    readonly TextBlock _time = new() { Text = L.T("Запуск…"), FontSize = 14, FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center };
+    // Таймер — системным шрифтом (цифры у Segoe UI / SF одинаковой ширины, время не «прыгает»).
+    readonly TextBlock _time = new TextBlock { Text = L.T("Запуск…"), VerticalAlignment = VerticalAlignment.Center }.Style("title3");
     readonly Border _dot;
     Button? _stop;
     bool _recording;
@@ -436,7 +437,6 @@ public sealed class RecordingHud : Window
         Opacity = 0;
         Title = L.T("SnapMark — запись");
 
-        _time.FontFamily = new FontFamily("Cascadia Mono, Consolas, SF Mono, Menlo, monospace");
         _dot = new Border
         {
             Width = 12, Height = 12, CornerRadius = new CornerRadius(6),

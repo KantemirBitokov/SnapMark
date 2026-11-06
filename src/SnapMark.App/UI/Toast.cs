@@ -42,9 +42,8 @@ public sealed class Toast : Window
             VerticalAlignment = VerticalAlignment.Top,
         };
 
-        var titleBlock = new TextBlock { Text = title, FontWeight = FontWeight.SemiBold, FontSize = 12.5 };
+        var titleBlock = new TextBlock { Text = title }.Style("headline");
         var messageBlock = UiKit.Caption(message);
-        messageBlock.FontSize = 11.5;
         messageBlock.MaxWidth = 210;
 
         var texts = new StackPanel { Spacing = 1, Margin = new Thickness(9, 0, 6, 0), VerticalAlignment = VerticalAlignment.Center };

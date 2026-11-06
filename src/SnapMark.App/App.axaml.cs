@@ -44,8 +44,9 @@ public partial class App : Application
             UI.Glass.Appearance = Enum.TryParse<UI.GlassAppearance>(AppServices.Settings.GlassAppearance, out var ga) ? ga : UI.GlassAppearance.Auto;
             // Системные «Уменьшить прозрачность» / «Высокий контраст» — проверяем при запуске и раз в 5 секунд.
             UI.Glass.RefreshSystemAccessibility();
+            UI.UiType.Refresh(Resources); // системный «Размер текста» → шкала шрифтов
             var a11yTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(5) };
-            a11yTimer.Tick += (_, _) => UI.Glass.RefreshSystemAccessibility();
+            a11yTimer.Tick += (_, _) => { UI.Glass.RefreshSystemAccessibility(); UI.UiType.Refresh(Resources); };
             a11yTimer.Start();
             LoadLogo();
             ExcludePopupsFromCapture();

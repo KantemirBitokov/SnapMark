@@ -192,7 +192,7 @@
           <Button x:Name="VideoOptionsButton" Classes="tool wide" Click="OnVideoOptionsClick"
                   ToolTip.Tip="{l:Tr 'Формат, частота кадров и звук'}">
             <StackPanel Orientation="Horizontal" Spacing="4">
-              <TextBlock x:Name="VideoFormatText" FontSize="12.5" VerticalAlignment="Center"/>
+              <TextBlock x:Name="VideoFormatText" Classes="callout" FontWeight="Medium" VerticalAlignment="Center"/>
               <Path Data="{StaticResource Icon.Chevron}" Width="12" Height="20"/>
             </StackPanel>
           </Button>
@@ -369,7 +369,7 @@
                           VerticalAlignment="Center" Click="OnOnImageClick"
                           ToolTip.Tip="{l:Tr 'Рисовать комментарии рядом с метками прямо на скриншоте (текстом они копируются в любом случае)'}"/>
             <Button Grid.Column="2" Classes="tool small" Click="OnCommentStyleClick" ToolTip.Tip="{l:Tr 'Шрифт, цвет и рамка подписей'}">
-              <TextBlock Text="Aa" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+              <TextBlock Text="Aa" Classes="callout" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Button>
           </Grid>
 

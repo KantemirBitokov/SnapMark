@@ -18,7 +18,7 @@
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="10" Margin="18,44,18,14">
           <Image Source="avares://SnapMark/Assets/snapmark.png" Width="30" Height="30"/>
           <StackPanel VerticalAlignment="Center">
-            <TextBlock Text="SnapMark" FontWeight="SemiBold" FontSize="15" Foreground="{DynamicResource Sm.TextPrimary}"/>
+            <TextBlock Text="SnapMark" Classes="title3" Foreground="{DynamicResource Sm.TextPrimary}"/>
             <TextBlock x:Name="VersionText" Classes="caption"/>
           </StackPanel>
         </StackPanel>
@@ -184,7 +184,7 @@
                   <TextBlock Text="{l:Tr 'PrtSc занят «Ножницами» Windows'}" FontWeight="SemiBold" VerticalAlignment="Center"
                              Foreground="{DynamicResource Sm.TextPrimary}"/>
                 </StackPanel>
-                <TextBlock Classes="caption" FontSize="12.5"
+                <TextBlock Classes="caption"
                            Text="{l:Tr 'В Windows 11 по PrtSc открываются «Ножницы». SnapMark перехватывает клавишу сам (как ShareX и PowerToys), но если всё равно открываются «Ножницы» — отключи эту функцию Windows. После отключения может понадобиться перезапуск SnapMark или выход из системы.'}"/>
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <Button x:Name="DisableSnippingButton" Classes="primary" Content="{l:Tr 'Отключить автоматически'}"/>
@@ -197,7 +197,7 @@
             <StackPanel>
               <TextBlock Classes="section" Text="{l:Tr 'Состояние'}"/>
               <Border Classes="card">
-                <TextBlock x:Name="HotkeyStatus" Classes="caption" Margin="16,12" FontSize="12.5"/>
+                <TextBlock x:Name="HotkeyStatus" Classes="caption" Margin="16,12"/>
               </Border>
             </StackPanel>
           </StackPanel>
@@ -347,8 +347,7 @@
             <StackPanel>
               <TextBlock Classes="section" Text="{l:Tr 'Пример'}"/>
               <Border Classes="card">
-                <SelectableTextBlock x:Name="PreviewText" Margin="16,12" FontSize="12.5"
-                                     FontFamily="Cascadia Mono, Consolas, SF Mono, Menlo, monospace"
+                <SelectableTextBlock x:Name="PreviewText" Classes="mono" Margin="16,12" LineHeight="{DynamicResource Sm.Line.Footnote}"
                                      Foreground="{DynamicResource Sm.TextPrimary}"/>
               </Border>
             </StackPanel>
@@ -491,14 +490,14 @@
             <Border Classes="card">
               <StackPanel Margin="24" Spacing="14" HorizontalAlignment="Center">
                 <Image Source="avares://SnapMark/Assets/snapmark.png" Width="96" Height="96"/>
-                <TextBlock Text="SnapMark" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"
+                <TextBlock Text="SnapMark" Classes="largetitle" HorizontalAlignment="Center"
                            Foreground="{DynamicResource Sm.TextPrimary}"/>
                 <TextBlock x:Name="AboutVersion" Classes="caption" HorizontalAlignment="Center"/>
                 <TextBlock Classes="caption" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="420"
                            Text="{l:Tr 'Скриншоты с метками и комментариями, серии для отчётов и запись экрана.'}"/>
                 <StackPanel HorizontalAlignment="Center" Spacing="2" Margin="0,4,0,0">
                   <TextBlock Classes="caption" Text="{l:Tr 'Разработчик'}" HorizontalAlignment="Center"/>
-                  <TextBlock Text="Kantemir Bitokov" FontSize="15" FontWeight="SemiBold" HorizontalAlignment="Center"
+                  <TextBlock Text="Kantemir Bitokov" Classes="title3" HorizontalAlignment="Center"
                              Foreground="{DynamicResource Sm.TextPrimary}"/>
                 </StackPanel>
                 <Button x:Name="SiteLink" Classes="link" Content="SadlyBear.pro" HorizontalAlignment="Center"

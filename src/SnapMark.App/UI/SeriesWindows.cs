@@ -21,7 +21,7 @@ public sealed class SeriesHud : Window
 {
     static SeriesHud? _instance;
 
-    readonly TextBlock _count = new() { FontWeight = FontWeight.SemiBold, VerticalAlignment = VerticalAlignment.Center };
+    readonly TextBlock _count = new TextBlock { VerticalAlignment = VerticalAlignment.Center }.Style("headline");
     List<IStorageItem> _dragItems = new();
     bool _settingPosition;
     DispatcherTimer? _saveTimer; // позицию пишем на диск один раз, когда панель остановилась
@@ -337,7 +337,7 @@ public sealed class SeriesWindow : Window
         image.PointerPressed += (_, _) => ShellOpen.Open(shot.ImagePath);
         ToolTip.SetTip(image, L.T("Открыть в просмотрщике"));
 
-        var title = new TextBlock { Text = $"Screenshot_{shot.Number}", FontWeight = FontWeight.SemiBold, FontSize = 14 };
+        var title = new TextBlock { Text = $"Screenshot_{shot.Number}" }.Style("title3");
         var info = UiKit.Caption($"{shot.Width} × {shot.Height}  ·  {shot.CreatedAt:HH:mm:ss}");
         var head = new StackPanel { Spacing = 1 };
         head.Children.Add(title);

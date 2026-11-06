@@ -101,6 +101,21 @@ class WinApp : Application
 
         // Фон стекла — как в оверлее: картинка, растянутая на всё окно.
         Glass.SetStaticBackdrop(window, bg);
+        // Образец шкалы шрифтов (UI/Typography.cs) на стекле.
+        var spec = new StackPanel { Spacing = 6 };
+        foreach (var (cls, text) in new[]
+                 {
+                     ("largetitle", "Large Title 26 — SnapMark"), ("title1", "Title 1 22 — Настройки"),
+                     ("title2", "Title 2 17 — Screenshot series"), ("title3", "Title 3 15 — Kantemir Bitokov"),
+                     ("headline", "Headline 13 — Сочетания клавиш"), ("body", "Body 13 — Копировать картинку в буфер"),
+                     ("callout", "Callout 12 — MP4 · 30 fps"), ("caption", "Footnote 12 — описание под настройкой, которое переносится на несколько строк и должно читаться легко"),
+                     ("caption1", "Caption 11 — 1280 × 720"), ("group", "GROUP LABEL 11"),
+                 })
+            spec.Children.Add(new TextBlock { Text = text, Classes = { cls }, MaxWidth = 380, TextWrapping = TextWrapping.Wrap });
+        var specPanel = new GlassPanel { Width = 420, Padding = new Thickness(18, 14), Child = spec };
+        specPanel.Classes.Add("pill");
+        Canvas.SetLeft(specPanel, 40); Canvas.SetTop(specPanel, 120); canvas.Children.Add(specPanel);
+
         window.Show();
         await Task.Delay(1800);
         var px = window.RenderScaling;
