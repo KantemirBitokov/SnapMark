@@ -80,6 +80,8 @@ class WinApp : Application
             catch (Exception ex) { Program.Log.WriteLine("BROWSER LONGSHOT ERROR " + ex); }
             try { await AppLongShotTest(); }
             catch (Exception ex) { Program.Log.WriteLine("APP LONGSHOT ERROR " + ex); }
+            try { await AppLongShotTest2(); }
+            catch (Exception ex) { Program.Log.WriteLine("APP LONGSHOT2 ERROR " + ex); }
             try { await TrimTest(); }
             catch (Exception ex) { Program.Log.WriteLine("TRIM ERROR " + ex); }
             life.Shutdown();
@@ -481,6 +483,7 @@ class WinApp : Application
     [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool GetClientRect(IntPtr h, out RECT r);
     [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool ClientToScreen(IntPtr h, ref POINT p);
     [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool ShowWindow(IntPtr h, int cmd);
+    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)] static extern IntPtr FindWindow(string? cls, string? title);
     struct RECT { public int L, T, R, B; }
     struct POINT { public int X, Y; }
 
@@ -549,6 +552,59 @@ class WinApp : Application
             Program.Log.WriteLine($"app-{name}: {(pass ? "OK" : "FAIL")} size={result.Width}x{result.Height} lines {min}..{max} recognized={distinct.Count} holes={holes} dupsInOcr={dups} manual={manual}");
         }
     }
+
+    /// <summary>Проводник (список System32) и область без прокрутки — должен включиться ручной режим.</summary>
+    static async Task AppLongShotTest2()
+    {
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe", @"C:\Windows\System32") { UseShellExecute = true });
+        IntPtr hwnd = IntPtr.Zero;
+        for (int t = 0; t < 30 && hwnd == IntPtr.Zero; t++) { await Task.Delay(500); hwnd = FindWindow("CabinetWClass", null); }
+        if (hwnd != IntPtr.Zero)
+        {
+            ShowWindow(hwnd, 3);
+            SetForegroundWindow(hwnd);
+            await Task.Delay(2500);
+            GetClientRect(hwnd, out var cr);
+            var tl = new POINT();
+            ClientToScreen(hwnd, ref tl);
+            // Правая часть окна — список файлов (левее — дерево папок, сверху — лента и адрес).
+            var rect = new PixelRect(tl.X + 260, tl.Y + 190, Math.Min(640, cr.R - 300), Math.Max(200, cr.B - 260));
+            using (var pre = Grab(rect.X, rect.Y, rect.Width, rect.Height)) pre.Save(Path.Combine(Program.OutDir, "app-explorer-start.png"));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+            bool manual = false;
+            SnapMark.Capture.LongShotController.Trace = m => Program.Log.WriteLine($"  app-explorer: {m}");
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+            using var result = await SnapMark.Capture.LongShotController.CaptureAsync(rect, 1, true, cts.Token, null, () => { manual = true; cts.CancelAfter(2000); });
+            SnapMark.Capture.LongShotController.Trace = null;
+            if (result is not null)
+            {
+                using (var img = SkiaSharp.SKImage.FromBitmap(result))
+                using (var data = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
+                    File.WriteAllBytes(Path.Combine(Program.OutDir, "app-explorer.png"), data.ToArray());
+                bool pass = result.Height > rect.Height * 4 && !manual;
+                Program.Log.WriteLine($"app-explorer: {(pass ? "OK" : "FAIL")} size={result.Width}x{result.Height} manual={manual} time={timer.Elapsed.TotalSeconds:0.0}s (check the picture)");
+            }
+            PostMessage(hwnd, 0x0010 /*WM_CLOSE*/, IntPtr.Zero, IntPtr.Zero);
+        }
+        else Program.Log.WriteLine("app-explorer: no window");
+
+        // Область без прокрутки: картинка в окне — колесо ни на что не влияет, ждём ручной режим.
+        using var bg = new Bitmap(Program.BgPath);
+        var w = new Window { Width = 700, Height = 500, Position = new PixelPoint(100, 100), SystemDecorations = SystemDecorations.None, Topmost = true,
+            Content = new Image { Source = bg, Stretch = Stretch.UniformToFill } };
+        w.Show();
+        await Task.Delay(800);
+        using var cts2 = new CancellationTokenSource(TimeSpan.FromSeconds(40));
+        bool manual2 = false;
+        var timer2 = System.Diagnostics.Stopwatch.StartNew();
+        double at = 0;
+        using var r2 = await SnapMark.Capture.LongShotController.CaptureAsync(new PixelRect(100, 100, 700, 500), 1, true, cts2.Token, null,
+            () => { manual2 = true; at = timer2.Elapsed.TotalSeconds; cts2.CancelAfter(1500); });
+        w.Close();
+        Program.Log.WriteLine($"app-static: {(manual2 && at < 20 ? "OK" : "FAIL")} manual={manual2} after {at:0.0}s height={r2?.Height}");
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
 
     /// <summary>Окно обрезки видео (нужен ffmpeg и тестовое видео).</summary>
     static async Task TrimTest()
