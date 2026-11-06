@@ -118,6 +118,75 @@ if (OperatingSystem.IsWindows())
     }
 }
 
+// ── 4. Склейка длинного скриншота: страница с закреплёнными шапкой и подвалом ──
+{
+    const int W = 300, PageH = 2200, H = 400, Head = 40, Foot = 30;
+    var rnd = new Random(7);
+    using var page = new SKBitmap(W, PageH);
+    using (var c = new SKCanvas(page))
+    {
+        c.Clear(SKColors.White);
+        using var font = new SKFont(SKTypeface.FromFamilyName("Segoe UI"), 18);
+        using var paint = new SKPaint { Color = SKColors.Black, IsAntialias = true };
+        for (int y = 30; y < PageH; y += 28)
+            if (rnd.NextDouble() > 0.25) c.DrawText($"Line {y / 28}: {Guid.NewGuid():N}"[..Math.Min(34, 12 + rnd.Next(20))], 10, y, font, paint);
+    }
+    SKBitmap Frame(int off)
+    {
+        var f = new SKBitmap(W, H);
+        using var c = new SKCanvas(f);
+        c.DrawBitmap(page, new SKRect(0, off, W, off + H - Head - Foot), new SKRect(0, Head, W, H - Foot));
+        using var hp = new SKPaint { Color = new SKColor(20, 90, 200) };
+        c.DrawRect(0, 0, W, Head, hp);
+        using var fp = new SKPaint { Color = new SKColor(200, 60, 40) };
+        c.DrawRect(0, H - Foot, W, Foot, fp);
+        return f;
+    }
+    var st = new SnapMark.Capture.Stitcher(W);
+    int body = H - Head - Foot, off = 0;
+    while (true)
+    {
+        using (var f = Frame(off)) st.Add(f);
+        if (off >= PageH - body) { using var again = Frame(off); st.Add(again); break; }
+        off = Math.Min(off + new[] { 97, 133, 151, 180 }[rnd.Next(4)], PageH - body);
+    }
+    using var result = st.Result();
+    File.WriteAllBytes(Path.Combine(outDir, "stitch.png"), SKImage.FromBitmap(result).Encode(SKEncodedImageFormat.Png, 100).ToArray());
+    bool ok = result.Height == Head + PageH + Foot;
+    // Сравнить середину результата со страницей построчно (пиксель в пиксель).
+    int bad = 0;
+    if (ok)
+        for (int y = 0; y < PageH; y += 3)
+            for (int x = 0; x < W; x += 5)
+                if (result.GetPixel(x, Head + y) != page.GetPixel(x, y)) bad++;
+    Check("stitch", ok && bad == 0, $"height={result.Height} expected={Head + PageH + Foot} mismatched={bad}");
+}
+
+// ── 5. Обрезка и GIF (нужен ffmpeg в PATH) ──
+var video = Environment.GetEnvironmentVariable("SNAPMARK_TEST_VIDEO");
+if (video is not null && File.Exists(video))
+{
+    try
+    {
+        var (dur, vw, vh) = await SnapMark.Recording.VideoTools.ProbeAsync(video);
+        Check("video-probe", Math.Abs(dur - 6) < 0.3 && vw == 640, $"{dur:0.00}s {vw}x{vh}");
+        var frame = await SnapMark.Recording.VideoTools.FrameAsync(video, 2, 320, CancellationToken.None);
+        Check("video-frame", frame is { Length: > 1000 }, $"{frame?.Length} bytes");
+        if (frame is not null) File.WriteAllBytes(Path.Combine(outDir, "video-frame.png"), frame);
+        var cut = Path.Combine(outDir, "cut.mp4");
+        await SnapMark.Recording.VideoTools.TrimAsync(video, 1, 3.5, cut, CancellationToken.None);
+        var (cd, _, _) = await SnapMark.Recording.VideoTools.ProbeAsync(cut);
+        Check("video-trim", Math.Abs(cd - 2.5) < 0.25, $"{cd:0.00}s");
+        var gif = Path.Combine(outDir, "cut.gif");
+        await SnapMark.Recording.VideoTools.GifAsync(video, 1, 2.5, 10, 320, gif, CancellationToken.None);
+        Check("video-gif", File.Exists(gif) && new FileInfo(gif).Length > 5000, $"{new FileInfo(gif).Length} bytes");
+    }
+    catch (Exception ex)
+    {
+        Check("video", false, ex.Message);
+    }
+}
+
 Console.WriteLine(failures == 0 ? "ALL PASSED" : $"{failures} FAILED");
 return failures == 0 ? 0 : 1;
 }

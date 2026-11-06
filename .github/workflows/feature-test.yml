@@ -22,6 +22,13 @@ jobs:
         run: |
           dotnet build -c Release src/SnapMark.App
           dotnet build -c Release tools/FeatureTest
+      - name: ffmpeg and a test video
+        shell: bash
+        run: |
+          ffmpeg -version >/dev/null 2>&1 || choco install ffmpeg -y --no-progress
+          mkdir -p out
+          ffmpeg -hide_banner -loglevel error -y -f lavfi -i testsrc2=size=640x360:rate=30 -f lavfi -i sine=frequency=440 -t 6 -c:v libx264 -pix_fmt yuv420p -c:a aac "$PWD/out/test.mp4"
+          ls -la out
       - name: Unit-style checks (OCR, redact, input hooks)
         shell: bash
         continue-on-error: true
@@ -29,6 +36,7 @@ jobs:
         run: |
           mkdir -p out
           export SNAPMARK_TEST_INPUT=1
+          export SNAPMARK_TEST_VIDEO="$PWD/out/test.mp4"
           dotnet tools/FeatureTest/bin/Release/net8.0/FeatureTest.dll "$PWD/out" 2>&1 | tee out/feature-test.txt
       - name: End-to-end step guide
         shell: pwsh

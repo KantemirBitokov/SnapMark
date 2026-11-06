@@ -4,7 +4,7 @@ name: Glass on Windows
 on:
   workflow_dispatch:
   push:
-    paths: ['src/SnapMark.App/UI/Glass*.cs', 'src/SnapMark.App/Recording/RecordingEffects.cs', 'src/SnapMark.App/Platform/InputMonitor.cs', 'tools/GlassWin/**', '.github/workflows/glass-win.yml']
+    paths: ['src/SnapMark.App/Capture/LongShot*.cs', 'src/SnapMark.App/Recording/TrimWindow.cs', 'src/SnapMark.App/UI/Glass*.cs', 'src/SnapMark.App/Recording/RecordingEffects.cs', 'src/SnapMark.App/Platform/InputMonitor.cs', 'tools/GlassWin/**', '.github/workflows/glass-win.yml']
 
 permissions:
   contents: write
@@ -19,15 +19,21 @@ jobs:
       - name: Build
         shell: bash
         run: dotnet build -c Release tools/GlassWin
+      - name: ffmpeg and a test video
+        shell: bash
+        run: |
+          ffmpeg -version >/dev/null 2>&1 || choco install ffmpeg -y --no-progress
+          ffmpeg -hide_banner -loglevel error -y -f lavfi -i testsrc2=size=640x360:rate=30 -f lavfi -i sine=frequency=440 -t 6 -c:v libx264 -pix_fmt yuv420p -c:a aac "$RUNNER_TEMP/test.mp4"
       - name: Render
         shell: bash
         run: |
           exe=$(ls tools/GlassWin/bin/Release/net8.0/GlassWin.exe)
           export SNAPMARK_TEST_INPUT=1
+          export SNAPMARK_TEST_VIDEO="$RUNNER_TEMP/test.mp4"
           mkdir -p out
           "$exe" "$PWD/out" "$PWD/docs/media/markers.png" &
           pid=$!
-          for i in $(seq 1 90); do kill -0 $pid 2>/dev/null || break; sleep 1; done
+          for i in $(seq 1 180); do kill -0 $pid 2>/dev/null || break; sleep 1; done
           kill $pid 2>/dev/null || true
           ls -la out; cat out/log.txt || true
       - name: Publish

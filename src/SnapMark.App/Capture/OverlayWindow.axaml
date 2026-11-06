@@ -162,6 +162,9 @@
           <Button Classes="tool" Click="OnOcrClick" ToolTip.Tip="{l:Tr 'Распознать текст и скопировать (Ctrl+T). Работает без интернета'}">
             <Path Data="{StaticResource Icon.Ocr}"/>
           </Button>
+          <Button Classes="tool" Click="OnLongShotClick" ToolTip.Tip="{l:Tr 'Длинный скриншот (Ctrl+L): выдели прокручиваемую часть — SnapMark сам прокрутит и склеит страницу'}">
+            <Path Data="{StaticResource Icon.LongShot}"/>
+          </Button>
           <Button Classes="tool" Click="OnPinClick" ToolTip.Tip="{l:Tr 'Закрепить поверх окон (Ctrl+F): колесо — масштаб, Ctrl+колесо — прозрачность, двойной щелчок — открепить'}">
             <Path Data="{StaticResource Icon.PinFloat}"/>
           </Button>

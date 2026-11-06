@@ -1077,6 +1077,7 @@ public partial class OverlayWindow : Window
                 case Key.G: _ = DoSearchAsync(); return true;
                 case Key.T: _ = DoOcrAsync(); return true;
                 case Key.F: DoPin(); return true;
+                case Key.L: DoLongShot(); return true;
                 case Key.D: DoAddToSeries(); return true;
                 case Key.R: StartRecording(); return true;
                 case Key.J: Surface.DuplicateSelected(); return true;
@@ -1117,6 +1118,22 @@ public partial class OverlayWindow : Window
     void OnSeriesClick(object? s, RoutedEventArgs e) => DoAddToSeries();
     void OnOcrClick(object? s, RoutedEventArgs e) => _ = DoOcrAsync();
     void OnPinClick(object? s, RoutedEventArgs e) => DoPin();
+    void OnLongShotClick(object? s, RoutedEventArgs e) => DoLongShot();
+
+    /// <summary>Длинный скриншот выделенной области: прокрутка и склейка.</summary>
+    void DoLongShot()
+    {
+        CommitTextEdit();
+        if (_screen is null || Surface.Selection is not PixelRect sel || sel.Width < 40 || sel.Height < 60)
+        {
+            Toast.Show(L.T("Длинный скриншот"), L.T("Выдели прокручиваемую часть окна — страницу, документ, список."));
+            return;
+        }
+        var at = new PixelRect(_screen.Bounds.X + sel.X, _screen.Bounds.Y + sel.Y, sel.Width, sel.Height);
+        var scaling = _screen.Scaling;
+        Finish();
+        LongShotController.Start(at, scaling);
+    }
     void OnCloseClick(object? s, RoutedEventArgs e) => CaptureController.CloseAll();
     void OnRecordClick(object? s, RoutedEventArgs e) => StartRecording();
     void OnRecordFromScreenshotClick(object? s, RoutedEventArgs e) => StartRecording();

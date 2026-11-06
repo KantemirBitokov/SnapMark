@@ -74,6 +74,10 @@ class WinApp : Application
             catch (Exception ex) { Program.Log.WriteLine("OCR ERROR " + ex); }
             try { await ToastTest(); }
             catch (Exception ex) { Program.Log.WriteLine("TOAST ERROR " + ex); }
+            try { await LongShotTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("LONGSHOT ERROR " + ex); }
+            try { await TrimTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("TRIM ERROR " + ex); }
             life.Shutdown();
         });
         base.OnFrameworkInitializationCompleted();
@@ -222,6 +226,49 @@ class WinApp : Application
         window.Close();
         Glass.Appearance = GlassAppearance.Auto;
         Program.Log.WriteLine("saved toast");
+    }
+
+    /// <summary>Длинный скриншот настоящего окна с прокруткой: автопрокрутка колесом и склейка.</summary>
+    static async Task LongShotTest()
+    {
+        var list = new StackPanel();
+        for (int i = 1; i <= 150; i++)
+            list.Children.Add(new Border
+            {
+                Background = new SolidColorBrush(i % 2 == 0 ? Color.Parse("#F2F2F7") : Colors.White),
+                Padding = new Thickness(12, 6),
+                Child = new TextBlock { Text = $"Line {i} — the quick brown fox jumps over the lazy dog #{i * 37 % 101}", Foreground = Brushes.Black, FontSize = 15 },
+            });
+        var header = new Border { Background = new SolidColorBrush(Color.Parse("#0A84FF")), Height = 44,
+            Child = new TextBlock { Text = "Sticky header", Foreground = Brushes.White, Margin = new Thickness(12), FontSize = 16 } };
+        var dock = new DockPanel();
+        DockPanel.SetDock(header, Dock.Top);
+        dock.Children.Add(header);
+        dock.Children.Add(new ScrollViewer { Content = list });
+        var w = new Window { Width = 520, Height = 420, Position = new PixelPoint(60, 60), SystemDecorations = SystemDecorations.None, Content = dock, Background = Brushes.White };
+        w.Show();
+        await Task.Delay(800);
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+        int frames = 0, height = 0;
+        using var result = await SnapMark.Capture.LongShotController.CaptureAsync(new PixelRect(60, 60, 520, 420), 1, true, cts.Token, (f, h) => { frames = f; height = h; });
+        w.Close();
+        if (result is null) { Program.Log.WriteLine("longshot: null"); return; }
+        using (var img = SkiaSharp.SKImage.FromBitmap(result))
+        using (var data = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
+            File.WriteAllBytes(Path.Combine(Program.OutDir, "longshot.png"), data.ToArray());
+        Program.Log.WriteLine($"longshot: frames={frames} size={result.Width}x{result.Height}");
+    }
+
+    /// <summary>Окно обрезки видео (нужен ffmpeg и тестовое видео).</summary>
+    static async Task TrimTest()
+    {
+        var video = Environment.GetEnvironmentVariable("SNAPMARK_TEST_VIDEO");
+        if (video is null || !File.Exists(video)) { Program.Log.WriteLine("trim: no video"); return; }
+        SnapMark.Recording.TrimWindow.Open(video);
+        await Task.Delay(9000);
+        var b = new PixelRect(0, 0, 1024, 768);
+        using (var shot = Grab(b.X, b.Y, b.Width, b.Height)) shot.Save(Path.Combine(Program.OutDir, "trim-window.png"));
+        Program.Log.WriteLine("saved trim");
     }
 
     static Button Sel(Button b) { b.Classes.Add("selected"); return b; }
