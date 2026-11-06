@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.1
+- Scrolling screenshot: moving the mouse pauses auto-scrolling, so the **Done** button is easy to reach (the cursor is no longer pulled back to the area); faster scrolling for tall areas.
+- Trimming GIFs and videos with odd width or height no longer fails (H.264 needs even dimensions).
+- Code clean-up from a review: a compiler warning in the webcam bubble, a guarded file picker in the trim window; CI actions updated to the Node 24 versions.
+
 ## 1.9.0 — scrolling screenshots, trimming, webcam
 - **Scrolling screenshot** (<kbd>Ctrl</kbd>+<kbd>L</kbd> or the new button in the editor). Select the scrollable part of a page, document or list — SnapMark scrolls it with the mouse wheel, captures frames and stitches them by matching rows. Sticky headers and footers appear once, the scrollbar is ignored, and it stops by itself at the end of the page (or press **Done** / Esc). The result opens in a window with Copy, Save and Pin. Where automatic scrolling isn't available, scroll yourself — frames are captured automatically.
 - **Trim a video and export a GIF.** After recording, the notification has **Trim** (also in the tray: “Trim video / to GIF…”). Drag the yellow handles on the filmstrip, click it to preview a frame, then **Save clip** (MP4, frame-accurate) or **Export GIF** (10/15/24 fps, original/960/720/480 width, per-frame palette for crisp text).
