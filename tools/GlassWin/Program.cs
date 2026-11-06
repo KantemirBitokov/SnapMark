@@ -298,7 +298,7 @@ class WinApp : Application
         Program.Log.WriteLine($"browser-longshot: screen {sw}x{sh}");
         var chrome = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
         var edge = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
-        foreach (var (name, exe, dsf) in new[] { ("chrome-150", chrome, 1.5), ("chrome-100", chrome, 1.0), ("edge-125", edge, 1.25) })
+        foreach (var (name, exe, dsf) in new[] { ("chrome-100", chrome, 1.0), ("chrome-150", chrome, 1.5), ("edge-125", edge, 1.25), ("edge-150", edge, 1.5) })
         {
             if (!File.Exists(exe)) { Program.Log.WriteLine($"{name}: no browser"); continue; }
             var profile = Path.Combine(Path.GetTempPath(), "snapmark-" + name);
@@ -308,7 +308,15 @@ class WinApp : Application
                          new Uri(html).AbsoluteUri })
                 psi.ArgumentList.Add(a);
             using var proc = System.Diagnostics.Process.Start(psi)!;
-            await Task.Delay(7000);
+            // Ждём, пока страница реально появится (бирюзовая полоса сверху), — первый запуск браузера долгий.
+            for (int t = 0; t < 40; t++)
+            {
+                await Task.Delay(500);
+                using var probe = Grab(40, 40, 4, 4);
+                var px = probe.GetPixel(1, 1);
+                if (px.R < 30 && px.G > 170 && px.B > 170) break;
+            }
+            await Task.Delay(800);
             var rect = new PixelRect(20, 0, Math.Min(760, sw - 80), sh - 40);
             using (var pre = Grab(rect.X, rect.Y, rect.Width, rect.Height)) pre.Save(Path.Combine(Program.OutDir, name + "-start.png"));
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
