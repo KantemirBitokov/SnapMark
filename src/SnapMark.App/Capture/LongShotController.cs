@@ -110,6 +110,17 @@ public static class LongShotController
             int expected = auto && lastPerNotch > 0 ? (int)Math.Round(step * lastPerNotch) : 0;
             int added;
             using (frame) added = stitcher.Add(frame, expected, steady);
+            if (added < 0 && auto)
+            {
+                // Не сошлось — возможно, страница ещё докручивалась или дорисовывалась: ещё один взгляд.
+                try { await Task.Delay(500, ct); } catch (OperationCanceledException) { break; }
+                SKBitmap? again;
+                try { again = await SettledFrameAsync(rect, 0, ct); }
+                catch (OperationCanceledException) { break; }
+                if (again is null) break;
+                using (again) added = stitcher.Add(again, expected, steady);
+                Trace?.Invoke($"  recheck: added={added} | {stitcher.LastInfo}");
+            }
             if (added == 0 && auto)
             {
                 // Firefox и некоторые программы начинают плавную прокрутку с задержкой (особенно самую первую,

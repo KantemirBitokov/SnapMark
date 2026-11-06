@@ -70,6 +70,8 @@ public sealed class Stitcher
         int bottom = 0;
         while (bottom < h - top && RowSame(a[h - 1 - bottom], cur[h - 1 - bottom])) bottom++;
         int zh = h - top - bottom;
+        // Изменилась лишь узкая полоса (всплыло уведомление, мигнула кнопка) — страница не сдвинулась.
+        if (zh < h / 10) { LastInfo = $"small change {zh} rows"; return 0; }
 
         // Какие колонки ячеек изменились на месте. Неподвижные (меню сбоку, фон, плавающие кнопки, уведомления)
         // в поиске сдвига не участвуют. Изменилась только малая часть (анимация на месте) — страница стоит.
@@ -99,7 +101,7 @@ public sealed class Stitcher
             cnt[sh] = r.Counted;
         }
 
-        int Pick(double[] sc, double tie)
+        int Pick(double[] sc, double tie, bool confident)
         {
             int best = -1;
             for (int sh = 1; sh < zh; sh++)
@@ -108,7 +110,7 @@ public sealed class Stitcher
             // Почти равные оценки (повторяющееся содержимое) — ближе к ожидаемому сдвигу, иначе — с большим перекрытием.
             double bestScore = sc[best];
             // Уверенное совпадение (почти всё сошлось) — ожидаемый сдвиг не навязываем: в конце страницы прокрутка короче.
-            if (bestScore >= 0.85) tie = Math.Min(tie, 0.005);
+            if (confident && bestScore >= 0.85) tie = Math.Min(tie, 0.005);
             int top1 = best;
             for (int sh = 1; sh < zh; sh++)
             {
@@ -121,14 +123,16 @@ public sealed class Stitcher
 
         // Прокрутка стабильна — ожидаемому сдвигу доверяем сильнее: среди близких оценок (большие анимации вроде
         // карусели во весь экран портят и верный сдвиг) берём ближайший к нему. Сдвиг ещё не известен — строже порог.
+        // Сдвиг совпал с ожидаемым — достаточно и более слабого подтверждения (дробный масштаб, сглаживание шрифтов).
+        bool near(int sh) => expected > 0 && Math.Abs(sh - expected) <= Math.Max(3, expected / 50);
         double tie = trustExpected ? 0.15 : 0.005;
-        int s = Pick(e, tie);
+        int s = Pick(e, tie, true);
         string how = "exact";
-        if (s < 0 || e[s] < 0.5 || e[s] < e[0] + 0.1)
+        if (s < 0 || e[s] < (near(s) ? 0.35 : 0.5) || e[s] < e[0] + 0.1)
         {
-            s = Pick(t, trustExpected ? 0.15 : 0.01);
+            s = Pick(t, trustExpected ? 0.15 : 0.01, false);
             how = "soft";
-            if (s < 0 || t[s] < (expected > 0 ? 0.7 : 0.8) || t[s] < t[0] + 0.1)
+            if (s < 0 || t[s] < (near(s) ? 0.55 : expected > 0 ? 0.7 : 0.8) || t[s] < t[0] + 0.1)
             {
                 s = -1;
                 how = "none";
@@ -317,6 +321,8 @@ public static class AutoScroll
     [DllImport("user32.dll")] static extern IntPtr GetForegroundWindow();
     [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
     [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+    [DllImport("user32.dll")] static extern bool AttachThreadInput(uint a, uint b, bool attach);
+    [DllImport("kernel32.dll")] static extern uint GetCurrentThreadId();
 
     [SupportedOSPlatform("windows")]
     static bool Win(int x, int y, int notches)
@@ -324,10 +330,18 @@ public static class AutoScroll
         // Если в Windows выключено «Прокручивать неактивные окна», колесо уходит активному окну, а не тому,
         // что под курсором, — делаем окно под точкой активным (только чужое: свои панели не трогаем).
         var root = GetAncestor(WindowFromPoint(new WPOINT { X = x, Y = y }), 2 /*GA_ROOT*/);
-        if (root != IntPtr.Zero && root != GetForegroundWindow())
+        var fg = GetForegroundWindow();
+        if (root != IntPtr.Zero && root != fg)
         {
             GetWindowThreadProcessId(root, out var pid);
-            if (pid != (uint)Environment.ProcessId) SetForegroundWindow(root);
+            if (pid != (uint)Environment.ProcessId)
+            {
+                // Windows разрешает менять активное окно не всем: «присоединяемся» к потоку текущего активного окна.
+                uint fgThread = fg == IntPtr.Zero ? 0 : GetWindowThreadProcessId(fg, out _), me = GetCurrentThreadId();
+                bool attached = fgThread != 0 && fgThread != me && AttachThreadInput(me, fgThread, true);
+                SetForegroundWindow(root);
+                if (attached) AttachThreadInput(me, fgThread, false);
+            }
         }
         SetCursorPos(x, y);
         var input = new INPUT { type = 0, mi = new MOUSEINPUT { dwFlags = 0x0800 /*WHEEL*/, mouseData = -120 * notches } };
