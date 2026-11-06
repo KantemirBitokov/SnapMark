@@ -160,6 +160,38 @@ if (OperatingSystem.IsWindows())
             for (int x = 0; x < W; x += 5)
                 if (result.GetPixel(x, Head + y) != page.GetPixel(x, y)) bad++;
     Check("stitch", ok && bad == 0, $"height={result.Height} expected={Head + PageH + Foot} mismatched={bad}");
+
+    // Шапка, которая появляется только после прокрутки (как на GitHub), и шаг почти в половину кадра.
+    SKBitmap Sticky(int o)
+    {
+        var f = new SKBitmap(W, H);
+        using var c = new SKCanvas(f);
+        c.DrawBitmap(page, new SKRect(0, o, W, o + H), new SKRect(0, 0, W, H));
+        if (o > 0)
+        {
+            using var sp = new SKPaint { Color = new SKColor(30, 30, 30) };
+            c.DrawRect(0, 0, W, 64, sp);
+            using var tf = new SKFont(SKTypeface.Default, 16);
+            using var tp = new SKPaint { Color = SKColors.White, IsAntialias = true };
+            c.DrawText("Sticky header", 10, 40, tf, tp);
+        }
+        return f;
+    }
+    var st2 = new SnapMark.Capture.Stitcher(W);
+    int o2 = 0, skipped = 0;
+    while (true)
+    {
+        using (var f = Sticky(o2)) if (st2.Add(f) < 0) skipped++;
+        if (o2 >= PageH - H) break;
+        o2 = Math.Min(o2 + H * 45 / 100 + rnd.Next(-20, 20), PageH - H);
+    }
+    using var r2 = st2.Result();
+    int bad2 = 0;
+    if (r2.Height == PageH)
+        for (int y = 0; y < PageH; y += 3)
+            for (int x = 0; x < W; x += 5)
+                if (r2.GetPixel(x, y) != page.GetPixel(x, y)) bad2++;
+    Check("stitch-sticky", r2.Height == PageH && bad2 == 0 && skipped == 0, $"height={r2.Height} expected={PageH} mismatched={bad2} skipped={skipped}");
 }
 
 // ── 5. Обрезка и GIF (нужен ffmpeg в PATH) ──

@@ -56,17 +56,30 @@ public sealed class Stitcher
         int bestS = -1;
         double bestScore = 0;
         int bestOverlap = 0;
+        // Шапка, которая «прилипает» при прокрутке (GitHub и многие сайты), появляется сверху нового кадра поверх
+        // содержимого — эти строки не совпадут ни при каком сдвиге. Поэтому сдвиг оценивается дважды: по всему
+        // перекрытию и без верхней полосы нового кадра (до четверти высоты), — берётся лучшая оценка.
+        int band = h / 4;
         for (int s = 1; s < zh; s++)
         {
-            int informative = 0, match = 0;
-            for (int i = 0; i < zh - s; i++)
+            int overlap = zh - s;
+            int skip = Math.Min(band, overlap / 2);
+            int informative = 0, match = 0, infoLow = 0, matchLow = 0;
+            for (int i = 0; i < overlap; i++)
             {
                 if (!ai[top + s + i] && !info[top + i]) continue;
+                bool eq = a[top + s + i] == hash[top + i];
                 informative++;
-                if (a[top + s + i] == hash[top + i]) match++;
+                if (eq) match++;
+                if (i >= skip)
+                {
+                    infoLow++;
+                    if (eq) matchLow++;
+                }
             }
-            if (informative < Math.Min(8, (zh - s) / 4 + 1)) continue;
+            if (informative < Math.Min(8, overlap / 4 + 1)) continue;
             double score = match / (double)informative;
+            if (infoLow >= Math.Min(8, overlap / 4 + 1)) score = Math.Max(score, matchLow / (double)infoLow);
             if (score > bestScore + 1e-9 || (Math.Abs(score - bestScore) < 1e-9 && informative > bestOverlap))
             {
                 bestScore = score;

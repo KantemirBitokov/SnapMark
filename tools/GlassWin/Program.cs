@@ -330,6 +330,7 @@ class WinApp : Application
             SnapMark.Capture.LongShotController.Trace = m => Program.Log.WriteLine($"  {name}: {m}");
             var sw2 = System.Diagnostics.Stopwatch.StartNew();
             using var result = await SnapMark.Capture.LongShotController.CaptureAsync(rect, dsf, true, cts.Token, (f, _) => frames = f);
+            using (var post = Grab(rect.X, rect.Y, rect.Width, rect.Height)) post.Save(Path.Combine(Program.OutDir, name + "-end.png"));
             try { proc.Kill(true); } catch { }
             foreach (var p in System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exe))) try { p.Kill(true); } catch { }
             await Task.Delay(1500);
