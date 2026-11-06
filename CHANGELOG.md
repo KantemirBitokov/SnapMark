@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.0 — scrolling screenshots, trimming, webcam
+- **Scrolling screenshot** (<kbd>Ctrl</kbd>+<kbd>L</kbd> or the new button in the editor). Select the scrollable part of a page, document or list — SnapMark scrolls it with the mouse wheel, captures frames and stitches them by matching rows. Sticky headers and footers appear once, the scrollbar is ignored, and it stops by itself at the end of the page (or press **Done** / Esc). The result opens in a window with Copy, Save and Pin. Where automatic scrolling isn't available, scroll yourself — frames are captured automatically.
+- **Trim a video and export a GIF.** After recording, the notification has **Trim** (also in the tray: “Trim video / to GIF…”). Drag the yellow handles on the filmstrip, click it to preview a frame, then **Save clip** (MP4, frame-accurate) or **Export GIF** (10/15/24 fps, original/960/720/480 width, per-frame palette for crisp text).
+- **Webcam in the corner of the video.** Turn on “Camera” in the recording options (choose the device in Settings → Video): a round bubble with your webcam sits in the corner of the recorded area and is part of the video. Drag it, resize with the wheel, right-click for size and shape.
+- Notifications can now have two buttons (e.g. Trim and Show).
+
 ## 1.8.2
 - **Fixed: glass lost its transparency in 1.8.1** — the extra density meant for “Always light / dark” glass over a background of the opposite brightness kicked in too early (also in Auto) and made panels nearly opaque, so the Transparency and Frost sliders seemed to do nothing. Now it applies only to a manually chosen appearance, only over a clearly opposite background, and adds to the slider values instead of overriding them.
 

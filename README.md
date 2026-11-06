@@ -58,6 +58,7 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 **Text & reference**
 - **Copy text from the screen (OCR)** — select an area, the text goes to the clipboard; offline (Windows OCR, macOS Vision, tesseract on Linux)
 - **Pin a screenshot** on top of all windows — move, zoom with the wheel, Ctrl+wheel for opacity
+- **Scrolling screenshot** — select the scrollable part of a page or document; SnapMark scrolls and stitches it, sticky headers appear once
 
 **Share**
 - **Series mode** — collect several screenshots with comments and copy everything at once
@@ -68,6 +69,8 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 - Record a region or the full screen to MP4, MKV, WebM or GIF, 15–60 fps
 - **Draw live while recording**: pen, highlighter, arrows, shapes, A-B-C markers with comments and text appear in the video as you draw and type — with the same style settings as the editor (fonts, frames, shadows…); the recording bar and panels never get into the video; switch to the mouse to keep working in your apps
 - **Click highlights and shortcut keys in the video** for tutorials (regular typing is never shown)
+- **Webcam bubble** in the corner of the video — drag it, resize with the wheel
+- **Trim after recording and export a GIF** — yellow handles on a filmstrip, “Save clip” or “Export GIF” (10–24 fps, any width)
 - Quality presets (Low → Maximum) and an exact area size: 1280×720, 1920×1080, square, vertical 1080×1920 or any W × H
 - Microphone, computer audio or both — with device selection and a mic level test
 - No time limit; crash-safe recording (nothing is lost if the PC freezes)
@@ -123,7 +126,7 @@ SnapMark is free and not (yet) signed with a paid certificate, so the system ask
 | Step-by-step guide (start/done) | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>8</kbd> |
 
 In the editor: <kbd>Ctrl+C</kbd> copy · <kbd>Ctrl+S</kbd> save · <kbd>Ctrl+D</kbd> add to series ·
-<kbd>Ctrl+T</kbd> copy text (OCR) · <kbd>Ctrl+F</kbd> pin on top · <kbd>Ctrl+Z</kbd> undo · <kbd>M</kbd> marker · <kbd>T</kbd> text · <kbd>P</kbd> pen · <kbd>A</kbd> arrow · <kbd>B</kbd> redact · <kbd>Esc</kbd> close.
+<kbd>Ctrl+T</kbd> copy text (OCR) · <kbd>Ctrl+F</kbd> pin on top · <kbd>Ctrl+L</kbd> scrolling screenshot · <kbd>Ctrl+Z</kbd> undo · <kbd>M</kbd> marker · <kbd>T</kbd> text · <kbd>P</kbd> pen · <kbd>A</kbd> arrow · <kbd>B</kbd> redact · <kbd>Esc</kbd> close.
 
 On Wayland (and anywhere you prefer system shortcuts) bind a key to a command:
 `snapmark --region`, `--full`, `--record`, `--steps`, `--series`, `--settings`.

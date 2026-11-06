@@ -68,8 +68,8 @@ public static class LongShotController
         {
             if (auto)
             {
-                // Прокрутка на ~треть высоты области (по 3 строки за «щелчок»), затем ждём, пока страница успокоится.
-                AutoScroll.Scroll(cx, cy, Math.Clamp(rect.Height / 240, 1, 6), scaling);
+                // Прокрутка примерно на половину высоты области (по 3 строки за «щелчок»), затем ждём, пока страница успокоится.
+                AutoScroll.Scroll(cx, cy, Math.Clamp(rect.Height / 150, 1, 8), scaling);
                 try { await Task.Delay(260, ct); } catch (OperationCanceledException) { break; }
             }
             else
