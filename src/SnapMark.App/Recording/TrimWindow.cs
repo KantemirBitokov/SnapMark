@@ -38,7 +38,11 @@ public sealed class TrimWindow : Window
         var w = new TrimWindow();
         w.Show();
         if (file is not null) _ = w.LoadAsync(file);
-        else w.Opened += async (_, _) => await w.PickAsync();
+        else w.Opened += async (_, _) =>
+        {
+            try { await w.PickAsync(); }
+            catch (Exception ex) { App.LogError(ex); w.Close(); }
+        };
     }
 
     TrimWindow()

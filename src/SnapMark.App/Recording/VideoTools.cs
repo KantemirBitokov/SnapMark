@@ -48,6 +48,8 @@ public static class VideoTools
         var args = new List<string>
         {
             "-hide_banner", "-y", "-ss", T(start), "-i", file, "-t", T(end - start),
+            // H.264 требует чётные ширину и высоту (у GIF и некоторых видео они бывают нечётными).
+            "-vf", "scale=trunc(iw/2)*2:trunc(ih/2)*2",
             "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p",
             "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", output,
         };

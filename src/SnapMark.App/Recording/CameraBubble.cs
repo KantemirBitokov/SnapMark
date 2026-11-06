@@ -23,13 +23,13 @@ namespace SnapMark.Recording;
 /// </summary>
 public sealed class CameraBubble : Window
 {
-    const int FrameSize = 360; // кадр с камеры — квадрат 360×360 (обрезка по центру)
+    const int CamSize = 360; // кадр с камеры — квадрат 360×360 (обрезка по центру)
     static CameraBubble? _current;
 
     readonly PixelRect _region;
     readonly Image _image = new() { Stretch = Stretch.UniformToFill };
     readonly Border _frame;
-    readonly WriteableBitmap _bitmap = new(new PixelSize(FrameSize, FrameSize), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Opaque);
+    readonly WriteableBitmap _bitmap = new(new PixelSize(CamSize, CamSize), new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Opaque);
     readonly TextBlock _placeholder;
     Process? _ffmpeg;
     volatile bool _running = true;
@@ -188,7 +188,7 @@ public sealed class CameraBubble : Window
         args.AddRange(new[]
         {
             // Квадрат по центру, зеркально (как в зеркале — привычнее), 30 кадров в секунду.
-            "-vf", $"crop='min(iw,ih)':'min(iw,ih)',scale={FrameSize}:{FrameSize},hflip,fps=30",
+            "-vf", $"crop='min(iw,ih)':'min(iw,ih)',scale={CamSize}:{CamSize},hflip,fps=30",
             "-pix_fmt", "bgra", "-f", "rawvideo", "pipe:1",
         });
 
@@ -208,7 +208,7 @@ public sealed class CameraBubble : Window
         var stream = _ffmpeg.StandardOutput.BaseStream;
         new Thread(() =>
         {
-            var frame = new byte[FrameSize * FrameSize * 4];
+            var frame = new byte[CamSize * CamSize * 4];
             bool any = false;
             try
             {
@@ -223,8 +223,8 @@ public sealed class CameraBubble : Window
                     }
                     if (read < 0) break;
                     using (var fb = _bitmap.Lock())
-                        for (int y = 0; y < FrameSize; y++)
-                            Marshal.Copy(frame, y * FrameSize * 4, fb.Address + y * fb.RowBytes, FrameSize * 4);
+                        for (int y = 0; y < CamSize; y++)
+                            Marshal.Copy(frame, y * CamSize * 4, fb.Address + y * fb.RowBytes, CamSize * 4);
                     if (!any)
                     {
                         any = true;

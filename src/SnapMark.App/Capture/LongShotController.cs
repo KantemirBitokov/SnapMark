@@ -64,8 +64,16 @@ public static class LongShotController
         progress?.Invoke(stitcher.Frames, stitcher.Height);
         int still = 0;
         int cx = rect.X + rect.Width / 2, cy = rect.Y + rect.Height / 2;
+        var wh = PlatformServices.WindowHelper;
         while (!ct.IsCancellationRequested && stitcher.Height < MaxHeight && stitcher.Frames < MaxFrames)
         {
+            // Двигаешь мышь (например, к «Готово») — пауза: курсор не перехватываем и не крутим.
+            if (auto && wh.GetCursorPosition() is PixelPoint cur && (Math.Abs(cur.X - cx) > 12 || Math.Abs(cur.Y - cy) > 12) && stitcher.Frames > 1)
+            {
+                var before = cur;
+                try { await Task.Delay(400, ct); } catch (OperationCanceledException) { break; }
+                if (wh.GetCursorPosition() is PixelPoint after && (after.X != before.X || after.Y != before.Y)) continue;
+            }
             if (auto)
             {
                 // Прокрутка примерно на половину высоты области (по 3 строки за «щелчок»), затем ждём, пока страница успокоится.
@@ -142,7 +150,7 @@ public sealed class LongShotHud : Window
         Title = L.T("SnapMark — длинный скриншот");
         var done = UiKit.SoftButton(L.T("Готово"), () => Done?.Invoke(), primary: true);
         var hint = UiKit.Caption(auto
-            ? L.T("Прокручиваю сам · Esc — закончить")
+            ? L.T("Прокручиваю сам · двинь мышь — пауза · Esc — закончить")
             : L.T("Прокручивай страницу — кадры снимаются сами"));
         hint.VerticalAlignment = VerticalAlignment.Center;
         hint.TextWrapping = TextWrapping.NoWrap;

@@ -22,8 +22,8 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with: { dotnet-version: '8.0.x' }
       - name: Inno Setup
         run: choco install innosetup -y --no-progress
@@ -38,8 +38,8 @@ jobs:
     env:
       HAS_CERT: ${{ secrets.MACOS_CERT_P12 != '' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with: { dotnet-version: '8.0.x' }
       - name: Import signing certificate
         if: env.HAS_CERT == 'true'
@@ -65,8 +65,8 @@ jobs:
   linux:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with: { dotnet-version: '8.0.x' }
       - name: Build
         run: bash ./build-linux.sh
@@ -79,7 +79,7 @@ jobs:
     needs: [windows, macos, linux]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Version
         id: ver
         run: echo "v=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/SnapMark.App/SnapMark.App.csproj | head -1)" >> $GITHUB_OUTPUT
