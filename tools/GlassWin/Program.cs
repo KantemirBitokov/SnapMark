@@ -270,6 +270,7 @@ class WinApp : Application
     }
 
     [System.Runtime.InteropServices.DllImport("user32.dll")] static extern int GetSystemMetrics(int i);
+    [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr h);
 
     /// <summary>
     /// Длинный скриншот настоящей страницы в браузере (как на GitHub): шапка, прилипающая при прокрутке,
@@ -308,6 +309,10 @@ class WinApp : Application
                          new Uri(html).AbsoluteUri })
                 psi.ArgumentList.Add(a);
             using var proc = System.Diagnostics.Process.Start(psi)!;
+            await Task.Delay(1500);
+            if (proc.MainWindowHandle == IntPtr.Zero) proc.Refresh();
+            foreach (var bp in System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exe)))
+                if (bp.MainWindowHandle != IntPtr.Zero) { SetForegroundWindow(bp.MainWindowHandle); break; }
             // Ждём, пока страница реально появится (бирюзовая полоса сверху), — первый запуск браузера долгий.
             for (int t = 0; t < 40; t++)
             {
@@ -322,6 +327,7 @@ class WinApp : Application
             using (var pre = Grab(rect.X, rect.Y, rect.Width, rect.Height)) pre.Save(Path.Combine(Program.OutDir, name + "-start.png"));
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
             int frames = 0;
+            SnapMark.Capture.LongShotController.Trace = m => Program.Log.WriteLine($"  {name}: {m}");
             var sw2 = System.Diagnostics.Stopwatch.StartNew();
             using var result = await SnapMark.Capture.LongShotController.CaptureAsync(rect, dsf, true, cts.Token, (f, _) => frames = f);
             try { proc.Kill(true); } catch { }

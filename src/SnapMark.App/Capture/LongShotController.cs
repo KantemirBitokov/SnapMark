@@ -29,6 +29,9 @@ public static class LongShotController
 
     public static bool IsActive => _cts is not null;
 
+    /// <summary>Отладка (автотесты): шаги съёмки.</summary>
+    public static Action<string>? Trace;
+
     public static void Start(PixelRect rect, double scaling)
     {
         if (IsActive) return;
@@ -91,6 +94,7 @@ public static class LongShotController
             if (frame is null) break;
             int added;
             using (frame) added = stitcher.Add(frame);
+            Trace?.Invoke($"step={step} added={added} height={stitcher.Height} pxPerNotch={pxPerNotch:0.#} still={still} misses={misses}");
             progress?.Invoke(stitcher.Frames, stitcher.Height);
             if (added > 0)
             {
