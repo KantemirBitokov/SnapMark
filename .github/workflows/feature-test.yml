@@ -1,0 +1,71 @@
+# Проверка новых функций на настоящей Windows: OCR, «Скрыть», хуки ввода и пошаговая инструкция целиком.
+# Результаты (лог, картинки, буфер обмена) — в ветку ci-feature-test.
+name: Feature test (Windows)
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ['src/**', 'tools/FeatureTest/**', '.github/workflows/feature-test.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: Build
+        shell: bash
+        run: |
+          dotnet build -c Release src/SnapMark.App
+          dotnet build -c Release tools/FeatureTest
+      - name: Unit-style checks (OCR, redact, input hooks)
+        shell: bash
+        continue-on-error: true
+        run: |
+          mkdir -p out
+          export SNAPMARK_TEST_INPUT=1
+          dotnet tools/FeatureTest/bin/Release/net8.0/FeatureTest.dll "$PWD/out" 2>&1 | tee out/feature-test.txt
+      - name: End-to-end step guide
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $env:SNAPMARK_TEST_INPUT = '1'
+          $exe = (Resolve-Path 'src/SnapMark.App/bin/Release/net8.0/SnapMark.exe').Path
+          Add-Type -Namespace W -Name U -MemberDefinition @'
+            [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
+            [DllImport("user32.dll")] public static extern void mouse_event(uint f, int x, int y, uint d, IntPtr e);
+          '@
+          function Click($x, $y) { [W.U]::SetCursorPos($x, $y) | Out-Null; Start-Sleep -Milliseconds 80; [W.U]::mouse_event(2,0,0,0,[IntPtr]::Zero); [W.U]::mouse_event(4,0,0,0,[IntPtr]::Zero) }
+          $app = Start-Process $exe -PassThru
+          Start-Sleep -Seconds 12
+          & $exe --steps
+          Start-Sleep -Seconds 3
+          Click 260 620; Start-Sleep -Milliseconds 1500
+          Click 900 450; Start-Sleep -Milliseconds 1500
+          Click 1250 700; Start-Sleep -Milliseconds 2500
+          & $exe --steps
+          Start-Sleep -Seconds 5
+          Get-Clipboard -Format Text | Out-File -Encoding utf8 out/clipboard.txt
+          $files = Get-Clipboard -Format FileDropList
+          "files: $($files.Count)" | Out-File -Append -Encoding utf8 out/clipboard.txt
+          foreach ($f in $files) { Copy-Item $f.FullName ("out/step-" + $f.Name) }
+          Get-Content out/clipboard.txt
+          Get-ChildItem out
+          $log = Join-Path $env:APPDATA 'SnapMark/error.log'
+          if (Test-Path $log) { Copy-Item $log out/error.log }
+          Stop-Process -Id $app.Id -Force -ErrorAction SilentlyContinue
+      - name: Publish results
+        if: always()
+        shell: bash
+        run: |
+          cd out
+          git init -q -b ci-feature-test
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "Feature test ${GITHUB_SHA::7}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-feature-test

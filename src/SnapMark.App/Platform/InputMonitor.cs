@@ -187,6 +187,8 @@ namespace SnapMark.Platform.Windows
         const int WM_KEYDOWN = 0x100, WM_SYSKEYDOWN = 0x104;
         const uint WM_QUIT = 0x12;
         const uint LLMHF_INJECTED = 1;
+        // Для автотестов в CI: принимать и программные клики (SendInput). В обычной работе — нет.
+        static readonly bool AllowInjected = Environment.GetEnvironmentVariable("SNAPMARK_TEST_INPUT") == "1";
 
         HookProc? _mouseProc, _keyProc; // ссылки держим, иначе сборщик мусора уберёт колбэки
         IntPtr _mouseHook, _keyHook;
@@ -232,7 +234,7 @@ namespace SnapMark.Platform.Windows
                 if (msg is WM_LBUTTONDOWN or WM_RBUTTONDOWN or WM_MBUTTONDOWN)
                 {
                     var m = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
-                    if ((m.flags & LLMHF_INJECTED) == 0)
+                    if ((m.flags & LLMHF_INJECTED) == 0 || AllowInjected)
                         RaiseClick(new InputClick(m.pt.X, m.pt.Y, msg switch
                         {
                             WM_RBUTTONDOWN => ClickButton.Right,

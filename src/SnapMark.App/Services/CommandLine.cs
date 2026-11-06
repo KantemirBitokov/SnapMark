@@ -20,7 +20,7 @@ public static class CommandLine
     /// <summary>Команда, с которой запустили первый экземпляр (выполняется после старта).</summary>
     public static string? StartupCommand { get; set; }
 
-    public static readonly string[] Commands = { "--region", "--full", "--record", "--series", "--settings" };
+    public static readonly string[] Commands = { "--region", "--full", "--record", "--steps", "--series", "--settings" };
 
     public static string? Find(string[] args) =>
         args.Select(a => a.Trim().ToLowerInvariant()).FirstOrDefault(a => Commands.Contains(a));
