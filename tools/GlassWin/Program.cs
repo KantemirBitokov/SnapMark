@@ -568,7 +568,7 @@ class WinApp : Application
             var tl = new POINT();
             ClientToScreen(hwnd, ref tl);
             // Правая часть окна — список файлов (левее — дерево папок, сверху — лента и адрес).
-            var rect = new PixelRect(tl.X + 260, tl.Y + 190, Math.Min(640, cr.R - 300), Math.Max(200, cr.B - 260));
+            var rect = new PixelRect(tl.X + 200, tl.Y + 190, Math.Min(700, cr.R - 240), Math.Max(200, cr.B - 260));
             using (var pre = Grab(rect.X, rect.Y, rect.Width, rect.Height)) pre.Save(Path.Combine(Program.OutDir, "app-explorer-start.png"));
             using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
             bool manual = false;

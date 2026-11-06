@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.9.3 — scrolling screenshots that don't give up
+- **Animated pages.** Twinkling backgrounds, carousels with progress bars, videos and blinking cursors no longer stop the capture (it used to halt at such blocks — e.g. the starry “Members save 90%” banner on yellowimages.com). Frames are compared cell by cell with tolerance for what moves on its own; when a block has nothing to match at all, the measured scroll distance is used.
+- **Floating elements appear once.** Chat buttons, “back to top”, cookie popups and Windows notifications that hover over the page are no longer repeated in every chunk of the picture.
+- **Fixed side menus** (documentation sites, mail) and **lists with similar rows** (Explorer, mail, tables) are stitched correctly and no longer end early.
+- **Firefox** is supported: its delayed smooth scrolling is waited for.
+- If the wheel can't scroll anything under the selection (a map, a carousel, a program running as administrator), SnapMark tries other points and then switches to manual mode — scroll yourself, frames are captured automatically.
+- The window under the selection is activated before scrolling, so it works even with “Scroll inactive windows” turned off.
+- Tested in CI on Chrome, Edge and Firefox at 100/125/150 % (sticky header, animations, floating button, cookie bar, side menu — all 200 rows of the test page, in order, no gaps or duplicates), Notepad, Explorer and SnapMark's own lists.
+
 ## 1.9.2
 - **Scrolling screenshots work on web pages at 125–150 % display scale.** Browsers scroll 100 px × the display scale per wheel notch (Edge — even more), so the fixed step jumped past the captured area: no overlap was found and the result was a plain screenshot, or capture stopped halfway. Now SnapMark measures how far one notch actually scrolls and picks the step from that; if it ever jumps too far, it scrolls back and continues with a smaller step.
 - **Sticky headers that appear while scrolling** (GitHub and many other sites) no longer break stitching.
