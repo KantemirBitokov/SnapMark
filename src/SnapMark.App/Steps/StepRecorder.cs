@@ -42,6 +42,19 @@ public static class StepRecorder
     static readonly Stopwatch Clock = Stopwatch.StartNew();
 
     public static bool IsActive => _input is not null;
+
+    // Журнал для автотеста в CI (SNAPMARK_TEST_INPUT=1): %TEMP%\SnapMark\steps.log.
+    static readonly bool Diag = Environment.GetEnvironmentVariable("SNAPMARK_TEST_INPUT") == "1";
+    static void Log(string line)
+    {
+        if (!Diag) return;
+        try
+        {
+            Directory.CreateDirectory(TempFiles.Root);
+            File.AppendAllText(Path.Combine(TempFiles.Root, "steps.log"), $"{DateTime.Now:HH:mm:ss.fff} {line}{Environment.NewLine}");
+        }
+        catch { }
+    }
     public static int Count => _steps;
 
     public static void Toggle()
@@ -55,6 +68,7 @@ public static class StepRecorder
         if (IsActive) return;
         if (CaptureController.IsActive) CaptureController.CloseAll();
         var monitor = InputMonitor.Instance;
+        Log($"start supported={monitor.IsSupported} problem={monitor.Problem}");
         if (!monitor.IsSupported)
         {
             Toast.Show(L.T("Пошаговая инструкция недоступна"), L.T(monitor.Problem ?? ""));
@@ -78,6 +92,7 @@ public static class StepRecorder
 
         _hud = new StepHud();
         _hud.Show();
+        Log($"started screens={_screens.Count} problem={monitor.Problem}");
         Toast.Show(L.T("Пошаговая инструкция"),
             L.F("Работай как обычно: каждый клик — шаг с меткой. «Готово» на панели или {0} — вся инструкция в буфере обмена.",
                 AppServices.Settings.StepGuideHotkey));
@@ -90,6 +105,7 @@ public static class StepRecorder
         Stop();
         // Дожидаемся кадров, которые ещё обрабатываются.
         for (int i = 0; i < 40 && Volatile.Read(ref _pending) > 0; i++) await Task.Delay(50);
+        Log($"finish steps={_steps} series={AppServices.Series.Shots.Count}");
         if (_steps == 0)
         {
             Toast.Show(L.T("Пошаговая инструкция"), L.T("Ни одного шага: кликни по программе, пока режим включён."));
@@ -142,6 +158,7 @@ public static class StepRecorder
     // ── Клик (фоновый поток; на Windows — прямо из хука мыши) ─────────────────────────────────
     static void OnClick(InputClick click)
     {
+        Log($"click {click} paused={_paused} overHud={_overHud} active={IsActive}");
         if (_paused || _overHud || !IsActive) return;
         if (CaptureController.IsActive || RecordingController.IsRecording) return;
         long now = Clock.ElapsedMilliseconds;
@@ -150,7 +167,7 @@ public static class StepRecorder
 
         var monitor = InputMonitor.Instance;
         var screen = FindScreen(click, monitor.LogicalCoordinates, out var local);
-        if (screen is null) return;
+        if (screen is null) { Log("no screen for click"); return; }
         string? title = AppServices.Settings.StepsWindowTitles ? WindowTitles.At(click) : null;
 
         Interlocked.Increment(ref _pending);
@@ -196,6 +213,7 @@ public static class StepRecorder
     {
         try
         {
+            Log($"add shot={(shot is null ? "null" : shot.PixelSize.ToString())} title={title}");
             if (shot is null) return;
             int w = shot.PixelSize.Width, h = shot.PixelSize.Height;
             var p = new Point(Math.Clamp(local.X * w, 0, w - 1), Math.Clamp(local.Y * h, 0, h - 1));

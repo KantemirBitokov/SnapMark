@@ -42,20 +42,34 @@ jobs:
             [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
             [DllImport("user32.dll")] public static extern void mouse_event(uint f, int x, int y, uint d, IntPtr e);
           '@
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          function Shot($name) {
+            $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+            $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+            $g = [System.Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+            $bmp.Save("out/$name.png"); $g.Dispose(); $bmp.Dispose()
+          }
           function Click($x, $y) { [W.U]::SetCursorPos($x, $y) | Out-Null; Start-Sleep -Milliseconds 80; [W.U]::mouse_event(2,0,0,0,[IntPtr]::Zero); [W.U]::mouse_event(4,0,0,0,[IntPtr]::Zero) }
           $app = Start-Process $exe -PassThru
           Start-Sleep -Seconds 12
+          Shot 'e2e-0-started'
           & $exe --steps
           Start-Sleep -Seconds 3
+          Shot 'e2e-1-steps-on'
           Click 260 620; Start-Sleep -Milliseconds 1500
           Click 900 450; Start-Sleep -Milliseconds 1500
           Click 1250 700; Start-Sleep -Milliseconds 2500
+          Shot 'e2e-2-after-clicks'
           & $exe --steps
           Start-Sleep -Seconds 5
-          Get-Clipboard -Format Text | Out-File -Encoding utf8 out/clipboard.txt
-          $files = Get-Clipboard -Format FileDropList
-          "files: $($files.Count)" | Out-File -Append -Encoding utf8 out/clipboard.txt
-          foreach ($f in $files) { Copy-Item $f.FullName ("out/step-" + $f.Name) }
+          Shot 'e2e-3-done'
+          # В PowerShell 7 у Get-Clipboard нет -Format — буфер читаем через Windows PowerShell (STA).
+          powershell.exe -NoProfile -STA -Command "Get-Clipboard -Format Text" | Out-File -Encoding utf8 out/clipboard.txt
+          $files = powershell.exe -NoProfile -STA -Command "Get-Clipboard -Format FileDropList | ForEach-Object { `$_.FullName }"
+          "files: $(@($files).Count)" | Out-File -Append -Encoding utf8 out/clipboard.txt
+          foreach ($f in @($files)) { if ($f) { Copy-Item $f ("out/step-" + (Split-Path $f -Leaf)) } }
+          $steps = Join-Path $env:TEMP 'SnapMark/steps.log'
+          if (Test-Path $steps) { Copy-Item $steps out/steps.log }
           Get-Content out/clipboard.txt
           Get-ChildItem out
           $log = Join-Path $env:APPDATA 'SnapMark/error.log'
