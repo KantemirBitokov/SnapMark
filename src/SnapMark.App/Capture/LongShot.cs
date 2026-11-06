@@ -160,14 +160,14 @@ public sealed class Stitcher
         // «Подвал» этого кадра: закреплённые строки снизу плюс полоса, где поверх страницы висит что-то
         // неподвижное (кнопка чата, «наверх», окно cookies, уведомление Windows). Его содержимое не добавляем
         // сейчас — страница под ним покажется выше в следующем кадре, а сам подвал окажется в результате один раз, в конце.
-        int band = Math.Min(Math.Max(bottom, OverlayBand(a, cur, s, bottom)), h * 2 / 5);
+        int footer = Math.Min(Math.Max(bottom, OverlayBand(a, cur, s, bottom)), h * 2 / 5);
         // Результат заканчивается хвостом прошлого кадра (строки прошлого кадра до самого низа). Убираем столько,
         // сколько было подвалом там или здесь, и добавляем страницу с того места, где она в прошлом кадре кончилась.
-        int remove = Math.Min(Math.Max(_lastBand, band), _rows.Count);
+        int remove = Math.Min(Math.Max(_lastBand, footer), _rows.Count);
         int start = Math.Max(top, h - remove - s);
         _rows.RemoveRange(_rows.Count - remove, remove);
         for (int i = start; i < h; i++) _rows.Add(rows[i]);
-        _lastBand = band;
+        _lastBand = footer;
         _prev = cur;
         return s;
     }
