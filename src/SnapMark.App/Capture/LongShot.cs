@@ -8,98 +8,151 @@ using SkiaSharp;
 namespace SnapMark.Capture;
 
 /// <summary>
-/// Склейка кадров длинного скриншота. Каждый новый кадр сравнивается с предыдущим по «отпечаткам» строк:
-///   • строки, одинаковые в обоих кадрах сверху и снизу, — закреплённые шапка и подвал (не дублируются);
-///   • сдвиг ищется по совпадению содержательных строк (однотонные пустые строки не в счёт);
-///   • в результат добавляются только новые строки, подвал переносится в конец.
+/// Склейка кадров длинного скриншота. Кадр делится на ячейки (строка пикселей × 1/64 ширины), у каждой —
+/// средняя яркость и разброс. Сдвиг между кадрами ищется по совпадению ячеек с допуском, поэтому склейку
+/// не ломают:
+///   • анимации (мерцающие звёзды, карусели, видео, мигающий курсор) — меняется малая доля ячеек;
+///   • закреплённые шапка и подвал (одинаковые строки сверху и снизу) — не дублируются, подвал уходит в конец;
+///   • шапка, которая появляется при прокрутке (GitHub и др.), — сдвиг оценивается и без верхней полосы кадра;
+///   • неподвижные колонки (боковое меню, кнопка чата) — в оценке сдвига не участвуют;
+///   • однообразное содержимое (звёздное небо, таблица из одинаковых строк) — при равных оценках берётся
+///     сдвиг, ближайший к ожидаемому (сколько обычно даёт прокрутка).
 /// </summary>
 public sealed class Stitcher
 {
+    const int Blocks = 64;
     readonly int _width;
     readonly List<byte[]> _rows = new();      // результат по строкам (BGRA)
-    ulong[]? _prevHash;
-    bool[]? _prevInfo;
+    byte[][]? _prev;                          // ячейки прошлого удачного кадра: [строка][2·блок] = яркость, разброс
 
     public Stitcher(int width) => _width = width;
 
     public int Height => _rows.Count;
     public int Frames { get; private set; }
 
-    /// <summary>Добавить кадр. Возвращает число новых строк: 0 — страница не сдвинулась,
-    /// -1 — сдвинулась, но перекрытия с прошлым кадром не нашлось (прокрутили слишком далеко, анимация…).</summary>
-    public int Add(SKBitmap frame)
+    /// <summary>Отладка: оценки последнего сравнения.</summary>
+    public string LastInfo { get; private set; } = "";
+
+    /// <summary>
+    /// Добавить кадр. Возвращает число новых строк: 0 — страница не сдвинулась, -1 — сдвинулась, но надёжного
+    /// перекрытия с прошлым кадром нет (прокрутили слишком далеко и т. п.). expected — ожидаемый сдвиг (0 — неизвестен).
+    /// </summary>
+    public int Add(SKBitmap frame, int expected = 0)
     {
         if (frame.Width != _width) throw new ArgumentException("width");
         int h = frame.Height;
         var rows = ReadRows(frame);
-        var (hash, info) = Fingerprints(rows, _width);
+        var cur = Cells(rows, _width);
         Frames++;
-        if (_prevHash is null)
+        if (_prev is null)
         {
             _rows.AddRange(rows);
-            _prevHash = hash;
-            _prevInfo = info;
+            _prev = cur;
             return h;
         }
-
-        var a = _prevHash;
-        var ai = _prevInfo!;
+        var a = _prev;
         if (a.Length != h) throw new ArgumentException("height");
+
+        // Неподвижные строки сверху и снизу (закреплённые шапка и подвал).
+        var all = Enumerable.Repeat(true, Blocks).ToArray();
         int top = 0;
-        while (top < h && a[top] == hash[top]) top++;
-        if (top == h) return 0; // ничего не изменилось
+        while (top < h && RowSame(a[top], cur[top])) top++;
+        if (top == h) { LastInfo = "same"; return 0; }
         int bottom = 0;
-        while (bottom < h - top && a[h - 1 - bottom] == hash[h - 1 - bottom]) bottom++;
+        while (bottom < h - top && RowSame(a[h - 1 - bottom], cur[h - 1 - bottom])) bottom++;
         int zh = h - top - bottom;
 
-        // Лучший сдвиг s: строка нового кадра top+i совпадает со строкой прошлого top+s+i.
-        int bestS = -1;
-        double bestScore = 0;
-        int bestOverlap = 0;
-        // Шапка, которая «прилипает» при прокрутке (GitHub и многие сайты), появляется сверху нового кадра поверх
-        // содержимого — эти строки не совпадут ни при каком сдвиге. Поэтому сдвиг оценивается дважды: по всему
-        // перекрытию и без верхней полосы нового кадра (до четверти высоты), — берётся лучшая оценка.
+        // Какие колонки ячеек изменились на месте (s = 0). Неподвижные (меню сбоку, фон, плавающие кнопки)
+        // в поиске сдвига не участвуют. Если изменилась только малая часть (анимация) — страница стоит.
+        var moving = new bool[Blocks];
+        int evidence = 0, movingCount = 0;
+        for (int j = 0; j < Blocks; j++)
+        {
+            int counted = 0, matched = 0;
+            for (int y = top; y < top + zh; y++)
+                Cell(a[y], cur[y], j, ref counted, ref matched);
+            if (counted == 0) continue;
+            evidence++;
+            if (matched < counted * 0.95) { moving[j] = true; movingCount++; }
+        }
+        if (evidence == 0 || movingCount < Math.Max(2, evidence * 0.15)) { LastInfo = $"anim moving={movingCount}/{evidence}"; return 0; }
+
+        var (score0, _, _, _) = Score(a, cur, top, zh, 0, moving, 0);
         int band = h / 4;
+        int bestS = -1, bestCounted = 0;
+        double bestScore = 0;
+        var scores = new double[zh];
+        var counts = new int[zh];
         for (int s = 1; s < zh; s++)
         {
             int overlap = zh - s;
-            int skip = Math.Min(band, overlap / 2);
-            int informative = 0, match = 0, infoLow = 0, matchLow = 0;
-            for (int i = 0; i < overlap; i++)
+            var (full, cf, low, cl) = Score(a, cur, top, zh, s, moving, Math.Min(band, overlap / 2));
+            double sc = cf >= 24 ? full : 0;
+            if (cl >= 24 && low > sc) sc = low;
+            scores[s] = sc;
+            counts[s] = Math.Max(cf, cl);
+            if (sc > bestScore) { bestScore = sc; bestS = s; }
+        }
+        if (bestS > 0)
+        {
+            // Почти равные оценки (однообразное содержимое) — ближе к ожидаемому сдвигу, иначе — с большим перекрытием.
+            for (int s = 1; s < zh; s++)
             {
-                if (!ai[top + s + i] && !info[top + i]) continue;
-                bool eq = a[top + s + i] == hash[top + i];
-                informative++;
-                if (eq) match++;
-                if (i >= skip)
-                {
-                    infoLow++;
-                    if (eq) matchLow++;
-                }
-            }
-            if (informative < Math.Min(8, overlap / 4 + 1)) continue;
-            double score = match / (double)informative;
-            if (infoLow >= Math.Min(8, overlap / 4 + 1)) score = Math.Max(score, matchLow / (double)infoLow);
-            if (score > bestScore + 1e-9 || (Math.Abs(score - bestScore) < 1e-9 && informative > bestOverlap))
-            {
-                bestScore = score;
-                bestS = s;
-                bestOverlap = informative;
+                if (scores[s] < bestScore - 0.03) continue;
+                bool better = expected > 0
+                    ? Math.Abs(s - expected) < Math.Abs(bestS - expected)
+                    : counts[s] > bestCounted;
+                if (better || s == bestS) { bestS = s; bestCounted = counts[s]; }
             }
         }
+        LastInfo = $"s={bestS} score={bestScore:0.00} s0={score0:0.00} moving={movingCount}/{evidence} expected={expected}";
+        if (bestS <= 0 || bestScore < 0.6 || bestScore < score0 + 0.05)
+            return score0 >= 0.6 ? 0 : -1;
 
-        // Не нашли надёжного перекрытия (анимация, всплывшая подсказка…) — кадр пропускаем и сравниваем
-        // следующий с последним удачным: шаг прокрутки меньше высоты области, перекрытие найдётся.
-        if (bestS <= 0 || bestScore < 0.8) return -1;
         int newRows = bestS;
         // Результат всегда заканчивается хвостом прошлого кадра, а его нижние bottom строк — тот же подвал,
         // что и у этого кадра: убираем их, добавляем новые строки и подвал заново (подвал остаётся в самом конце).
         if (bottom > 0) _rows.RemoveRange(_rows.Count - bottom, bottom);
         for (int i = top + zh - newRows; i < top + zh; i++) _rows.Add(rows[i]);
         for (int i = h - bottom; i < h; i++) _rows.Add(rows[i]);
-        _prevHash = hash;
-        _prevInfo = info;
+        _prev = cur;
         return newRows;
+    }
+
+    /// <summary>
+    /// Доля совпавших ячеек: строка нового кадра top+i против строки прошлого top+s+i — по всему перекрытию
+    /// и без верхней полосы нового кадра (i ≥ skip, там могла появиться прилипающая шапка).
+    /// </summary>
+    static (double Full, int CountedFull, double Low, int CountedLow) Score(byte[][] a, byte[][] b, int top, int zh, int s, bool[] moving, int skip)
+    {
+        int cHigh = 0, mHigh = 0, cLow = 0, mLow = 0;
+        for (int i = 0; i < zh - s; i++)
+        {
+            var ra = a[top + s + i];
+            var rb = b[top + i];
+            if (i < skip)
+                for (int j = 0; j < Blocks; j++) { if (moving[j]) Cell(ra, rb, j, ref cHigh, ref mHigh); }
+            else
+                for (int j = 0; j < Blocks; j++) { if (moving[j]) Cell(ra, rb, j, ref cLow, ref mLow); }
+        }
+        int c = cHigh + cLow, m = mHigh + mLow;
+        return (c == 0 ? 0 : m / (double)c, c, cLow == 0 ? 0 : mLow / (double)cLow, cLow);
+    }
+
+    static void Cell(byte[] ra, byte[] rb, int j, ref int counted, ref int matched)
+    {
+        int ma = ra[2 * j], va = ra[2 * j + 1], mb = rb[2 * j], vb = rb[2 * j + 1];
+        int dm = Math.Abs(ma - mb);
+        if (va <= 8 && vb <= 8 && dm <= 4) return; // обе ячейки ровные и одинаковые — ни за, ни против
+        counted++;
+        if (dm <= 5 && Math.Abs(va - vb) <= 16) matched++;
+    }
+
+    static bool RowSame(byte[] a, byte[] b)
+    {
+        int counted = 0, matched = 0;
+        for (int j = 0; j < Blocks; j++) Cell(a, b, j, ref counted, ref matched);
+        return counted - matched <= 1;
     }
 
     public SKBitmap Result()
@@ -126,35 +179,38 @@ public sealed class Stitcher
         return rows;
     }
 
-    /// <summary>Отпечаток строки (FNV по слегка огрублённым пикселям) и «содержательность» (не однотонная).</summary>
+    /// <summary>Ячейки строки: средняя яркость и разброс (max − min) по 64 полосам ширины.</summary>
     /// <remarks>
-    /// Правый край (полоса прокрутки: ползунок двигается и появляется/гаснет) и узкая левая кромка в отпечаток
-    /// не входят — иначе строки двух кадров никогда не совпадут.
+    /// Правый край (полоса прокрутки: ползунок двигается и появляется/гаснет) и узкая левая кромка не входят —
+    /// иначе строки двух кадров никогда не совпадут.
     /// </remarks>
-    static (ulong[] Hash, bool[] Informative) Fingerprints(List<byte[]> rows, int width)
+    static byte[][] Cells(List<byte[]> rows, int width)
     {
-        int from = Math.Min(width / 50, 8) * 4, to = Math.Max(from + 4, (width - Math.Max(24, width / 20)) * 4);
-        var hash = new ulong[rows.Count];
-        var info = new bool[rows.Count];
+        int from = Math.Min(width / 50, 8), to = Math.Max(from + Blocks, width - Math.Max(24, width / 20));
+        to = Math.Min(to, width);
+        var result = new byte[rows.Count][];
         for (int y = 0; y < rows.Count; y++)
         {
             var r = rows[y];
-            ulong hv = 1469598103934665603UL;
-            int minL = 255, maxL = 0;
-            for (int x = from; x < to && x < r.Length; x += 4)
+            var c = new byte[2 * Blocks];
+            for (int j = 0; j < Blocks; j++)
             {
-                byte b = (byte)(r[x] >> 3), g = (byte)(r[x + 1] >> 3), rr = (byte)(r[x + 2] >> 3);
-                hv = (hv ^ b) * 1099511628211UL;
-                hv = (hv ^ g) * 1099511628211UL;
-                hv = (hv ^ rr) * 1099511628211UL;
-                int l = (r[x] + r[x + 1] * 2 + r[x + 2]) >> 2;
-                if (l < minL) minL = l;
-                if (l > maxL) maxL = l;
+                int x0 = from + (to - from) * j / Blocks, x1 = Math.Max(x0 + 1, from + (to - from) * (j + 1) / Blocks);
+                int sum = 0, min = 255, max = 0;
+                for (int x = x0; x < x1; x++)
+                {
+                    int p = x * 4;
+                    int l = (r[p] + r[p + 1] * 2 + r[p + 2]) >> 2;
+                    sum += l;
+                    if (l < min) min = l;
+                    if (l > max) max = l;
+                }
+                c[2 * j] = (byte)(sum / (x1 - x0));
+                c[2 * j + 1] = (byte)(max - min);
             }
-            hash[y] = hv;
-            info[y] = maxL - minL > 24;
+            result[y] = c;
         }
-        return (hash, info);
+        return result;
     }
 
     /// <summary>Avalonia Bitmap → SKBitmap (копия пикселей).</summary>

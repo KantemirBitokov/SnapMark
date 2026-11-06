@@ -56,14 +56,17 @@ public static class LongShotController
         if (combo == "Esc") Dispatcher.UIThread.Post(() => _cts?.Cancel());
     }
 
-    /// <summary>Снять и склеить (доступно и для автотестов). progress: (кадров, высота).</summary>
+    /// <summary>Снять и склеить (доступно и для автотестов). progress: (кадров, высота); manual — автопрокрутка не работает, крутит человек.</summary>
     /// <remarks>
     /// Сколько пикселей даёт один «щелчок» колеса, заранее не известно: браузеры крутят на 100 px × масштаб экрана,
-    /// а Edge и новый Chrome — на долю высоты окна. Поэтому шаг подбирается по факту: первый — осторожный,
-    /// дальше — примерно на 45 % высоты области, чтобы с прошлым кадром всегда оставалось перекрытие.
-    /// Если всё же проскочили (перекрытия нет) — откатываемся назад и уменьшаем шаг, а не бросаем съёмку.
+    /// Firefox — на несколько строк текста, Edge и новый Chrome — на долю высоты окна. Поэтому шаг подбирается
+    /// по факту: первый — один щелчок, дальше — примерно на 45 % высоты области, чтобы с прошлым кадром всегда
+    /// оставалось перекрытие. Проскочили (перекрытия нет) — откатываемся назад и уменьшаем шаг.
+    /// Если в центре области прокрутка не действует (карта, карусель, окно с правами администратора…) —
+    /// пробуем другие точки, а если нигде не крутится — переходим в ручной режим: крутит человек, кадры снимаются сами.
     /// </remarks>
-    public static async Task<SKBitmap?> CaptureAsync(PixelRect rect, double scaling, bool auto, CancellationToken ct, Action<int, int>? progress = null)
+    public static async Task<SKBitmap?> CaptureAsync(PixelRect rect, double scaling, bool auto, CancellationToken ct,
+        Action<int, int>? progress = null, Action? manual = null)
     {
         var first = await Task.Run(() => Grab(rect));
         if (first is null) return null;
@@ -73,12 +76,23 @@ public static class LongShotController
         progress?.Invoke(stitcher.Frames, stitcher.Height);
         int still = 0, misses = 0;
         int notches = 1;               // первый шаг — один щелчок: заодно меряем, сколько он даёт
-        double pxPerNotch = 0;         // замер (сглаженный)
+        double pxPerNotch = 0;         // замер (с запасом в большую сторону)
+        double lastPerNotch = 0;       // последний замер — для ожидаемого сдвига
+        bool moved = false;
         int target = Math.Max(1, (int)(rect.Height * 0.45));
-        int cx = rect.X + rect.Width / 2, cy = rect.Y + rect.Height / 2;
+        // Точки, где крутим колесо: центр, затем левее и выше (если в центре — элемент, который сам ловит колесо).
+        var points = new[]
+        {
+            new PixelPoint(rect.X + rect.Width / 2, rect.Y + rect.Height / 2),
+            new PixelPoint(rect.X + rect.Width / 5, rect.Y + rect.Height / 2),
+            new PixelPoint(rect.X + rect.Width / 2, rect.Y + rect.Height / 5),
+            new PixelPoint(rect.X + rect.Width * 4 / 5, rect.Y + rect.Height * 4 / 5),
+        };
+        int point = 0;
         var wh = PlatformServices.WindowHelper;
         while (!ct.IsCancellationRequested && stitcher.Height < MaxHeight && stitcher.Frames < MaxFrames)
         {
+            int cx = points[point].X, cy = points[point].Y;
             // Двигаешь мышь (например, к «Готово») — пауза: курсор не перехватываем и не крутим.
             if (auto && wh.GetCursorPosition() is PixelPoint cur && (Math.Abs(cur.X - cx) > 12 || Math.Abs(cur.Y - cy) > 12) && stitcher.Frames > 1)
             {
@@ -92,34 +106,45 @@ public static class LongShotController
             try { frame = await SettledFrameAsync(rect, auto ? 160 : 220, ct); }
             catch (OperationCanceledException) { break; }
             if (frame is null) break;
+            int expected = auto && lastPerNotch > 0 ? (int)Math.Round(step * lastPerNotch) : 0;
             int added;
-            using (frame) added = stitcher.Add(frame);
-            Trace?.Invoke($"step={step} added={added} height={stitcher.Height} pxPerNotch={pxPerNotch:0.#} still={still} misses={misses}");
+            using (frame) added = stitcher.Add(frame, expected);
+            Trace?.Invoke($"step={step} point={point} added={added} height={stitcher.Height} pxPerNotch={pxPerNotch:0.#} still={still} misses={misses} | {stitcher.LastInfo}");
             progress?.Invoke(stitcher.Frames, stitcher.Height);
+            if (!auto) continue; // ручной режим: снимаем, пока не нажмут «Готово»
             if (added > 0)
             {
                 still = misses = 0;
-                if (auto)
-                {
-                    // Сдвиг на step щелчков = added строк (если не упёрлись в конец страницы — тогда сдвиг меньше).
-                    double measured = added / (double)step;
-                    pxPerNotch = pxPerNotch <= 0 ? measured : Math.Max(measured, pxPerNotch * 0.7 + measured * 0.3);
-                    notches = Math.Clamp((int)(target / pxPerNotch), 1, 20);
-                }
+                moved = true;
+                // Сдвиг на step щелчков = added строк (если не упёрлись в конец страницы — тогда сдвиг меньше).
+                double measured = added / (double)step;
+                lastPerNotch = measured;
+                pxPerNotch = pxPerNotch <= 0 ? measured : Math.Max(measured, pxPerNotch * 0.7 + measured * 0.3);
+                notches = Math.Clamp((int)(target / pxPerNotch), 1, 20);
             }
             else if (added == 0)
             {
-                // Конец страницы: несколько раз подряд ничего не сдвинулось (в ручном режиме — ждём, пока прокрутят).
-                if (auto && ++still >= 3) break;
+                if (!moved)
+                {
+                    // Ещё ни разу не сдвинулось: другая точка, а если нигде — ручной режим.
+                    if (++point < points.Length) continue;
+                    Trace?.Invoke("manual: wheel has no effect");
+                    auto = false;
+                    point = 0;
+                    manual?.Invoke();
+                    continue;
+                }
+                // Конец страницы: несколько раз подряд ничего не сдвинулось.
+                if (++still >= 3) break;
             }
-            else if (auto)
+            else
             {
                 // Проскочили: возвращаемся на то же число щелчков назад и дальше идём шагом вдвое меньше.
                 still = 0;
                 if (++misses > 6) break;
                 AutoScroll.Scroll(cx, cy, -step, scaling);
                 notches = Math.Max(1, step / 2);
-                if (pxPerNotch <= 0 || step == 1) pxPerNotch = Math.Max(pxPerNotch, target * 2.0); // щелчок больше полкадра
+                if (step == 1 && misses >= 2) pxPerNotch = Math.Max(pxPerNotch, target * 2.0); // щелчок больше полкадра
                 try { await Task.Delay(350, ct); } catch (OperationCanceledException) { break; }
             }
         }
@@ -127,8 +152,8 @@ public static class LongShotController
     }
 
     /// <summary>
-    /// Кадр после прокрутки, когда страница успокоилась: плавная прокрутка и подгрузка ещё идут — ждём,
-    /// пока два снимка подряд не совпадут (но не дольше ~1 с).
+    /// Кадр после прокрутки, когда страница успокоилась: плавная прокрутка и подгрузка ещё идут — ждём, пока два
+    /// снимка подряд не станут почти одинаковыми (анимации на странице — мерцание, карусели — не в счёт), но не дольше ~1 с.
     /// </summary>
     static async Task<SKBitmap?> SettledFrameAsync(PixelRect rect, int delay, CancellationToken ct)
     {
@@ -139,12 +164,31 @@ public static class LongShotController
             await Task.Delay(90, ct);
             var next = await Task.Run(() => Grab(rect));
             if (next is null) return prev;
-            bool same = next.GetPixelSpan().SequenceEqual(prev.GetPixelSpan());
+            bool same = NearlySame(prev, next);
             prev.Dispose();
             prev = next;
             if (same) break;
         }
         return prev;
+    }
+
+    /// <summary>Отличается меньше 1 % строк (по выборке пикселей) — страница стоит, мелкая анимация не в счёт.</summary>
+    static bool NearlySame(SKBitmap a, SKBitmap b)
+    {
+        var pa = a.GetPixelSpan();
+        var pb = b.GetPixelSpan();
+        if (pa.Length != pb.Length) return false;
+        int rowBytes = a.RowBytes, changed = 0;
+        for (int y = 0; y < a.Height; y++)
+        {
+            int o = y * rowBytes;
+            for (int x = 0; x < a.Width; x += 3)
+            {
+                int p = o + x * 4;
+                if (Math.Abs(pa[p] - pb[p]) + Math.Abs(pa[p + 1] - pb[p + 1]) + Math.Abs(pa[p + 2] - pb[p + 2]) > 24) { changed++; break; }
+            }
+        }
+        return changed <= a.Height / 100;
     }
 
     static SKBitmap? Grab(PixelRect rect)
@@ -159,7 +203,8 @@ public static class LongShotController
         SKBitmap? result = null;
         try
         {
-            result = await CaptureAsync(rect, scaling, auto, ct, (f, h) => Dispatcher.UIThread.Post(() => _hud?.Progress(f, h)));
+            result = await CaptureAsync(rect, scaling, auto, ct, (f, h) => Dispatcher.UIThread.Post(() => _hud?.Progress(f, h)),
+                () => Dispatcher.UIThread.Post(() => _hud?.SetManual()));
         }
         catch (Exception ex)
         {
@@ -189,7 +234,11 @@ public static class LongShotController
 public sealed class LongShotHud : Window
 {
     readonly TextBlock _text = new TextBlock { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 0, 4, 0) }.Style("headline");
+    readonly TextBlock _hint;
     public event Action? Done;
+
+    /// <summary>Автопрокрутка не действует — просим крутить самому.</summary>
+    public void SetManual() => _hint.Text = L.T("Прокручивай страницу — кадры снимаются сами");
 
     public LongShotHud(bool auto)
     {
@@ -197,12 +246,12 @@ public sealed class LongShotHud : Window
         ShowActivated = false;
         Title = L.T("SnapMark — длинный скриншот");
         var done = UiKit.SoftButton(L.T("Готово"), () => Done?.Invoke(), primary: true);
-        var hint = UiKit.Caption(auto
+        _hint = UiKit.Caption(auto
             ? L.T("Прокручиваю сам · двинь мышь — пауза · Esc — закончить")
             : L.T("Прокручивай страницу — кадры снимаются сами"));
-        hint.VerticalAlignment = VerticalAlignment.Center;
-        hint.TextWrapping = TextWrapping.NoWrap;
-        var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children = { _text, hint, done } };
+        _hint.VerticalAlignment = VerticalAlignment.Center;
+        _hint.TextWrapping = TextWrapping.NoWrap;
+        var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10, Children = { _text, _hint, done } };
         var card = new GlassPanel { Margin = new Thickness(16), Padding = new Thickness(6), Child = stack };
         card.Classes.Add("pill");
         card.Classes.Add("bar");
