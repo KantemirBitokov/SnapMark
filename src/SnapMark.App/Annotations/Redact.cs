@@ -108,18 +108,30 @@ internal static class RedactEffect
                 // Радиус растёт квадратично (1 → ~10 px, 5 → ~45, 7 → ~80, 10 → ~150) и не меньше трети высоты области,
                 // иначе крупный шрифт на мониторах с масштабом 150–200 % «просвечивает».
                 double sigma = Math.Max(8 + s * s * 1.45, Math.Min(r.Width, r.Height) * (0.12 + s * 0.025));
-                // Считаем на уменьшенной копии — быстро даже для больших областей и ещё сильнее «съедает» детали.
+                // Три отдельных шага (фильтр размытия вместе с масштабированием в Skia 2.88 даёт прозрачные края —
+                // исходный текст просвечивал): 1) уменьшить, 2) размыть 1:1 с «прижатыми» краями, 3) увеличить.
                 double down = Math.Max(1, sigma / 6);
                 int w = Math.Max(2, (int)Math.Ceiling(r.Width / down)), h = Math.Max(2, (int)Math.Ceiling(r.Height / down));
-                using var small = SKSurface.Create(new SKImageInfo(w, h, SKColorType.Bgra8888, SKAlphaType.Premul));
+                var smallInfo = new SKImageInfo(w, h, SKColorType.Bgra8888, SKAlphaType.Premul);
+                using var reduced = SKSurface.Create(smallInfo);
+                using (var p = new SKPaint { FilterQuality = SKFilterQuality.High })
+                    reduced.Canvas.DrawImage(sub, new SKRect(0, 0, w, h), p);
+                using var reducedImg = reduced.Snapshot();
+                using var blurred = SKSurface.Create(smallInfo);
                 float ss = (float)(sigma / down);
-                using (var p = new SKPaint { FilterQuality = SKFilterQuality.High, ImageFilter = SKImageFilter.CreateBlur(ss, ss, SKShaderTileMode.Clamp, null) })
-                    small.Canvas.DrawImage(sub, new SKRect(0, 0, w, h), p);
-                using var smallImg = small.Snapshot();
-                // Второй проход после увеличения — без «квадратиков» от масштабирования.
-                float fine = (float)Math.Max(2, down * 0.8);
-                using (var p = new SKPaint { FilterQuality = SKFilterQuality.High, ImageFilter = SKImageFilter.CreateBlur(fine, fine, SKShaderTileMode.Clamp, null) })
-                    canvas.DrawImage(smallImg, new SKRect(0, 0, r.Width, r.Height), p);
+                using (var p = new SKPaint { ImageFilter = SKImageFilter.CreateBlur(ss, ss, SKShaderTileMode.Clamp, null) })
+                    blurred.Canvas.DrawImage(reducedImg, 0, 0, p);
+                using var blurredImg = blurred.Snapshot();
+                // Увеличиваем и гарантируем непрозрачность: альфа = 1 (цветовая матрица работает с непредумноженным цветом).
+                using var opaque = SKColorFilter.CreateColorMatrix(new float[]
+                {
+                    1, 0, 0, 0, 0,
+                    0, 1, 0, 0, 0,
+                    0, 0, 1, 0, 0,
+                    0, 0, 0, 0, 1,
+                });
+                using (var p = new SKPaint { FilterQuality = SKFilterQuality.High, ColorFilter = opaque })
+                    canvas.DrawImage(blurredImg, new SKRect(0, 0, r.Width, r.Height), p);
                 // Лёгкая «матовая» дымка, как у стекла: размытое не выглядит грязным.
                 using var haze = new SKPaint { Color = new SKColor(255, 255, 255, 22) };
                 canvas.DrawRect(new SKRect(0, 0, r.Width, r.Height), haze);

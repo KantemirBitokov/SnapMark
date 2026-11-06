@@ -182,20 +182,44 @@ class WinApp : Application
         Program.Log.WriteLine("saved ocr");
     }
 
-    /// <summary>Уведомление при «всегда светлом» стекле поверх тёмного фона.</summary>
+    /// <summary>
+    /// Стекло уведомления («всегда светлое») над тёмным фоном. Само уведомление исключено из захвата экрана,
+    /// поэтому снимаем такую же стеклянную карточку в обычном окне.
+    /// </summary>
     static async Task ToastTest()
     {
         Glass.Appearance = GlassAppearance.Light;
         Glass.Transparency = 0.65;
-        var screen = new Window { Position = new PixelPoint(0, 0), WindowState = WindowState.FullScreen, SystemDecorations = SystemDecorations.None,
-            Background = new SolidColorBrush(Color.Parse("#202024")) };
-        screen.Show();
-        await Task.Delay(700);
-        SnapMark.UI.Toast.Show("Скопировано", "Скриншот в буфере обмена. Вставь в чат или документ.");
+        Glass.Frost = 0.6;
+        byte[] dark;
+        using (var surface = SkiaSharp.SKSurface.Create(new SkiaSharp.SKImageInfo(700, 300)))
+        {
+            surface.Canvas.Clear(new SkiaSharp.SKColor(0x20, 0x20, 0x24));
+            using var p = new SkiaSharp.SKPaint { Color = new SkiaSharp.SKColor(0x3A, 0x3A, 0x44) };
+            for (int x = 0; x < 700; x += 60) surface.Canvas.DrawRect(x, 0, 30, 300, p);
+            using var img = surface.Snapshot();
+            using var data = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
+            dark = data.ToArray();
+        }
+        using var bg = new Bitmap(new MemoryStream(dark));
+        var window = new Window { Width = 700, Height = 300, Position = new PixelPoint(0, 0), SystemDecorations = SystemDecorations.None };
+        var grid = new Grid();
+        grid.Children.Add(new Image { Source = bg, Stretch = Stretch.Fill });
+        var texts = new StackPanel { Spacing = 1, Children =
+        {
+            new TextBlock { Text = "Скопировано" }.Style("headline"),
+            UiKit.Caption("Скриншот в буфере обмена. Вставь в чат или документ."),
+        } };
+        var card = new GlassPanel { Width = 300, Padding = new Thickness(10, 8), Margin = new Thickness(40), Child = texts,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left, VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top };
+        card.Classes.Add("pill");
+        grid.Children.Add(card);
+        window.Content = grid;
+        Glass.SetStaticBackdrop(window, bg);
+        window.Show();
         await Task.Delay(1500);
-        var b = screen.Screens.Primary!.Bounds;
-        using (var shot = Grab(b.Width - 420, b.Height - 220, 420, 220)) shot.Save(Path.Combine(Program.OutDir, "toast-light-on-dark.png"));
-        screen.Close();
+        using (var shot = Grab(0, 0, 700, 300)) shot.Save(Path.Combine(Program.OutDir, "toast-light-on-dark.png"));
+        window.Close();
         Glass.Appearance = GlassAppearance.Auto;
         Program.Log.WriteLine("saved toast");
     }

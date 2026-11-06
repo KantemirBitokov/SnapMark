@@ -321,7 +321,7 @@ public sealed class OcrWindow : Window
         }
 
         static readonly IBrush SelBrush = new SolidColorBrush(Color.FromArgb(105, 10, 132, 255));
-        static readonly IBrush HintBrush = new SolidColorBrush(Color.FromArgb(26, 10, 132, 255));
+        static readonly IBrush HintBrush = new SolidColorBrush(Color.FromArgb(20, 10, 132, 255));
 
         public override void Render(DrawingContext ctx)
         {
@@ -330,7 +330,7 @@ public sealed class OcrWindow : Window
             if (!_appear) return;
 
             // Лёгкое затемнение вне текста — слова «приподнимаются», как в Живом тексте.
-            ctx.FillRectangle(new SolidColorBrush(Color.FromArgb(28, 0, 0, 0)), new Rect(size));
+            ctx.FillRectangle(new SolidColorBrush(Color.FromArgb(14, 0, 0, 0)), new Rect(size));
             foreach (var (w, _) in _words)
             {
                 var b = BoxOf(w).Inflate(new Thickness(2, 1));
