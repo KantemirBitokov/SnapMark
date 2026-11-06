@@ -1,9 +1,9 @@
 cask "snapmark" do
   arch arm: "arm64", intel: "x64"
 
-  version "1.5.2"
-  sha256 arm:   "002af6bf01718e51a3532425eb0025f1d35b29f1e67824cc475dc988b50968c3",
-         intel: "7cd1b4119811bcdb3889f907049c8ed824803bcf3111db64c2c72ef53a56413f"
+  version "1.5.3"
+  sha256 arm:   "9ba96ec84aab48f7ab3afff2dc301a1d441c3ad5d55dbf663efe20bd8df67da7",
+         intel: "1c727d0ea49c15aa58bbfb892617f09d2db7723f6f233a605fe187a6d965652e"
 
   url "https://github.com/KantemirBitokov/SnapMark/releases/download/v#{version}/SnapMark-#{version}-macOS-#{arch}.dmg"
   name "SnapMark"
