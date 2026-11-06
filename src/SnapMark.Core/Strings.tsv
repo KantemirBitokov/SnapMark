@@ -475,3 +475,50 @@ SnapMark — текст с картинки	SnapMark — text from image	SnapMar
 Копировать выделенное	Copy selection	Auswahl kopieren	Copier la sélection	Copia selezione	Copiar selección
 Выдели текст мышью	Select text with the mouse	Text mit der Maus markieren	Sélectionne le texte à la souris	Seleziona il testo con il mouse	Selecciona el texto con el ratón
 Выделить всё (Ctrl+A)	Select all (Ctrl+A)	Alles auswählen (Strg+A)	Tout sélectionner (Ctrl+A)	Seleziona tutto (Ctrl+A)	Seleccionar todo (Ctrl+A)
+Обрезать видео / в GIF…	Trim video / to GIF…	Video kürzen / als GIF…	Couper une vidéo / en GIF…	Taglia video / in GIF…	Recortar vídeo / a GIF…
+Длинный скриншот	Scrolling screenshot	Scroll-Screenshot	Capture défilante	Screenshot a scorrimento	Captura con desplazamiento
+Выдели прокручиваемую часть окна — страницу, документ, список.	Select the scrollable part of a window — a page, document or list.	Wähle den scrollbaren Teil eines Fensters — Seite, Dokument, Liste.	Sélectionne la partie défilante d’une fenêtre — page, document, liste.	Seleziona la parte scorrevole di una finestra — pagina, documento, elenco.	Selecciona la parte desplazable de una ventana: página, documento, lista.
+Длинный скриншот не удался	Scrolling screenshot failed	Scroll-Screenshot fehlgeschlagen	La capture défilante a échoué	Screenshot a scorrimento non riuscito	La captura con desplazamiento falló
+SnapMark — длинный скриншот	SnapMark — scrolling screenshot	SnapMark — Scroll-Screenshot	SnapMark — capture défilante	SnapMark — screenshot a scorrimento	SnapMark — captura con desplazamiento
+Прокручиваю сам · Esc — закончить	Scrolling automatically · Esc to finish	Scrolle automatisch · Esc zum Beenden	Défilement automatique · Échap pour terminer	Scorro da solo · Esc per finire	Desplazando solo · Esc para terminar
+Прокручивай страницу — кадры снимаются сами	Scroll the page — frames are captured automatically	Scrolle die Seite — Bilder werden automatisch aufgenommen	Fais défiler la page — les images sont prises automatiquement	Scorri la pagina — i fotogrammi vengono catturati da soli	Desplaza la página: los fotogramas se capturan solos
+Длинный скриншот…	Scrolling screenshot…	Scroll-Screenshot…	Capture défilante…	Screenshot a scorrimento…	Captura con desplazamiento…
+Кадров: {0} · {1} px	Frames: {0} · {1} px	Bilder: {0} · {1} px	Images : {0} · {1} px	Fotogrammi: {0} · {1} px	Fotogramas: {0} · {1} px
+Длинный скриншот — SnapMark	Scrolling screenshot — SnapMark	Scroll-Screenshot — SnapMark	Capture défilante — SnapMark	Screenshot a scorrimento — SnapMark	Captura con desplazamiento — SnapMark
+Закрепить поверх окон	Pin on top	Oben anheften	Épingler au premier plan	Fissa in primo piano	Fijar encima
+Копировать	Copy	Kopieren	Copier	Copia	Copiar
+Длинный скриншот в буфере обмена.	Scrolling screenshot is on the clipboard.	Scroll-Screenshot ist in der Zwischenablage.	La capture défilante est dans le presse-papiers.	Lo screenshot a scorrimento è negli appunti.	La captura con desplazamiento está en el portapapeles.
+Камера по умолчанию	Default camera	Standardkamera	Caméra par défaut	Fotocamera predefinita	Cámara predeterminada
+Для этого нужен ffmpeg (Настройки → Видео).	This needs ffmpeg (Settings → Video).	Dafür wird ffmpeg benötigt (Einstellungen → Video).	Il faut ffmpeg (Réglages → Vidéo).	Serve ffmpeg (Impostazioni → Video).	Necesita ffmpeg (Ajustes → Vídeo).
+ffmpeg завершился с ошибкой.	ffmpeg exited with an error.	ffmpeg wurde mit einem Fehler beendet.	ffmpeg s’est arrêté avec une erreur.	ffmpeg è terminato con un errore.	ffmpeg terminó con un error.
+Обрезать	Trim	Kürzen	Couper	Taglia	Recortar
+SnapMark — камера	SnapMark — camera	SnapMark — Kamera	SnapMark — caméra	SnapMark — fotocamera	SnapMark — cámara
+Камера…	Camera…	Kamera…	Caméra…	Fotocamera…	Cámara…
+Маленькая	Small	Klein	Petite	Piccola	Pequeña
+Средняя	Medium	Mittel	Moyenne	Media	Mediana
+Большая	Large	Groß	Grande	Grande	Grande
+Скрыть камеру	Hide camera	Kamera ausblenden	Masquer la caméra	Nascondi fotocamera	Ocultar cámara
+Камера не найдена	No camera found	Keine Kamera gefunden	Aucune caméra trouvée	Nessuna fotocamera trovata	No se encontró cámara
+Камера отключилась	Camera disconnected	Kamera getrennt	Caméra déconnectée	Fotocamera scollegata	Cámara desconectada
+Камера недоступна	Camera unavailable	Kamera nicht verfügbar	Caméra indisponible	Fotocamera non disponibile	Cámara no disponible
+Обрезка видео — SnapMark	Trim video — SnapMark	Video kürzen — SnapMark	Couper la vidéo — SnapMark	Taglia video — SnapMark	Recortar vídeo — SnapMark
+Обрезка видео	Trim video	Video kürzen	Couper la vidéo	Taglia video	Recortar vídeo
+Исходная	Original	Original	Originale	Originale	Original
+Сохранить отрезок	Save clip	Ausschnitt speichern	Enregistrer l’extrait	Salva clip	Guardar fragmento
+Экспорт в GIF	Export GIF	Als GIF exportieren	Exporter en GIF	Esporta GIF	Exportar GIF
+Закрыть	Close	Schließen	Fermer	Chiudi	Cerrar
+ширина	width	Breite	largeur	larghezza	ancho
+Выбери видео	Choose a video	Video auswählen	Choisis une vidéo	Scegli un video	Elige un vídeo
+Загружаю видео…	Loading video…	Video wird geladen…	Chargement de la vidéo…	Caricamento del video…	Cargando vídeo…
+Не удалось определить длительность видео.	Couldn’t read the video duration.	Videodauer konnte nicht ermittelt werden.	Impossible de lire la durée de la vidéo.	Impossibile leggere la durata del video.	No se pudo leer la duración del vídeo.
+Двигай жёлтые ручки — начало и конец; щелчок по ленте — посмотреть кадр.	Drag the yellow handles to set start and end; click the strip to preview a frame.	Ziehe die gelben Griffe für Anfang und Ende; Klick auf den Streifen zeigt ein Bild.	Fais glisser les poignées jaunes pour le début et la fin ; clique sur la bande pour voir une image.	Trascina le maniglie gialle per inizio e fine; clic sulla striscia per vedere un fotogramma.	Arrastra las asas amarillas para el inicio y el final; haz clic en la tira para ver un fotograma.
+длина {0}	length {0}	Länge {0}	durée {0}	durata {0}	duración {0}
+Сохраняю отрезок…	Saving clip…	Ausschnitt wird gespeichert…	Enregistrement de l’extrait…	Salvataggio della clip…	Guardando fragmento…
+GIF сохранён	GIF saved	GIF gespeichert	GIF enregistré	GIF salvata	GIF guardado
+Отрезок сохранён	Clip saved	Ausschnitt gespeichert	Extrait enregistré	Clip salvata	Fragmento guardado
+Не получилось	Didn’t work	Hat nicht geklappt	Échec	Non riuscito	No funcionó
+Длинный скриншот (Ctrl+L): выдели прокручиваемую часть — SnapMark сам прокрутит и склеит страницу	Scrolling screenshot (Ctrl+L): select the scrollable part — SnapMark scrolls and stitches the page itself	Scroll-Screenshot (Strg+L): scrollbaren Teil auswählen — SnapMark scrollt und fügt die Seite selbst zusammen	Capture défilante (Ctrl+L) : sélectionne la partie défilante — SnapMark fait défiler et assemble la page	Screenshot a scorrimento (Ctrl+L): seleziona la parte scorrevole — SnapMark scorre e unisce la pagina da solo	Captura con desplazamiento (Ctrl+L): selecciona la parte desplazable — SnapMark desplaza y une la página solo
+Камера	Camera	Kamera	Caméra	Fotocamera	Cámara
+Веб-камера в углу видео. Окошко можно двигать и менять колесом мыши; камера — в Настройках → Видео	Webcam in the corner of the video. Drag the bubble, resize with the wheel; choose the camera in Settings → Video	Webcam in der Ecke des Videos. Fenster ziehen, Größe mit dem Mausrad; Kamera unter Einstellungen → Video	Webcam dans le coin de la vidéo. Déplace la bulle, taille à la molette ; caméra dans Réglages → Vidéo	Webcam nell’angolo del video. Trascina la bolla, ridimensiona con la rotella; fotocamera in Impostazioni → Video	Webcam en la esquina del vídeo. Arrastra la burbuja, tamaño con la rueda; cámara en Ajustes → Vídeo
+Камера в углу видео	Camera in the corner of the video	Kamera in der Videoecke	Caméra dans le coin de la vidéo	Fotocamera nell’angolo del video	Cámara en la esquina del vídeo
+Круглое окошко с веб-камерой: двигай мышью, колесо — размер, правый клик — форма	Round webcam bubble: drag with the mouse, wheel to resize, right-click for shape	Runde Webcam-Blase: mit der Maus ziehen, Mausrad für Größe, Rechtsklick für Form	Bulle ronde de webcam : déplace à la souris, molette pour la taille, clic droit pour la forme	Bolla rotonda della webcam: trascina col mouse, rotella per la dimensione, clic destro per la forma	Burbuja redonda de webcam: arrastra con el ratón, rueda para el tamaño, clic derecho para la forma

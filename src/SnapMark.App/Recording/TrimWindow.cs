@@ -77,14 +77,14 @@ public sealed class TrimWindow : Window
         _gif = UiKit.SoftButton(L.T("Экспорт в GIF"), () => _ = SaveAsync(gif: true));
         var cancel = UiKit.SoftButton(L.T("Закрыть"), Close);
 
-        var gifRow = new StackPanel
+        var gifRow = new WrapPanel
         {
-            Orientation = Orientation.Horizontal, Spacing = 10, VerticalAlignment = VerticalAlignment.Center,
+            Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center,
             Children =
             {
-                new TextBlock { Text = L.T("GIF:"), VerticalAlignment = VerticalAlignment.Center }.Style("caption1"),
+                new TextBlock { Text = L.T("GIF:"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 0, 8, 4) }.Style("caption1"),
                 _fpsChips,
-                new TextBlock { Text = L.T("ширина"), VerticalAlignment = VerticalAlignment.Center }.Style("caption1"),
+                new TextBlock { Text = L.T("ширина"), VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(12, 0, 8, 4) }.Style("caption1"),
                 _widthChips,
             },
         };
@@ -96,10 +96,10 @@ public sealed class TrimWindow : Window
             {
                 _timeline,
                 _range,
-                new Grid { ColumnDefinitions = new ColumnDefinitions("*,Auto"), Children = { gifRow, buttons } },
+                gifRow,
+                buttons,
             },
         };
-        Grid.SetColumn(buttons, 1);
 
         var root = new DockPanel();
         DockPanel.SetDock(header, Dock.Top);

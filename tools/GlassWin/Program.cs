@@ -184,6 +184,7 @@ class WinApp : Application
         await Task.Delay(400);
         using (var shot = Grab(0, 0, 900, 420)) shot.Save(Path.Combine(Program.OutDir, "ocr-select.png"));
         Program.Log.WriteLine("saved ocr");
+        CloseAll<SnapMark.UI.OcrWindow>();
     }
 
     /// <summary>
@@ -228,6 +229,12 @@ class WinApp : Application
         Program.Log.WriteLine("saved toast");
     }
 
+    static void CloseAll<T>() where T : Window
+    {
+        var life = (IClassicDesktopStyleApplicationLifetime)Application.Current!.ApplicationLifetime!;
+        foreach (var w in life.Windows.OfType<T>().ToList()) w.Close();
+    }
+
     /// <summary>Длинный скриншот настоящего окна с прокруткой: автопрокрутка колесом и склейка.</summary>
     static async Task LongShotTest()
     {
@@ -245,8 +252,9 @@ class WinApp : Application
         DockPanel.SetDock(header, Dock.Top);
         dock.Children.Add(header);
         dock.Children.Add(new ScrollViewer { Content = list });
-        var w = new Window { Width = 520, Height = 420, Position = new PixelPoint(60, 60), SystemDecorations = SystemDecorations.None, Content = dock, Background = Brushes.White };
+        var w = new Window { Width = 520, Height = 420, Position = new PixelPoint(60, 60), SystemDecorations = SystemDecorations.None, Content = dock, Background = Brushes.White, Topmost = true };
         w.Show();
+        w.Activate();
         await Task.Delay(800);
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
         int frames = 0, height = 0;
