@@ -25,7 +25,8 @@ public sealed class Stitcher
     public int Height => _rows.Count;
     public int Frames { get; private set; }
 
-    /// <summary>Добавить кадр. Возвращает число новых строк (0 — страница не сдвинулась).</summary>
+    /// <summary>Добавить кадр. Возвращает число новых строк: 0 — страница не сдвинулась,
+    /// -1 — сдвинулась, но перекрытия с прошлым кадром не нашлось (прокрутили слишком далеко, анимация…).</summary>
     public int Add(SKBitmap frame)
     {
         if (frame.Width != _width) throw new ArgumentException("width");
@@ -76,7 +77,7 @@ public sealed class Stitcher
 
         // Не нашли надёжного перекрытия (анимация, всплывшая подсказка…) — кадр пропускаем и сравниваем
         // следующий с последним удачным: шаг прокрутки меньше высоты области, перекрытие найдётся.
-        if (bestS <= 0 || bestScore < 0.8) return 0;
+        if (bestS <= 0 || bestScore < 0.8) return -1;
         int newRows = bestS;
         // Результат всегда заканчивается хвостом прошлого кадра, а его нижние bottom строк — тот же подвал,
         // что и у этого кадра: убираем их, добавляем новые строки и подвал заново (подвал остаётся в самом конце).
@@ -158,7 +159,7 @@ public static class AutoScroll
 {
     public static bool IsSupported => OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || (OperatingSystem.IsLinux() && X11Supported());
 
-    /// <summary>Прокрутить вниз на notches «щелчков» колеса в точке (x, y).</summary>
+    /// <summary>Прокрутить на notches «щелчков» колеса в точке (x, y): больше нуля — вниз, меньше — вверх.</summary>
     public static bool Scroll(int x, int y, int notches, double scaling)
     {
         try
@@ -223,10 +224,11 @@ public static class AutoScroll
         if (_display == IntPtr.Zero) _display = XOpenDisplay(IntPtr.Zero);
         if (_display == IntPtr.Zero) return false;
         XTestFakeMotionEvent(_display, -1, x, y, 0);
-        for (int i = 0; i < notches; i++)
+        uint button = notches >= 0 ? 5u : 4u; // 5 — вниз, 4 — вверх
+        for (int i = 0; i < Math.Abs(notches); i++)
         {
-            XTestFakeButtonEvent(_display, 5, true, 0);
-            XTestFakeButtonEvent(_display, 5, false, 0);
+            XTestFakeButtonEvent(_display, button, true, 0);
+            XTestFakeButtonEvent(_display, button, false, 0);
         }
         XFlush(_display);
         return true;

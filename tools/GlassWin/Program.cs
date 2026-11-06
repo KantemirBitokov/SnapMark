@@ -76,6 +76,8 @@ class WinApp : Application
             catch (Exception ex) { Program.Log.WriteLine("TOAST ERROR " + ex); }
             try { await LongShotTest(); }
             catch (Exception ex) { Program.Log.WriteLine("LONGSHOT ERROR " + ex); }
+            try { await BrowserLongShotTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("BROWSER LONGSHOT ERROR " + ex); }
             try { await TrimTest(); }
             catch (Exception ex) { Program.Log.WriteLine("TRIM ERROR " + ex); }
             life.Shutdown();
@@ -265,6 +267,90 @@ class WinApp : Application
         using (var data = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
             File.WriteAllBytes(Path.Combine(Program.OutDir, "longshot.png"), data.ToArray());
         Program.Log.WriteLine($"longshot: frames={frames} size={result.Width}x{result.Height} scrollOk={SnapMark.Capture.AutoScroll.Scroll(310, 270, 0, 1)}");
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")] static extern int GetSystemMetrics(int i);
+
+    /// <summary>
+    /// Длинный скриншот настоящей страницы в браузере (как на GitHub): шапка, прилипающая при прокрутке,
+    /// масштаб 100/125/150 %. Строка N закрашена своим цветом — по левому краю результата проверяем,
+    /// что все 200 строк есть, по порядку, без пропусков и повторов.
+    /// </summary>
+    static async Task BrowserLongShotTest()
+    {
+        CloseAll<OcrWindow>();
+        var sb = new System.Text.StringBuilder();
+        sb.Append("<!doctype html><html><head><meta charset=utf-8><style>body{margin:0;font:16px Segoe UI,sans-serif}"
+            + ".r{height:40px;line-height:40px;padding-left:90px;color:#fff;white-space:nowrap}"
+            + "#top{height:120px;background:#00c8c8}#end{height:150px;background:#ff00ff}"
+            + "#sticky{position:fixed;top:0;left:0;right:0;height:60px;background:#1e1e1e;color:#fff;line-height:60px;padding-left:20px;display:none}"
+            + "</style></head><body><div id=sticky>Sticky header — appears after scrolling, like on GitHub</div><div id=top></div>");
+        for (int n = 1; n <= 200; n++)
+        {
+            var (r, g, b) = RowColor(n);
+            sb.Append($"<div class=r style=\"background:rgb({r},{g},{b})\">Row {n} — the quick brown fox jumps over the lazy dog {n * 7919 % 1000}</div>");
+        }
+        sb.Append("<div id=end></div><script>addEventListener('scroll',()=>sticky.style.display=scrollY>200?'block':'none')</script></body></html>");
+        var html = Path.Combine(Path.GetTempPath(), "snapmark-long.html");
+        File.WriteAllText(html, sb.ToString());
+
+        int sw = GetSystemMetrics(0), sh = GetSystemMetrics(1);
+        Program.Log.WriteLine($"browser-longshot: screen {sw}x{sh}");
+        var chrome = @"C:\Program Files\Google\Chrome\Application\chrome.exe";
+        var edge = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe";
+        foreach (var (name, exe, dsf) in new[] { ("chrome-150", chrome, 1.5), ("chrome-100", chrome, 1.0), ("edge-125", edge, 1.25) })
+        {
+            if (!File.Exists(exe)) { Program.Log.WriteLine($"{name}: no browser"); continue; }
+            var profile = Path.Combine(Path.GetTempPath(), "snapmark-" + name);
+            var psi = new System.Diagnostics.ProcessStartInfo(exe) { UseShellExecute = false };
+            foreach (var a in new[] { "--kiosk", "--no-first-run", "--no-default-browser-check", "--disable-features=Translate,msEdgeWelcomePage",
+                         "--user-data-dir=" + profile, "--force-device-scale-factor=" + dsf.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                         new Uri(html).AbsoluteUri })
+                psi.ArgumentList.Add(a);
+            using var proc = System.Diagnostics.Process.Start(psi)!;
+            await Task.Delay(7000);
+            var rect = new PixelRect(20, 0, Math.Min(760, sw - 80), sh - 40);
+            using (var pre = Grab(rect.X, rect.Y, rect.Width, rect.Height)) pre.Save(Path.Combine(Program.OutDir, name + "-start.png"));
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(90));
+            int frames = 0;
+            var sw2 = System.Diagnostics.Stopwatch.StartNew();
+            using var result = await SnapMark.Capture.LongShotController.CaptureAsync(rect, dsf, true, cts.Token, (f, _) => frames = f);
+            try { proc.Kill(true); } catch { }
+            foreach (var p in System.Diagnostics.Process.GetProcessesByName(Path.GetFileNameWithoutExtension(exe))) try { p.Kill(true); } catch { }
+            await Task.Delay(1500);
+            if (result is null) { Program.Log.WriteLine($"{name}: null"); continue; }
+            using (var img = SkiaSharp.SKImage.FromBitmap(result))
+            using (var data = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
+                File.WriteAllBytes(Path.Combine(Program.OutDir, name + ".png"), data.ToArray());
+            // Разбор левого края: последовательность номеров строк и высота каждой.
+            var seq = new List<(int N, int Len)>();
+            for (int y = 0; y < result.Height; y++)
+            {
+                var c = result.GetPixel(12, y);
+                int n = Decode(c.Red, c.Green, c.Blue);
+                if (seq.Count > 0 && seq[^1].N == n) seq[^1] = (n, seq[^1].Len + 1);
+                else seq.Add((n, 1));
+            }
+            var rows = seq.Where(x => x.N > 0 && x.Len > 4).ToList();
+            int expectLen = (int)Math.Round(40 * dsf);
+            bool ordered = rows.Count == 200 && rows.Select((x, i) => x.N == i + 1).All(b => b);
+            int badLen = rows.Count(x => Math.Abs(x.Len - expectLen) > 2);
+            bool end = seq.Any(x => x.N == -2 && x.Len > 50);
+            var missing = Enumerable.Range(1, 200).Except(rows.Select(x => x.N)).Take(10);
+            var dup = rows.GroupBy(x => x.N).Where(g => g.Count() > 1).Select(g => g.Key).Take(10);
+            Program.Log.WriteLine($"{name}: {(ordered && badLen == 0 && end ? "OK" : "FAIL")} frames={frames} size={result.Width}x{result.Height} rows={rows.Count} badLen={badLen} end={end} " +
+                $"missing=[{string.Join(",", missing)}] dup=[{string.Join(",", dup)}] time={sw2.Elapsed.TotalSeconds:0.0}s");
+        }
+
+        static (int, int, int) RowColor(int n) => (40 + n % 10 * 20, 40 + n / 10 % 10 * 20, 40 + n / 100 * 60);
+        static int Decode(int r, int g, int b)
+        {
+            if (r > 230 && g < 30 && b > 230) return -2; // конец страницы
+            int a = (int)Math.Round((r - 40) / 20.0), bb = (int)Math.Round((g - 40) / 20.0), cc = (int)Math.Round((b - 40) / 60.0);
+            if (a is < 0 or > 9 || bb is < 0 or > 9 || cc is < 0 or > 2) return 0;
+            if (Math.Abs(r - (40 + a * 20)) > 6 || Math.Abs(g - (40 + bb * 20)) > 6 || Math.Abs(b - (40 + cc * 60)) > 6) return 0;
+            return cc * 100 + bb * 10 + a;
+        }
     }
 
     /// <summary>Окно обрезки видео (нужен ffmpeg и тестовое видео).</summary>

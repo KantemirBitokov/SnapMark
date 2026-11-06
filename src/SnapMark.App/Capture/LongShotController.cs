@@ -54,6 +54,12 @@ public static class LongShotController
     }
 
     /// <summary>Снять и склеить (доступно и для автотестов). progress: (кадров, высота).</summary>
+    /// <remarks>
+    /// Сколько пикселей даёт один «щелчок» колеса, заранее не известно: браузеры крутят на 100 px × масштаб экрана,
+    /// а Edge и новый Chrome — на долю высоты окна. Поэтому шаг подбирается по факту: первый — осторожный,
+    /// дальше — примерно на 45 % высоты области, чтобы с прошлым кадром всегда оставалось перекрытие.
+    /// Если всё же проскочили (перекрытия нет) — откатываемся назад и уменьшаем шаг, а не бросаем съёмку.
+    /// </remarks>
     public static async Task<SKBitmap?> CaptureAsync(PixelRect rect, double scaling, bool auto, CancellationToken ct, Action<int, int>? progress = null)
     {
         var first = await Task.Run(() => Grab(rect));
@@ -62,7 +68,10 @@ public static class LongShotController
         stitcher.Add(first);
         first.Dispose();
         progress?.Invoke(stitcher.Frames, stitcher.Height);
-        int still = 0;
+        int still = 0, misses = 0;
+        int notches = 1;               // первый шаг — один щелчок: заодно меряем, сколько он даёт
+        double pxPerNotch = 0;         // замер (сглаженный)
+        int target = Math.Max(1, (int)(rect.Height * 0.45));
         int cx = rect.X + rect.Width / 2, cy = rect.Y + rect.Height / 2;
         var wh = PlatformServices.WindowHelper;
         while (!ct.IsCancellationRequested && stitcher.Height < MaxHeight && stitcher.Frames < MaxFrames)
@@ -74,29 +83,64 @@ public static class LongShotController
                 try { await Task.Delay(400, ct); } catch (OperationCanceledException) { break; }
                 if (wh.GetCursorPosition() is PixelPoint after && (after.X != before.X || after.Y != before.Y)) continue;
             }
-            if (auto)
-            {
-                // Прокрутка примерно на половину высоты области (по 3 строки за «щелчок»), затем ждём, пока страница успокоится.
-                AutoScroll.Scroll(cx, cy, Math.Clamp(rect.Height / 150, 1, 8), scaling);
-                try { await Task.Delay(260, ct); } catch (OperationCanceledException) { break; }
-            }
-            else
-            {
-                try { await Task.Delay(220, ct); } catch (OperationCanceledException) { break; }
-            }
-            var frame = await Task.Run(() => Grab(rect));
+            int step = notches;
+            if (auto) AutoScroll.Scroll(cx, cy, step, scaling);
+            SKBitmap? frame;
+            try { frame = await SettledFrameAsync(rect, auto ? 160 : 220, ct); }
+            catch (OperationCanceledException) { break; }
             if (frame is null) break;
             int added;
             using (frame) added = stitcher.Add(frame);
             progress?.Invoke(stitcher.Frames, stitcher.Height);
-            if (added == 0)
+            if (added > 0)
             {
-                // Конец страницы: дважды подряд ничего не сдвинулось (в ручном режиме — ждём, пока прокрутят).
+                still = misses = 0;
+                if (auto)
+                {
+                    // Сдвиг на step щелчков = added строк (если не упёрлись в конец страницы — тогда сдвиг меньше).
+                    double measured = added / (double)step;
+                    pxPerNotch = pxPerNotch <= 0 ? measured : Math.Max(measured, pxPerNotch * 0.7 + measured * 0.3);
+                    notches = Math.Clamp((int)(target / pxPerNotch), 1, 20);
+                }
+            }
+            else if (added == 0)
+            {
+                // Конец страницы: несколько раз подряд ничего не сдвинулось (в ручном режиме — ждём, пока прокрутят).
                 if (auto && ++still >= 3) break;
             }
-            else still = 0;
+            else if (auto)
+            {
+                // Проскочили: возвращаемся на то же число щелчков назад и дальше идём шагом вдвое меньше.
+                still = 0;
+                if (++misses > 6) break;
+                AutoScroll.Scroll(cx, cy, -step, scaling);
+                notches = Math.Max(1, step / 2);
+                if (pxPerNotch <= 0 || step == 1) pxPerNotch = Math.Max(pxPerNotch, target * 2.0); // щелчок больше полкадра
+                try { await Task.Delay(350, ct); } catch (OperationCanceledException) { break; }
+            }
         }
         return stitcher.Result();
+    }
+
+    /// <summary>
+    /// Кадр после прокрутки, когда страница успокоилась: плавная прокрутка и подгрузка ещё идут — ждём,
+    /// пока два снимка подряд не совпадут (но не дольше ~1 с).
+    /// </summary>
+    static async Task<SKBitmap?> SettledFrameAsync(PixelRect rect, int delay, CancellationToken ct)
+    {
+        await Task.Delay(delay, ct);
+        var prev = await Task.Run(() => Grab(rect));
+        for (int i = 0; i < 8 && prev is not null; i++)
+        {
+            await Task.Delay(90, ct);
+            var next = await Task.Run(() => Grab(rect));
+            if (next is null) return prev;
+            bool same = next.GetPixelSpan().SequenceEqual(prev.GetPixelSpan());
+            prev.Dispose();
+            prev = next;
+            if (same) break;
+        }
+        return prev;
     }
 
     static SKBitmap? Grab(PixelRect rect)
