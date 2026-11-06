@@ -313,8 +313,9 @@ class WinApp : Application
             {
                 await Task.Delay(500);
                 using var probe = Grab(40, 40, 4, 4);
-                var px = probe.GetPixel(1, 1);
-                if (px.R < 30 && px.G > 170 && px.B > 170) break;
+                using var sk = SnapMark.Capture.Stitcher.ToSk(probe);
+                var px = sk.GetPixel(1, 1);
+                if (px.Red < 30 && px.Green > 170 && px.Blue > 170) break;
             }
             await Task.Delay(800);
             var rect = new PixelRect(20, 0, Math.Min(760, sw - 80), sh - 40);
