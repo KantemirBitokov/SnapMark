@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.2
+- **Fixed: glass lost its transparency in 1.8.1** — the extra density meant for “Always light / dark” glass over a background of the opposite brightness kicked in too early (also in Auto) and made panels nearly opaque, so the Transparency and Frost sliders seemed to do nothing. Now it applies only to a manually chosen appearance, only over a clearly opposite background, and adds to the slider values instead of overriding them.
+
 ## 1.8.1
 - **Select text on the image, like in a text editor.** “Recognize text” (<kbd>Ctrl</kbd>+<kbd>T</kbd>) now keeps the captured area in place and highlights the recognized words: drag to select, double-click for a word, triple-click for a line, Shift+click to extend, <kbd>Ctrl</kbd>+<kbd>C</kbd> copies the selection, <kbd>Ctrl</kbd>+<kbd>A</kbd> selects all; buttons “Copy selection” and “Copy all”.
 - **Blur really hides text now.** It used to leave the original faintly visible (Skia made the blurred layer semi-transparent); now it's computed in separate passes and is fully opaque, much stronger by default, and grows with the area and the strength (1–10, remembered).
