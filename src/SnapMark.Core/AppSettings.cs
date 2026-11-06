@@ -122,10 +122,6 @@ public sealed class AppSettings
     /// <summary>Подписывать шаги названием окна, по которому кликнули («Клик: Блокнот»).</summary>
     public bool StepsWindowTitles { get; set; } = true;
 
-    // ── Распознавание текста ─────────────────────────────────────────
-    /// <summary>Склеивать строки в абзацы (без переносов внутри абзаца).</summary>
-    public bool OcrJoinLines { get; set; }
-
     // ── Скрытие (размытие / пикселизация) ───────────────────────────
     public string LastRedactMode { get; set; } = "Blur";
 

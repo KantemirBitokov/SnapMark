@@ -13,6 +13,8 @@ public enum ToolKind
     Select, Pen, Pencil, Highlighter, Eraser,
     Line, Arrow, DoubleArrow, Rectangle, Ellipse,
     Text, Marker, MarkerArrow,
+    /// <summary>Скрыть: размытие или пикселизация области.</summary>
+    Redact,
 }
 
 public static class ToolKinds

@@ -158,6 +158,9 @@ public partial class OverlayWindow
             case MarkerAnnotation m:
                 BuildMarkerContext(m);
                 break;
+            case RedactAnnotation r:
+                BuildRedactContext(r);
+                break;
             default:
                 BuildShapeContext(target);
                 break;
@@ -192,6 +195,22 @@ public partial class OverlayWindow
                 ta.Shadow = true;
                 ta.ShadowColor = c;
             })));
+    }
+
+    /// <summary>«Скрыть»: размытие или пиксели и сила эффекта.</summary>
+    void BuildRedactContext(RedactAnnotation r)
+    {
+        var blur = Chip(L.T("Размытие"), r.Mode == RedactMode.Blur, _ => SetMode(RedactMode.Blur), tip: L.T("Мягкое размытие"));
+        var pixels = Chip(L.T("Пиксели"), r.Mode == RedactMode.Pixelate, _ => SetMode(RedactMode.Pixelate), tip: L.T("Крупные квадраты"));
+        var strength = Stepper(r.Strength, 1, 10, 1, v => Mutate(a => ((RedactAnnotation)a).Strength = v), L.T("Сила эффекта"));
+        ContextContent.Children.Add(Row(blur, pixels, strength, Spacer(), ObjectActions()));
+
+        void SetMode(RedactMode mode)
+        {
+            Mutate(a => ((RedactAnnotation)a).Mode = mode);
+            SetRedactMode(mode, announce: false);
+            RequestContextRebuild();
+        }
     }
 
     /// <summary>Строка «Тень»: вкл/выкл, «Авто» и цвета.</summary>

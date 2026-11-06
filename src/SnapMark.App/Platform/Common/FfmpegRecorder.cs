@@ -226,7 +226,7 @@ public sealed class FfmpegRecorder
                 : "none";
             args.AddRange(new[]
             {
-                "-f", "avfoundation", "-capture_cursor", s.VideoShowCursor ? "1" : "0", "-capture_mouse_clicks", s.VideoShowCursor ? "1" : "0",
+                "-f", "avfoundation", "-capture_cursor", s.VideoShowCursor ? "1" : "0", "-capture_mouse_clicks", s.VideoHighlightClicks ? "1" : "0",
                 "-framerate", fps.ToString(), "-i", $"{device}:{mic}",
             });
             if (mic != "none") _macLiveAudio = true;

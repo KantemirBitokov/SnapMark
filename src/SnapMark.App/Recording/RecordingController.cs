@@ -24,6 +24,7 @@ public static class RecordingController
 
     // Рисование поверх записи: окно-холст создаётся при первом выборе инструмента.
     static LiveDrawWindow? _draw;
+    static RecordingEffectsWindow? _effects;
     static PixelRect _rect;
     static double _scaling = 1;
     static ToolKind _lastTool = ToolKind.Pen;
@@ -220,6 +221,32 @@ public static class RecordingController
         _styleOpen = false;
     }
 
+    /// <summary>Подсветка кликов и показ клавиш — отдельный прозрачный слой, который попадает в видео.</summary>
+    static void ShowEffects(PixelRect rect, double scaling)
+    {
+        var s = AppServices.Settings;
+        bool clicks = s.VideoHighlightClicks && !OperatingSystem.IsMacOS(); // на Mac клики рисует ffmpeg
+        if (!clicks && !s.VideoShowKeys) return;
+        var monitor = InputMonitor.Instance;
+        if (!monitor.IsSupported)
+        {
+            Toast.Show(L.T("Подсветка кликов и клавиш недоступна"), L.T(monitor.Problem ?? ""));
+            return;
+        }
+        var w = new RecordingEffectsWindow(rect, scaling, s.VideoHighlightClicks, s.VideoShowKeys);
+        w.Show();
+        _effects = w;
+        if (monitor.Problem is { } problem)
+            Toast.Show(L.T("Показ клавиш недоступен"), L.T(problem));
+        RaiseHud();
+    }
+
+    static void CloseEffects()
+    {
+        _effects?.Close();
+        _effects = null;
+    }
+
     public static async void Start(PixelRect rect, double scaling, bool withMic, bool withSystem)
     {
         if (IsRecording)
@@ -285,6 +312,7 @@ public static class RecordingController
             if (s.ShowRecordingFrame) ShowFrame(rect, scaling);
             await recorder.StartAsync(ffmpeg, rect, s, withMic, withSystem, output);
             _hud?.SetRecording();
+            ShowEffects(rect, scaling);
             if (recorder.SystemAudioProblem == "blackhole")
                 Toast.Show(L.T("Звук компьютера: нужен BlackHole"),
                     L.T("На macOS 12 и старше звук компьютера записывается через бесплатный драйвер BlackHole. Установи его и выбери «BlackHole 2ch» как микрофон в настройках записи. Сейчас запись идёт без звука компьютера."),
@@ -299,6 +327,7 @@ public static class RecordingController
             _hud = null;
             HideFrame();
             CloseDrawWindow();
+            CloseEffects();
             Toast.Show(L.T("Запись не запустилась"), ex.Message.Length > 300 ? ex.Message[..300] + "…" : ex.Message);
         }
         finally
@@ -317,6 +346,7 @@ public static class RecordingController
         _hud = null;
         HideFrame();
         CloseDrawWindow();
+        CloseEffects();
 
         Toast.Show(L.T("Запись остановлена"), AppServices.Settings.VideoFormat == VideoFileFormat.Gif
             ? L.T("Собираю GIF…")

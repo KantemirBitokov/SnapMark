@@ -71,6 +71,9 @@
                 <Path Data="{StaticResource Icon.MarkerTail}"/>
               </Grid>
             </Button>
+            <Button x:Name="RedactButton" Classes="tool seg" Tag="Redact" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Скрыть (B): размытие или пиксели — для паролей, почты, лиц. Нажми ещё раз, чтобы сменить режим'}">
+              <Path x:Name="RedactIcon" Data="{StaticResource Icon.Blur}"/>
+            </Button>
           </StackPanel>
 
           <Border Classes="vsep"/>
@@ -156,6 +159,13 @@
             <Path Data="{StaticResource Icon.Search}"/>
           </Button>
           <Border Classes="hsep tight"/>
+          <Button Classes="tool" Click="OnOcrClick" ToolTip.Tip="{l:Tr 'Распознать текст и скопировать (Ctrl+T). Работает без интернета'}">
+            <Path Data="{StaticResource Icon.Ocr}"/>
+          </Button>
+          <Button Classes="tool" Click="OnPinClick" ToolTip.Tip="{l:Tr 'Закрепить поверх окон (Ctrl+F): колесо — масштаб, Ctrl+колесо — прозрачность, двойной щелчок — открепить'}">
+            <Path Data="{StaticResource Icon.PinFloat}"/>
+          </Button>
+          <Border Classes="hsep tight"/>
           <Button x:Name="SeriesButton" Classes="tool" Click="OnSeriesClick" ToolTip.Tip="{l:Tr 'Добавить в серию (Ctrl+D)'}">
             <Path Data="{StaticResource Icon.SeriesAdd}"/>
           </Button>
@@ -223,6 +233,11 @@
           <WrapPanel x:Name="VideoCursorChips">
             <ToggleButton Classes="chip" Tag="Show" Content="{l:Tr 'Показывать'}" Click="OnVideoCursorChip"/>
             <ToggleButton Classes="chip" Tag="Hide" Content="{l:Tr 'Скрыть'}" Click="OnVideoCursorChip" ToolTip.Tip="{l:Tr 'В видео не будет курсора — только то, что на экране и что ты рисуешь'}"/>
+          </WrapPanel>
+          <TextBlock Classes="group" Text="{l:Tr 'ДЛЯ ОБУЧАЮЩИХ РОЛИКОВ'}"/>
+          <WrapPanel>
+            <ToggleButton x:Name="VideoClicksChip" Classes="chip" Content="{l:Tr 'Подсветка кликов'}" Click="OnVideoEffectsChip" ToolTip.Tip="{l:Tr 'Круги на месте каждого клика — видно, куда нажали'}"/>
+            <ToggleButton x:Name="VideoKeysChip" Classes="chip" Content="{l:Tr 'Показ клавиш'}" Click="OnVideoEffectsChip" ToolTip.Tip="{l:Tr 'Внизу видео — нажатые сочетания (Ctrl+C, Enter…). Обычный набор текста не показывается'}"/>
           </WrapPanel>
           <TextBlock Classes="group" Text="{l:Tr 'КАЧЕСТВО'}"/>
           <WrapPanel x:Name="VideoQualityChips">

@@ -406,6 +406,22 @@
                     <TextBlock Text="{l:Tr 'Курсор мыши в видео'}"/>
                     <ToggleSwitch x:Name="CursorToggle" Grid.Column="1"/>
                   </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{l:Tr 'Подсветка кликов'}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'Круги на месте каждого клика — видно, куда нажали'}"/>
+                    </StackPanel>
+                    <ToggleSwitch x:Name="ClicksToggle" Grid.Column="1"/>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center">
+                      <TextBlock Text="{l:Tr 'Показ нажатых клавиш'}"/>
+                      <TextBlock Classes="caption" Text="{l:Tr 'Сочетания (Ctrl+C, Enter…) внизу видео. Обычный набор текста не показывается — пароли в запись не попадут'}"/>
+                    </StackPanel>
+                    <ToggleSwitch x:Name="KeysToggle" Grid.Column="1"/>
+                  </Grid>
                 </StackPanel>
               </Border>
             </StackPanel>

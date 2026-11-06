@@ -154,6 +154,8 @@ public partial class SettingsWindow : Window
         QualityCombo.SelectedIndex = (int)S.VideoQuality;
         FrameToggle.IsChecked = S.ShowRecordingFrame;
         CursorToggle.IsChecked = S.VideoShowCursor;
+        ClicksToggle.IsChecked = S.VideoHighlightClicks;
+        KeysToggle.IsChecked = S.VideoShowKeys;
         AudioCombo.SelectedIndex = (int)S.Audio;
         // Звук компьютера: Windows — WASAPI, Linux — PulseAudio, macOS 13+ — ScreenCaptureKit (11–12 — BlackHole).
         SystemDeviceRow.IsVisible = OperatingSystem.IsWindows();
@@ -303,6 +305,8 @@ public partial class SettingsWindow : Window
         QualityCombo.SelectionChanged += (_, _) => Change(() => S.VideoQuality = (VideoQuality)Math.Max(0, QualityCombo.SelectedIndex));
         FrameToggle.IsCheckedChanged += (_, _) => Change(() => S.ShowRecordingFrame = FrameToggle.IsChecked == true);
         CursorToggle.IsCheckedChanged += (_, _) => Change(() => S.VideoShowCursor = CursorToggle.IsChecked == true);
+        ClicksToggle.IsCheckedChanged += (_, _) => Change(() => S.VideoHighlightClicks = ClicksToggle.IsChecked == true);
+        KeysToggle.IsCheckedChanged += (_, _) => Change(() => S.VideoShowKeys = KeysToggle.IsChecked == true);
         AudioCombo.SelectionChanged += (_, _) => Change(() => S.Audio = (AudioSource)Math.Max(0, AudioCombo.SelectedIndex));
         MicCombo.SelectionChanged += (_, _) =>
         {

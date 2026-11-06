@@ -99,6 +99,7 @@ public partial class OverlayWindow : Window
         cs.PlateColor = Color.TryParse(s.CommentPlateColor, out var cpc) ? cpc : null;
         cs.BorderColor = Color.TryParse(s.CommentBorderColor, out var cbc) ? cbc : null;
         if (Enum.TryParse<ToolKind>(s.LastShape, out var shape) && ToolKinds.IsShape(shape)) _currentShape = shape;
+        SetRedactMode(Enum.TryParse<RedactMode>(s.LastRedactMode, out var rm) ? rm : RedactMode.Blur, announce: false);
         _withMic = s.Audio is AudioSource.Microphone or AudioSource.MicrophoneAndSystem;
         _withSystem = s.Audio is AudioSource.System or AudioSource.MicrophoneAndSystem;
 
@@ -317,6 +318,9 @@ public partial class OverlayWindow : Window
 
     void SetTool(ToolKind tool)
     {
+        // «Скрыть» уже выбран — повторное нажатие меняет режим: размытие ⇄ пиксели.
+        if (tool == ToolKind.Redact && Surface.Tool == ToolKind.Redact)
+            SetRedactMode(Surface.RedactMode == RedactMode.Blur ? RedactMode.Pixelate : RedactMode.Blur, announce: true);
         CommitTextEdit();
         if (ToolKinds.IsShape(tool) && tool != _currentShape)
         {
@@ -364,6 +368,19 @@ public partial class OverlayWindow : Window
             b.Classes.Set("selected", b.Tag is string t && t == current);
         foreach (var b in ShapeChoices.Children.OfType<Button>())
             b.Classes.Set("selected", b.Tag is string t && t == _currentShape.ToString());
+    }
+
+    void SetRedactMode(RedactMode mode, bool announce)
+    {
+        Surface.RedactMode = mode;
+        RedactIcon.Data = this.FindResource(mode == RedactMode.Pixelate ? "Icon.Pixelate" : "Icon.Blur") as Geometry;
+        if (AppServices.Settings.LastRedactMode != mode.ToString())
+        {
+            AppServices.Settings.LastRedactMode = mode.ToString();
+            AppServices.SaveSettings();
+        }
+        if (announce)
+            Toast.Show(L.T("Скрыть"), mode == RedactMode.Pixelate ? L.T("Режим: пиксели") : L.T("Режим: размытие"));
     }
 
     void UpdateHistoryButtons()
@@ -1057,6 +1074,8 @@ public partial class OverlayWindow : Window
                 case Key.S: _ = DoQuickSaveAsync(); return true;
                 case Key.P: _ = DoPrintAsync(); return true;
                 case Key.G: _ = DoSearchAsync(); return true;
+                case Key.T: _ = DoOcrAsync(); return true;
+                case Key.F: DoPin(); return true;
                 case Key.D: DoAddToSeries(); return true;
                 case Key.R: StartRecording(); return true;
                 case Key.J: Surface.DuplicateSelected(); return true;
@@ -1084,6 +1103,7 @@ public partial class OverlayWindow : Window
             case Key.T: SetTool(ToolKind.Text); return true;
             case Key.M: SetTool(ToolKind.Marker); return true;
             case Key.N: SetTool(ToolKind.MarkerArrow); return true;
+            case Key.B: SetTool(ToolKind.Redact); return true;
         }
         return false;
     }
@@ -1094,6 +1114,8 @@ public partial class OverlayWindow : Window
     void OnPrintClick(object? s, RoutedEventArgs e) => _ = DoPrintAsync();
     void OnSearchClick(object? s, RoutedEventArgs e) => _ = DoSearchAsync();
     void OnSeriesClick(object? s, RoutedEventArgs e) => DoAddToSeries();
+    void OnOcrClick(object? s, RoutedEventArgs e) => _ = DoOcrAsync();
+    void OnPinClick(object? s, RoutedEventArgs e) => DoPin();
     void OnCloseClick(object? s, RoutedEventArgs e) => CaptureController.CloseAll();
     void OnRecordClick(object? s, RoutedEventArgs e) => StartRecording();
     void OnRecordFromScreenshotClick(object? s, RoutedEventArgs e) => StartRecording();
@@ -1313,6 +1335,49 @@ public partial class OverlayWindow : Window
         Finish();
         try { await GoogleLens.SearchAsync(r.Png, AppServices.Settings.ImageSearch); }
         catch (Exception ex) { Toast.Show(L.T("Поиск не удался"), ex.Message); }
+    }
+
+    /// <summary>Распознать текст в выделенной области (по чистому снимку, без рисунков) и скопировать.</summary>
+    async Task DoOcrAsync()
+    {
+        CommitTextEdit();
+        if (_shot is null || Surface.Selection is not PixelRect sel || sel.Width < 4 || sel.Height < 4) return;
+        byte[] png;
+        using (var rtb = ImageRenderer.Render(_shot, sel, Array.Empty<Annotation>()))
+            png = ImageEncoder.ToPng(rtb);
+        Finish();
+        Toast.Show(L.T("Распознаю текст…"), L.T("Обычно это занимает секунду-две."));
+        try
+        {
+            var text = await TextRecognizer.RecognizeAsync(png);
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                Toast.Show(L.T("Текст не найден"), L.T("Попробуй выделить область покрупнее или с более контрастным текстом."));
+                return;
+            }
+            await SmartPaste.CopyPlainAsync(new ClipboardPayload { Text = text });
+            var preview = text.Replace(Environment.NewLine, " ");
+            if (preview.Length > 140) preview = preview[..140] + "…";
+            Toast.Show(L.T("Текст скопирован"), preview);
+        }
+        catch (TextRecognizer.OcrException ex)
+        {
+            Toast.Show(L.T("Не удалось распознать текст"), ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Toast.Show(L.T("Не удалось распознать текст"), ex.Message);
+        }
+    }
+
+    /// <summary>Закрепить скриншот поверх окон — на том же месте экрана, где он был выделен.</summary>
+    void DoPin()
+    {
+        var r = RenderCurrent();
+        if (r is null || _screen is null || Surface.Selection is not PixelRect sel) return;
+        var at = new PixelRect(_screen.Bounds.X + sel.X, _screen.Bounds.Y + sel.Y, sel.Width, sel.Height);
+        Finish();
+        PinWindow.Pin(r.Png, at);
     }
 
     void DoAddToSeries()
