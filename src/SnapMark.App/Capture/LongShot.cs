@@ -136,7 +136,9 @@ public sealed class Stitcher
         {
             s = Pick(t, trustExpected ? 0.15 : 0.01, false);
             how = "soft";
-            if (s < 0 || t[s] < (near(s) ? 0.55 : expected > 0 ? 0.7 : 0.8) || t[s] < t[0] + Margin(t[0]))
+            // Мягкое совпадение без единого точного — только там, где сдвиг и так ожидаем: в списках из похожих
+            // строк мягко «совпадает» почти любой сдвиг на целое число строк.
+            if (s < 0 || t[s] < (near(s) ? 0.55 : expected > 0 ? 0.7 : 0.8) || t[s] < t[0] + Margin(t[0]) || (e[s] < 0.15 && !near(s)))
             {
                 s = -1;
                 how = "none";
