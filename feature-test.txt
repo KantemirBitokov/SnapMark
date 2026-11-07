@@ -1,0 +1,16 @@
+words: Hello@44,57,97x34 SnapMark@155,57,194x44 2026@363,59,92x32 Password:@44,147,187x34 secret42@247,149,159x32
+PASS ocr-boxes 
+PASS ocr → Hello SnapMark 2026 | Password: secret42
+PASS redact-Blur → Hello SnapMark 2026
+PASS redact-Pixelate → Hello SnapMark 2026
+PASS hook-installed 
+PASS hook-click InputClick { X = 300, Y = 300, Button = Left }
+PASS hook-combo Ctrl + Shift + S;Enter
+PASS hook-typing-hidden Ctrl + Shift + S;Enter
+PASS stitch height=2270 expected=2270 mismatched=0
+PASS stitch-sticky height=2200 expected=2200 mismatched=0 skipped=0
+PASS video-probe 6.00s 640x360
+PASS video-frame 19946 bytes
+PASS video-trim 2.50s
+PASS video-gif 118612 bytes
+ALL PASSED

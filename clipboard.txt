@@ -1,0 +1,4 @@
+Screenshot_1_A — Click: C:\ProgramData\GitHub\HostedComputeAgent\hosted-compute-agent
+Screenshot_2_B — Click: C:\ProgramData\GitHub\HostedComputeAgent\hosted-compute-agent
+Screenshot_3_C — Click: Desktop
+files: 3
