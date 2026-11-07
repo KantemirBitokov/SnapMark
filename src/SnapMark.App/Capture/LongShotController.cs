@@ -200,6 +200,15 @@ public static class LongShotController
                 still = 0;
                 // Сдаёмся, только если не сошлось даже с самым мелким шагом.
                 if (++misses > 6 && step == 1) break;
+                if (!moved && misses >= 3)
+                {
+                    // Прокрутка так ни разу и не получилась, а кадр меняется чем-то другим (всплывающее окно,
+                    // анимация) — пусть крутит человек.
+                    Trace?.Invoke("manual: never scrolled, frames change by themselves");
+                    auto = false;
+                    manual?.Invoke();
+                    continue;
+                }
                 AutoScroll.Scroll(cx, cy, -step, scaling);
                 notches = Math.Max(1, step / 2);
                 if (step == 1 && misses >= 2) pxPerNotch = Math.Max(pxPerNotch, target * 2.0); // щелчок больше полкадра
