@@ -564,6 +564,19 @@ class WinApp : Application
             ShowWindow(hwnd, 3);
             SetForegroundWindow(hwnd);
             await Task.Delay(2500);
+            // Ждём, пока список файлов заполнится (на свежей машине Проводник открывается долго).
+            for (int t = 0; t < 30; t++)
+            {
+                GetClientRect(hwnd, out var cr0);
+                var p0 = new POINT();
+                ClientToScreen(hwnd, ref p0);
+                using var probe = Grab(p0.X + 200, p0.Y + 190, 300, 200);
+                using var sk = SnapMark.Capture.Stitcher.ToSk(probe);
+                int dark = 0;
+                for (int y = 0; y < sk.Height; y += 4) for (int x = 0; x < sk.Width; x += 4) if (sk.GetPixel(x, y).Red < 120) dark++;
+                if (dark > 60) break;
+                await Task.Delay(1000);
+            }
             GetClientRect(hwnd, out var cr);
             var tl = new POINT();
             ClientToScreen(hwnd, ref tl);

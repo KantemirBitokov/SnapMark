@@ -176,6 +176,21 @@ public static class LongShotController
                     notches = 1;
                 }
             }
+            else if (!moved && misses == 0 && stitcher.Frames == 1)
+            {
+                // Ещё ничего не склеено, а кадр изменился целиком — окно в момент начала ещё загружалось
+                // (список в Проводнике, страница). Возвращаемся назад и начинаем заново с того, что видно сейчас.
+                misses++;
+                AutoScroll.Scroll(cx, cy, -step, scaling);
+                SKBitmap? fresh;
+                try { fresh = await SettledFrameAsync(rect, 500, ct); }
+                catch (OperationCanceledException) { break; }
+                if (fresh is null || fresh.Width != fw || fresh.Height != fh) { fresh?.Dispose(); break; }
+                stitcher = new Stitcher(fw);
+                using (fresh) stitcher.Add(fresh);
+                Trace?.Invoke("restart: content changed before anything was stitched");
+                progress?.Invoke(stitcher.Frames, stitcher.Height);
+            }
             else
             {
                 // Проскочили: возвращаемся на то же число щелчков назад и дальше идём шагом вдвое меньше.

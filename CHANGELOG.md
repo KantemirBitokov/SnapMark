@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.6
+- Scrolling screenshot:
+  - If the window was still loading when capture started (an Explorer folder, a slow page), capture restarts from what has loaded instead of stopping.
+  - In manual mode, frames where nothing changed no longer count towards the frame limit, so capture doesn't end by itself while you read or scroll slowly.
+  - Very wide areas (4K screens) are limited to a safe amount of memory.
+  - Changing the screen resolution or scale during capture ends it with what was already captured, instead of an error.
+- New text recognition screenshot in the README and on the site.
+
 ## 1.9.5
 - Text recognition window: the blue frame has the same thickness all around — the picture no longer covers it at the rounded corners, and the picture sits exactly where the selected area was on screen.
 
