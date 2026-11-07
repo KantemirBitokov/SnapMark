@@ -22,11 +22,13 @@ $version = ($xml.Project.PropertyGroup | Where-Object { $_.Version } | Select-Ob
 Write-Host "SnapMark $version" -ForegroundColor Cyan
 
 # 1. Чистая публикация: self-contained (на ПК пользователя .NET не нужен), один exe.
+#    ReadyToRun — код заранее скомпилирован: запуск примерно вдвое быстрее (PrtSc срабатывает раньше), exe на ~10 МБ больше.
 Remove-Item -Recurse -Force publish, release -ErrorAction SilentlyContinue
 dotnet publish $proj -c Release -r win-x64 --self-contained true `
     -p:PublishSingleFile=true `
     -p:IncludeNativeLibrariesForSelfExtract=true `
     -p:EnableCompressionInSingleFile=true `
+    -p:PublishReadyToRun=true `
     -p:DebugType=None -p:DebugSymbols=false `
     -o publish
 if ($LASTEXITCODE -ne 0) { throw 'dotnet publish завершился с ошибкой' }

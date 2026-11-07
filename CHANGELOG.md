@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.8
+- **PrtSc works right after SnapMark starts.** Notifying Windows about the Print Screen setting no longer holds up startup (it used to wait for every open window to answer, which on a busy desktop took several seconds).
+- **Faster start on Windows.** The app is now published precompiled (ReadyToRun): it is ready about twice as fast — around 1.3 s instead of 2–2.5 s on the test machine. The download is ~10 MB larger.
+- CI checks how soon PrtSc opens SnapMark after start, with the Windows Snipping Tool setting on, off and managed by SnapMark.
+
 ## 1.9.7
 - **PrtSc works in Windows again when SnapMark is closed.** If you let SnapMark turn off “Use the Print screen key to open screen capture” (Settings → Hotkeys → Fix), it now only does so while it is running: on exit the Windows setting is turned back on, and on the next start SnapMark takes the key again. If you move SnapMark's capture to another shortcut, PrtSc goes back to Windows right away.
 
