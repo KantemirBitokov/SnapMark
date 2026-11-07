@@ -151,7 +151,9 @@ public static class LongShotController
                 steady = lastPerNotch > 0 && Math.Abs(measured - lastPerNotch) <= lastPerNotch * 0.03;
                 lastPerNotch = measured;
                 pxPerNotch = measured;
-                notches = Math.Clamp((int)(target / pxPerNotch), 1, 20);
+                // Шаг растёт не больше чем вдвое за раз: один неудачный замер (окно ещё дорисовывалось) не должен
+                // превратить следующий шаг в прыжок через пол-страницы.
+                notches = Math.Clamp(Math.Min((int)(target / pxPerNotch), step * 2), 1, 20);
             }
             else if (added == 0)
             {
@@ -195,7 +197,8 @@ public static class LongShotController
             {
                 // Проскочили: возвращаемся на то же число щелчков назад и дальше идём шагом вдвое меньше.
                 still = 0;
-                if (++misses > 6) break;
+                // Сдаёмся, только если не сошлось даже с самым мелким шагом.
+                if (++misses > 6 && step == 1) break;
                 AutoScroll.Scroll(cx, cy, -step, scaling);
                 notches = Math.Max(1, step / 2);
                 if (step == 1 && misses >= 2) pxPerNotch = Math.Max(pxPerNotch, target * 2.0); // щелчок больше полкадра
