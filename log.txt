@@ -1,0 +1,17 @@
+saved editor 1920x1080 at 0, 0
+saved editor-style 1920x1080 at 0, 0
+scene ok: editor
+saved record 1920x1080 at 0, 0
+scene ok: record
+saved ocr 458x388 at 1048, 172
+scene ok: ocr
+saved series 760x640 at 448, 256
+saved stephud 323x78 at 798, 4
+scene ok: steps
+saved longshot 657x760 at 448, 256
+scene ok: longshot
+saved trim 820x660 at 448, 256
+scene ok: trim
+saved settings 820x600 at 448, 256
+saved settings-video 820x600 at 448, 256
+scene ok: settings
