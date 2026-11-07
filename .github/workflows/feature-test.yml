@@ -38,6 +38,46 @@ jobs:
           export SNAPMARK_TEST_INPUT=1
           export SNAPMARK_TEST_VIDEO="$PWD/out/test.mp4"
           dotnet tools/FeatureTest/bin/Release/net8.0/FeatureTest.dll "$PWD/out" 2>&1 | tee out/feature-test.txt
+      - name: PrtSc right after start
+        shell: pwsh
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          $ErrorActionPreference = 'Continue'
+          $env:SNAPMARK_TEST_INPUT = '1'
+          $exe = (Resolve-Path 'src/SnapMark.App/bin/Release/net8.0/SnapMark.exe').Path
+          # Как у пользователя: «Ножницы» включены, SnapMark сам управляет этой настройкой.
+          New-Item -Path 'HKCU:\Software\SnapMark' -Force | Out-Null
+          Set-ItemProperty -Path 'HKCU:\Software\SnapMark' -Name RestorePrintScreenSnipping -Value 1 -Type DWord
+          Set-ItemProperty -Path 'HKCU:\Control Panel\Keyboard' -Name PrintScreenKeyForSnippingEnabled -Value 1 -Type DWord
+          Add-Type -Namespace K -Name U -MemberDefinition @'
+            [DllImport("user32.dll")] public static extern void keybd_event(byte vk, byte scan, uint flags, IntPtr extra);
+            [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
+            [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
+            [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+            public struct RECT { public int L, T, R, B; }
+          '@
+          Add-Type -AssemblyName System.Windows.Forms
+          New-Item -ItemType Directory -Force out | Out-Null
+          $w = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width
+          for ($run = 1; $run -le 2; $run++) {
+            $sw = [Diagnostics.Stopwatch]::StartNew()
+            $app = Start-Process $exe -PassThru
+            $found = $false
+            while ($sw.Elapsed.TotalSeconds -lt 30 -and -not $found) {
+              Start-Sleep -Milliseconds 250
+              [K.U]::keybd_event(0x2C, 0, 0, [IntPtr]::Zero); [K.U]::keybd_event(0x2C, 0, 2, [IntPtr]::Zero)
+              Start-Sleep -Milliseconds 150
+              $r = New-Object K.U+RECT
+              [K.U]::GetWindowRect([K.U]::GetForegroundWindow(), [ref]$r) | Out-Null
+              $fgPid = [uint32]0
+              [K.U]::GetWindowThreadProcessId([K.U]::GetForegroundWindow(), [ref]$fgPid) | Out-Null
+              if (($r.R - $r.L) -ge $w -and $app.Id -eq $fgPid) { $found = $true }
+            }
+            $kb = (Get-ItemProperty 'HKCU:\Control Panel\Keyboard').PrintScreenKeyForSnippingEnabled
+            "run ${run}: overlay after $([math]::Round($sw.Elapsed.TotalSeconds,1)) s found=$found snipping=$kb" | Tee-Object -Append out/prtsc-startup.txt
+            Stop-Process -Id $app.Id -Force; Start-Sleep -Seconds 2
+          }
       - name: End-to-end step guide
         shell: pwsh
         continue-on-error: true

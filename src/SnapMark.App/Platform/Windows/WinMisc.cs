@@ -105,7 +105,7 @@ internal sealed class WinPrintScreenConflict : IPrintScreenConflict
             using var key = Registry.CurrentUser.CreateSubKey(KeyPath);
             if (key.GetValue(ValueName) is int cur && cur == value) return true;
             key.SetValue(ValueName, value, RegistryValueKind.DWord);
-            Broadcast();
+            _broadcast = Broadcast();
             return true;
         }
         catch { return false; }
@@ -114,12 +114,18 @@ internal sealed class WinPrintScreenConflict : IPrintScreenConflict
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     static extern IntPtr SendMessageTimeout(IntPtr hwnd, uint msg, IntPtr wParam, string lParam, uint flags, uint timeout, out IntPtr result);
 
+    /// <remarks>
+    /// В отдельном потоке: рассылка ждёт ответа каждого окна в системе (до таймаута на каждое), и на главном
+    /// потоке это на несколько секунд задерживало запуск — PrtSc сразу после старта не срабатывала.
+    /// </remarks>
+    static Task? _broadcast;
+
     /// <summary>Сообщаем системе, что настройки клавиатуры поменялись, — как это делают «Параметры» Windows.</summary>
-    static void Broadcast()
+    static Task Broadcast() => Task.Run(() =>
     {
         foreach (var area in new[] { @"Control Panel\Keyboard", "Keyboard" })
-            SendMessageTimeout((IntPtr)0xFFFF /*HWND_BROADCAST*/, 0x001A /*WM_SETTINGCHANGE*/, IntPtr.Zero, area, 0x0002 /*SMTO_ABORTIFHUNG*/, 300, out _);
-    }
+            SendMessageTimeout((IntPtr)0xFFFF /*HWND_BROADCAST*/, 0x001A /*WM_SETTINGCHANGE*/, IntPtr.Zero, area, 0x0002 /*SMTO_ABORTIFHUNG*/, 200, out _);
+    });
 
     public bool TryDisableSystemBinding()
     {
@@ -147,7 +153,10 @@ internal sealed class WinPrintScreenConflict : IPrintScreenConflict
 
     public void RestoreOnExit()
     {
-        if (IsSupported && Managed()) Write(1);
+        if (!IsSupported || !Managed()) return;
+        Write(1);
+        // Процесс сейчас завершится — даём рассылке немного времени, но выход не задерживаем надолго.
+        try { _broadcast?.Wait(1500); } catch { }
     }
 }
 
