@@ -57,13 +57,13 @@ jobs:
             [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
             public struct RECT { public int L, T, R, B; }
           '@
-          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
           New-Item -ItemType Directory -Force out | Out-Null
           $w = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width
           for ($run = 1; $run -le 2; $run++) {
             $sw = [Diagnostics.Stopwatch]::StartNew()
             $app = Start-Process $exe -PassThru
-            $found = $false
+            $found = $false; $logged = $false
             while ($sw.Elapsed.TotalSeconds -lt 30 -and -not $found) {
               Start-Sleep -Milliseconds 250
               [K.U]::keybd_event(0x2C, 0, 0, [IntPtr]::Zero); [K.U]::keybd_event(0x2C, 0, 2, [IntPtr]::Zero)
@@ -73,6 +73,14 @@ jobs:
               $fgPid = [uint32]0
               [K.U]::GetWindowThreadProcessId([K.U]::GetForegroundWindow(), [ref]$fgPid) | Out-Null
               if (($r.R - $r.L) -ge $w -and $app.Id -eq $fgPid) { $found = $true }
+              if (-not $logged -and $sw.Elapsed.TotalSeconds -gt 10) {
+                $logged = $true
+                "  10s: fg pid=$fgPid app=$($app.Id) rect=$($r.L),$($r.T),$($r.R),$($r.B) screen=$w" | Tee-Object -Append out/prtsc-startup.txt
+                $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+                $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+                $g = [System.Drawing.Graphics]::FromImage($bmp); $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+                $bmp.Save("out/prtsc-run$run.png"); $g.Dispose(); $bmp.Dispose()
+              }
             }
             $kb = (Get-ItemProperty 'HKCU:\Control Panel\Keyboard').PrintScreenKeyForSnippingEnabled
             "run ${run}: overlay after $([math]::Round($sw.Elapsed.TotalSeconds,1)) s found=$found snipping=$kb" | Tee-Object -Append out/prtsc-startup.txt
