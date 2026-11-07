@@ -59,13 +59,22 @@ public sealed class OcrWindow : Window
         _layer = new TextLayer(bitmap, 1 / _scaling) { Width = w, Height = h };
         _layer.SelectionChanged += SyncButtons;
 
-        var frame = new Border
+        // Картинка обрезается по скруглению, а синяя рамка рисуется отдельным слоем поверх неё. Если рамку дать
+        // самому контейнеру картинки, углы картинки ложатся поверх рамки — в углах она становится тоньше или
+        // пропадает, — и картинка сдвигается на толщину рамки относительно экрана.
+        var frame = new Grid
         {
-            Child = _layer,
-            CornerRadius = new CornerRadius(8),
-            ClipToBounds = true,
-            BorderThickness = new Thickness(1.5),
-            BorderBrush = new SolidColorBrush(Color.Parse("#0A84FF")),
+            Children =
+            {
+                new Border { Child = _layer, CornerRadius = new CornerRadius(8), ClipToBounds = true },
+                new Border
+                {
+                    CornerRadius = new CornerRadius(8),
+                    BorderThickness = new Thickness(2),
+                    BorderBrush = new SolidColorBrush(Color.Parse("#0A84FF")),
+                    IsHitTestVisible = false,
+                },
+            },
         };
         var shadow = new Border
         {
