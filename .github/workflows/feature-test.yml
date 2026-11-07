@@ -38,6 +38,14 @@ jobs:
           export SNAPMARK_TEST_INPUT=1
           export SNAPMARK_TEST_VIDEO="$PWD/out/test.mp4"
           dotnet tools/FeatureTest/bin/Release/net8.0/FeatureTest.dll "$PWD/out" 2>&1 | tee out/feature-test.txt
+      - name: Publish variants for startup timing
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $proj = 'src/SnapMark.App/SnapMark.App.csproj'
+          dotnet publish $proj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -o pub-current | Out-Null
+          dotnet publish $proj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true -p:DebugType=None -o pub-r2r | Out-Null
+          Get-ChildItem pub-current/SnapMark.exe, pub-r2r/SnapMark.exe | ForEach-Object { "$($_.FullName) $([math]::Round($_.Length/1MB,1)) MB" }
       - name: PrtSc right after start
         shell: pwsh
         continue-on-error: true
@@ -45,7 +53,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Continue'
           $env:SNAPMARK_TEST_INPUT = '1'
-          $exe = (Resolve-Path 'src/SnapMark.App/bin/Release/net8.0/SnapMark.exe').Path
+          $exes = @{ 'build' = (Resolve-Path 'src/SnapMark.App/bin/Release/net8.0/SnapMark.exe').Path }
+          foreach ($v in 'current','r2r') { if (Test-Path "pub-$v/SnapMark.exe") { $exes[$v] = (Resolve-Path "pub-$v/SnapMark.exe").Path } }
           Add-Type -AssemblyName System.Windows.Forms, System.Drawing
           New-Item -ItemType Directory -Force out | Out-Null
           Add-Type -Namespace K -Name U -MemberDefinition @'
@@ -72,7 +81,8 @@ jobs:
           }
           New-Item -Path 'HKCU:\Software\SnapMark' -Force | Out-Null
           # A — «Ножницы» давно выключены; B — включены, SnapMark ими управляет; C — включены, SnapMark не трогает.
-          foreach ($case in 'A','B','C') {
+          foreach ($variant in $exes.Keys) { $exe = $exes[$variant]
+          foreach ($case in 'A','B','C','A','A') {
             Set-ItemProperty 'HKCU:\Control Panel\Keyboard' PrintScreenKeyForSnippingEnabled ($(if ($case -eq 'A') {0} else {1})) -Type DWord
             Set-ItemProperty 'HKCU:\Software\SnapMark' RestorePrintScreenSnipping ($(if ($case -eq 'B') {1} else {0})) -Type DWord
             Start-Sleep -Seconds 2
@@ -90,8 +100,9 @@ jobs:
               if (-not $shot -and $sw.Elapsed.TotalSeconds -gt 8) { $shot = $true; Shot "prtsc-$case"; "  8s fg=$fn" | Tee-Object -Append out/prtsc-startup.txt }
             }
             $kb = (Get-ItemProperty 'HKCU:\Control Panel\Keyboard').PrintScreenKeyForSnippingEnabled
-            "case ${case}: overlay=$found after $([math]::Round($sw.Elapsed.TotalSeconds,1)) s, snip opened $snips times, setting now=$kb" | Tee-Object -Append out/prtsc-startup.txt
+            "[$variant] case ${case}: overlay=$found after $([math]::Round($sw.Elapsed.TotalSeconds,1)) s, snip opened $snips times, setting now=$kb" | Tee-Object -Append out/prtsc-startup.txt
             Stop-Process -Id $app.Id -Force; Start-Sleep -Seconds 2
+          }
           }
       - name: End-to-end step guide
         shell: pwsh
