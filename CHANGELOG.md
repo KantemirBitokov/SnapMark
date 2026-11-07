@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.9
+- **Smaller installer, same fast start.** In 1.9.8 the installer grew to 49 MB: the precompiled (ReadyToRun) app was additionally compressed inside the exe, and an already compressed file can't be packed further by the installer. Now the installer carries the app uncompressed and packs it itself with LZMA2 — about 35 MB, smaller than before 1.9.8 — and the app no longer unpacks itself on every start.
+- The portable zip is built as before 1.9.8 (about 39 MB).
+
 ## 1.9.8
 - **PrtSc works right after SnapMark starts.** Notifying Windows about the Print Screen setting no longer holds up startup (it used to wait for every open window to answer, which on a busy desktop took several seconds).
 - **Faster start on Windows.** The app is now published precompiled (ReadyToRun): it is ready about twice as fast — around 1.3 s instead of 2–2.5 s on the test machine. The download is ~10 MB larger.

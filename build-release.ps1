@@ -9,7 +9,7 @@
 #    powershell -ExecutionPolicy Bypass -File .\build-release.ps1
 #
 #  Результат:
-#    publish\SnapMark.exe                    — портативная версия (работает без установки)
+#    publish-portable\SnapMark.exe           — портативная версия (работает без установки)
 #    release\SnapMark-<версия>-Setup.exe     — установщик
 #    release\SnapMark-<версия>-portable.zip  — портативная версия в архиве
 # ─────────────────────────────────────────────────────────────────────────────
@@ -21,21 +21,22 @@ $proj = 'src\SnapMark.App\SnapMark.App.csproj'
 $version = ($xml.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
 Write-Host "SnapMark $version" -ForegroundColor Cyan
 
-# 1. Чистая публикация: self-contained (на ПК пользователя .NET не нужен), один exe.
-#    ReadyToRun — код заранее скомпилирован: запуск примерно вдвое быстрее (PrtSc срабатывает раньше), exe на ~10 МБ больше.
-Remove-Item -Recurse -Force publish, release -ErrorAction SilentlyContinue
-dotnet publish $proj -c Release -r win-x64 --self-contained true `
-    -p:PublishSingleFile=true `
-    -p:IncludeNativeLibrariesForSelfExtract=true `
-    -p:EnableCompressionInSingleFile=true `
-    -p:PublishReadyToRun=true `
-    -p:DebugType=None -p:DebugSymbols=false `
-    -o publish
+# 1. Чистая публикация: self-contained (на ПК пользователя .NET не нужен), один exe. Две сборки:
+#    • для установщика — ReadyToRun (код скомпилирован заранее: запуск примерно вдвое быстрее, PrtSc срабатывает
+#      раньше) и без сжатия внутри exe: его сжимает сам установщик (LZMA2), и сильнее, чем .NET, — установщик
+#      получается даже меньше прежнего, а программе не нужно распаковывать себя при каждом запуске;
+#    • для портативного zip — как раньше, сжатый exe без ReadyToRun: самый маленький архив.
+Remove-Item -Recurse -Force publish, publish-portable, release -ErrorAction SilentlyContinue
+$common = @('-c', 'Release', '-r', 'win-x64', '--self-contained', 'true',
+    '-p:PublishSingleFile=true', '-p:IncludeNativeLibrariesForSelfExtract=true', '-p:DebugType=None', '-p:DebugSymbols=false')
+dotnet publish $proj @common -p:PublishReadyToRun=true -o publish
 if ($LASTEXITCODE -ne 0) { throw 'dotnet publish завершился с ошибкой' }
+dotnet publish $proj @common -p:EnableCompressionInSingleFile=true -o publish-portable
+if ($LASTEXITCODE -ne 0) { throw 'dotnet publish (portable) завершился с ошибкой' }
 
 # 2. Портативный zip.
 New-Item -ItemType Directory -Force release | Out-Null
-Compress-Archive -Path publish\* -DestinationPath "release\SnapMark-$version-portable.zip"
+Compress-Archive -Path publish-portable\* -DestinationPath "release\SnapMark-$version-portable.zip"
 
 # 3. Установщик (Inno Setup).
 $iscc = @(
