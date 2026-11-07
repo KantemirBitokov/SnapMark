@@ -38,6 +38,7 @@ public sealed class Stitcher
     public Stitcher(int width) => _width = width;
 
     public int Height => _rows.Count;
+    /// <summary>Сколько кадров вошло в результат (кадры «без изменений» не считаются).</summary>
     public int Frames { get; private set; }
 
     /// <summary>Отладка: оценки последнего сравнения.</summary>
@@ -54,9 +55,9 @@ public sealed class Stitcher
         int h = frame.Height;
         var rows = ReadRows(frame);
         var cur = Cells(rows, _width);
-        Frames++;
         if (_prev is null)
         {
+            Frames++;
             _rows.AddRange(rows);
             _prev = cur;
             return h;
@@ -176,6 +177,7 @@ public sealed class Stitcher
         for (int i = start; i < h; i++) _rows.Add(rows[i]);
         _lastBand = footer;
         _prev = cur;
+        Frames++;
         return s;
     }
 

@@ -70,7 +70,10 @@ public static class LongShotController
     {
         var first = await Task.Run(() => Grab(rect));
         if (first is null) return null;
-        var stitcher = new Stitcher(first.Width);
+        int fw = first.Width, fh = first.Height;
+        var stitcher = new Stitcher(fw);
+        // Не больше ~400 МБ на строки результата (широкая область на 4K-экране — это 15 КБ на строку).
+        int maxHeight = Math.Clamp(400_000_000 / Math.Max(1, fw * 4), 2000, MaxHeight);
         stitcher.Add(first);
         first.Dispose();
         progress?.Invoke(stitcher.Frames, stitcher.Height);
@@ -92,7 +95,7 @@ public static class LongShotController
         };
         int point = 0;
         var wh = PlatformServices.WindowHelper;
-        while (!ct.IsCancellationRequested && stitcher.Height < MaxHeight && stitcher.Frames < MaxFrames)
+        while (!ct.IsCancellationRequested && stitcher.Height < maxHeight && stitcher.Frames < MaxFrames)
         {
             int cx = points[point].X, cy = points[point].Y;
             // Двигаешь мышь (например, к «Готово») — пауза: курсор не перехватываем и не крутим.
@@ -110,6 +113,8 @@ public static class LongShotController
             if (frame is null) break;
             int expected = auto && lastPerNotch > 0 ? (int)Math.Round(step * lastPerNotch) : 0;
             int added;
+            // Размер кадра поменялся (сменили разрешение или масштаб экрана) — заканчиваем с тем, что уже снято.
+            if (frame.Width != fw || frame.Height != fh) { frame.Dispose(); break; }
             using (frame) added = stitcher.Add(frame, expected, steady);
             if (added < 0 && auto)
             {
@@ -118,7 +123,7 @@ public static class LongShotController
                 SKBitmap? again;
                 try { again = await SettledFrameAsync(rect, 0, ct); }
                 catch (OperationCanceledException) { break; }
-                if (again is null) break;
+                if (again is null || again.Width != fw || again.Height != fh) { again?.Dispose(); break; }
                 using (again) added = stitcher.Add(again, expected, steady);
                 Trace?.Invoke($"  recheck: added={added} | {stitcher.LastInfo}");
             }
@@ -130,7 +135,7 @@ public static class LongShotController
                 SKBitmap? again;
                 try { again = await SettledFrameAsync(rect, 0, ct); }
                 catch (OperationCanceledException) { break; }
-                if (again is null) break;
+                if (again is null || again.Width != fw || again.Height != fh) { again?.Dispose(); break; }
                 using (again) added = stitcher.Add(again, expected, steady);
             }
             Trace?.Invoke($"step={step} point={point} added={added} height={stitcher.Height} pxPerNotch={pxPerNotch:0.#} still={still} misses={misses} | {stitcher.LastInfo}");
@@ -193,17 +198,25 @@ public static class LongShotController
     {
         await Task.Delay(delay, ct);
         var prev = await Task.Run(() => Grab(rect));
-        for (int i = 0; i < 8 && prev is not null; i++)
+        try
         {
-            await Task.Delay(90, ct);
-            var next = await Task.Run(() => Grab(rect));
-            if (next is null) return prev;
-            bool same = NearlySame(prev, next);
-            prev.Dispose();
-            prev = next;
-            if (same) break;
+            for (int i = 0; i < 8 && prev is not null; i++)
+            {
+                await Task.Delay(90, ct);
+                var next = await Task.Run(() => Grab(rect));
+                if (next is null) return prev;
+                bool same = NearlySame(prev, next);
+                prev.Dispose();
+                prev = next;
+                if (same) break;
+            }
+            return prev;
         }
-        return prev;
+        catch
+        {
+            prev?.Dispose(); // отменили посреди ожидания — кадр больше не нужен
+            throw;
+        }
     }
 
     /// <summary>Отличается меньше 1 % строк (по выборке пикселей) — страница стоит, мелкая анимация не в счёт.</summary>
