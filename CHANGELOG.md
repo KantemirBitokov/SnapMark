@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.5
+- Text recognition window: the blue frame has the same thickness all around — the picture no longer covers it at the rounded corners, and the picture sits exactly where the selected area was on screen.
+
 ## 1.9.4
 - Scrolling screenshot: in long lists of very similar rows (file lists, tables) a rare wrong match could skip a few rows when the browser started scrolling late — such matches are now rejected and the step is retried.
 
