@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.7
+- **PrtSc works in Windows again when SnapMark is closed.** If you let SnapMark turn off “Use the Print screen key to open screen capture” (Settings → Hotkeys → Fix), it now only does so while it is running: on exit the Windows setting is turned back on, and on the next start SnapMark takes the key again. If you move SnapMark's capture to another shortcut, PrtSc goes back to Windows right away.
+
 ## 1.9.6
 - Scrolling screenshot:
   - If the window was still loading when capture started (an Explorer folder, a slow page), capture restarts from what has loaded instead of stopping.
