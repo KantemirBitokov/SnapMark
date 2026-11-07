@@ -67,6 +67,12 @@ public interface IPrintScreenConflict
     bool IsSystemToolBoundToPrintScreen();
     void OpenSystemSettings();
     bool TryDisableSystemBinding();
+    /// <summary>
+    /// SnapMark сам отключал системное PrtSc («Исправить» в настройках): при запуске (если PrtSc — наша клавиша)
+    /// отключаем снова, при выходе — возвращаем Windows, чтобы без SnapMark клавиша работала как обычно.
+    /// </summary>
+    void ApplyWhileRunning(bool usesPrtSc);
+    void RestoreOnExit();
 }
 
 /// <summary>Нативные мелочи для окон.</summary>

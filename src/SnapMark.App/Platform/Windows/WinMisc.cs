@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using SnapMark.Core;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -84,22 +85,69 @@ internal sealed class WinPrintScreenConflict : IPrintScreenConflict
 
     public void OpenSystemSettings() => ShellOpen.Open("ms-settings:easeofaccess-keyboard");
 
+    // Флаг «настройку отключил SnapMark» (по нему же установщик вернёт её при удалении программы).
+    const string OwnKey = @"Software\SnapMark", OwnValue = "RestorePrintScreenSnipping";
+
+    static bool Managed()
+    {
+        try
+        {
+            using var own = Registry.CurrentUser.OpenSubKey(OwnKey);
+            return own?.GetValue(OwnValue) is int i && i == 1;
+        }
+        catch { return false; }
+    }
+
+    static bool Write(int value)
+    {
+        try
+        {
+            using var key = Registry.CurrentUser.CreateSubKey(KeyPath);
+            if (key.GetValue(ValueName) is int cur && cur == value) return true;
+            key.SetValue(ValueName, value, RegistryValueKind.DWord);
+            Broadcast();
+            return true;
+        }
+        catch { return false; }
+    }
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    static extern IntPtr SendMessageTimeout(IntPtr hwnd, uint msg, IntPtr wParam, string lParam, uint flags, uint timeout, out IntPtr result);
+
+    /// <summary>Сообщаем системе, что настройки клавиатуры поменялись, — как это делают «Параметры» Windows.</summary>
+    static void Broadcast()
+    {
+        foreach (var area in new[] { @"Control Panel\Keyboard", "Keyboard" })
+            SendMessageTimeout((IntPtr)0xFFFF /*HWND_BROADCAST*/, 0x001A /*WM_SETTINGCHANGE*/, IntPtr.Zero, area, 0x0002 /*SMTO_ABORTIFHUNG*/, 300, out _);
+    }
+
     public bool TryDisableSystemBinding()
     {
         try
         {
             bool wasEnabled = IsSystemToolBoundToPrintScreen();
-            using var key = Registry.CurrentUser.CreateSubKey(KeyPath);
-            key.SetValue(ValueName, 0, RegistryValueKind.DWord);
-            // Запоминаем, что это сделал SnapMark: при удалении программы установщик вернёт настройку Windows.
+            if (!Write(0)) return false;
+            // Запоминаем, что это сделал SnapMark: при выходе (и при удалении программы) вернём настройку Windows.
             if (wasEnabled)
             {
-                using var own = Registry.CurrentUser.CreateSubKey(@"Software\SnapMark");
-                own.SetValue("RestorePrintScreenSnipping", 1, RegistryValueKind.DWord);
+                using var own = Registry.CurrentUser.CreateSubKey(OwnKey);
+                own.SetValue(OwnValue, 1, RegistryValueKind.DWord);
             }
             return true;
         }
         catch { return false; }
+    }
+
+    public void ApplyWhileRunning(bool usesPrtSc)
+    {
+        if (!IsSupported || !Managed()) return;
+        // PrtSc — клавиша SnapMark: пока он запущен, «Ножницы» на неё не реагируют; иначе — клавиша снова у Windows.
+        Write(usesPrtSc ? 0 : 1);
+    }
+
+    public void RestoreOnExit()
+    {
+        if (IsSupported && Managed()) Write(1);
     }
 }
 

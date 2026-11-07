@@ -240,7 +240,7 @@ public partial class SettingsWindow : Window
         {
             var ok = PlatformServices.PrintScreenConflict.TryDisableSystemBinding();
             PrtScStatus.Text = ok
-                ? L.T("Готово. Если «Ножницы» всё ещё открываются — выйди из системы и войди снова.")
+                ? L.T("Готово. Пока SnapMark запущен, PrtSc — его клавиша; когда закроешь SnapMark, она снова откроет «Ножницы».")
                 : L.T("Не получилось изменить настройку. Открой параметры Windows и выключи переключатель вручную.");
             PlatformServices.Hotkeys.Apply(S);
         };
@@ -429,6 +429,7 @@ public partial class SettingsWindow : Window
         assign(hk);
         Save();
         PlatformServices.Hotkeys.Apply(S);
+        PlatformServices.PrintScreenConflict.ApplyWhileRunning(S.CaptureRegionHotkey.Key is "PrintScreen" or "Snapshot");
         // Статус обновляется в потоке хоткеев — перечитываем чуть позже.
         Avalonia.Threading.DispatcherTimer.RunOnce(RefreshHotkeyInfo, TimeSpan.FromMilliseconds(300));
     }

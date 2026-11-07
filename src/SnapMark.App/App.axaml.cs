@@ -62,8 +62,13 @@ public partial class App : Application
             PlatformServices.Hotkeys.Apply(AppServices.Settings);
             AppServices.Series.Changed += SeriesHud.Sync;
 
+            // PrtSc: пока SnapMark запущен — его клавиша; при выходе — снова у Windows (если отключал её SnapMark).
+            var prtsc = PlatformServices.PrintScreenConflict;
+            prtsc.ApplyWhileRunning(AppServices.Settings.CaptureRegionHotkey.Key is "PrintScreen" or "Snapshot");
+            AppDomain.CurrentDomain.ProcessExit += (_, _) => prtsc.RestoreOnExit();
             desktop.Exit += (_, _) =>
             {
+                prtsc.RestoreOnExit();
                 PlatformServices.Hotkeys.Dispose();
                 AppServices.Series.Clear();
             };

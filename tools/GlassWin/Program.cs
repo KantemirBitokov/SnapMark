@@ -76,6 +76,8 @@ class WinApp : Application
             catch (Exception ex) { Program.Log.WriteLine("TOAST ERROR " + ex); }
             try { await LongShotTest(); }
             catch (Exception ex) { Program.Log.WriteLine("LONGSHOT ERROR " + ex); }
+            try { PrtScRestoreTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("PRTSC ERROR " + ex); }
             try { await BrowserLongShotTest(); }
             catch (Exception ex) { Program.Log.WriteLine("BROWSER LONGSHOT ERROR " + ex); }
             try { await AppLongShotTest(); }
@@ -615,6 +617,21 @@ class WinApp : Application
             () => { manual2 = true; at = timer2.Elapsed.TotalSeconds; cts2.CancelAfter(1500); });
         w.Close();
         Program.Log.WriteLine($"app-static: {(manual2 && at < 20 ? "OK" : "FAIL")} manual={manual2} after {at:0.0}s height={r2?.Height}");
+    }
+
+    /// <summary>PrtSc: «Исправить» отключает «Ножницы», при выходе настройка возвращается, при запуске — снова отключается.</summary>
+    static void PrtScRestoreTest()
+    {
+        var c = SnapMark.Platform.PlatformServices.PrintScreenConflict;
+        int Read() => Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Control Panel\Keyboard")?.GetValue("PrintScreenKeyForSnippingEnabled") is int i ? i : -1;
+        using (var k = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"Control Panel\Keyboard")) k.SetValue("PrintScreenKeyForSnippingEnabled", 1);
+        var t = System.Diagnostics.Stopwatch.StartNew();
+        bool ok1 = c.TryDisableSystemBinding(); int afterFix = Read();
+        c.RestoreOnExit(); int afterExit = Read();
+        c.ApplyWhileRunning(true); int afterStart = Read();
+        c.ApplyWhileRunning(false); int afterOtherKey = Read();
+        c.RestoreOnExit();
+        Program.Log.WriteLine($"prtsc: {(c.IsSupported && ok1 && afterFix == 0 && afterExit == 1 && afterStart == 0 && afterOtherKey == 1 ? "OK" : "FAIL")} supported={c.IsSupported} fix={afterFix} exit={afterExit} start={afterStart} otherKey={afterOtherKey} time={t.ElapsedMilliseconds}ms");
     }
 
     [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);

@@ -152,6 +152,8 @@ internal sealed class NoPrintScreenConflict : IPrintScreenConflict
     public bool IsSystemToolBoundToPrintScreen() => false;
     public void OpenSystemSettings() { }
     public bool TryDisableSystemBinding() => false;
+    public void ApplyWhileRunning(bool usesPrtSc) { }
+    public void RestoreOnExit() { }
 }
 
 internal class NoWindowHelper : IWindowHelper
