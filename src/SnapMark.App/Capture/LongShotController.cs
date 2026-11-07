@@ -144,7 +144,8 @@ public static class LongShotController
             if (added > 0)
             {
                 still = misses = 0;
-                moved = true;
+                // Сдвиг на пару пикселей — скорее, окно дорисовалось, чем прокрутилось.
+                if (added >= 8) moved = true;
                 triedOther = false;
                 // Сдвиг на step щелчков = added строк (если не упёрлись в конец страницы — тогда сдвиг меньше).
                 double measured = added / (double)step;
