@@ -6,6 +6,7 @@
   - In manual mode, frames where nothing changed no longer count towards the frame limit, so capture doesn't end by itself while you read or scroll slowly.
   - Very wide areas (4K screens) are limited to a safe amount of memory.
   - Changing the screen resolution or scale during capture ends it with what was already captured, instead of an error.
+  - The scroll step grows gradually, so one bad measurement can't make SnapMark jump past half a page; if scrolling never works and the picture changes by itself (a popup, an animation), it switches to manual mode instead of giving up.
 - New text recognition screenshot in the README and on the site.
 
 ## 1.9.5
