@@ -59,7 +59,8 @@ Key 0x1B
 $closed = WaitFor { -not (Fullscreen $app) } 3
 $second = ''
 if ($closed -lt 0) { Shot 'e2e-esc-fail'; Key 0x1B; $second = if ((WaitFor { -not (Fullscreen $app) } 3) -ge 0) { 'closed by 2nd Esc' } else { 'still open' } }
-Say ("overlay-esc: " + $(if ($closed -ge 0) { 'ok' } else { 'FAIL' }) + " (foreground is SnapMark: $($fp -eq $app.Id); $second)")
+$fgName = (Get-Process -Id $fp -ErrorAction SilentlyContinue).ProcessName
+Say ("overlay-esc: " + $(if ($closed -ge 0) { 'ok' } else { 'FAIL' }) + " (foreground: $fgName; $second)")
 # Пять раз подряд: PrtSc → редактор открылся → Esc → закрылся.
 $cycles = 0
 for ($k = 1; $k -le 5; $k++) {
