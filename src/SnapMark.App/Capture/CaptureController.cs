@@ -75,7 +75,15 @@ public static class CaptureController
             if (ReferenceEquals(screen, underCursor)) focusTarget = w;
         }
 
-        (focusTarget ?? Open[0]).FocusSurface();
+        var target = focusTarget ?? Open[0];
+        target.FocusSurface();
+        // Первое окно после запуска программы Windows иногда не делает активным сразу (окно ещё только
+        // создаётся) — тогда редактор не получает клавиши, и Esc не закрывает его. Проверяем ещё пару раз.
+        foreach (var ms in new[] { 120, 350, 800 })
+            Avalonia.Threading.DispatcherTimer.RunOnce(() =>
+            {
+                if (target.IsVisible && !target.IsActive && Open.Contains(target)) target.FocusSurface();
+            }, TimeSpan.FromMilliseconds(ms));
     }
 
     public static void CloseAll()
