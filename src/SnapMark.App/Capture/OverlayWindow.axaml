@@ -363,6 +363,8 @@
                   <Path Data="{StaticResource Icon.ShapePin}"/>
                 </Button>
               </StackPanel>
+              <ToggleButton x:Name="MarkerGlassToggle" Classes="chip" Content="{l:Tr 'Стекло'}" Click="OnMarkerGlassClick" Margin="6,0,0,0" VerticalAlignment="Center"
+                            ToolTip.Tip="{l:Tr 'Эффект стекла: градиент, блик и цветная тень'}"/>
               <Border Classes="vsep"/>
               <ToggleButton x:Name="LettersToggle" Classes="chip" Content="A B C" Click="OnNumberingClick" Tag="Letters" Margin="0" VerticalAlignment="Center"/>
               <ToggleButton x:Name="NumbersToggle" Classes="chip" Content="1 2 3" Click="OnNumberingClick" Tag="Numbers" Margin="4,0,0,0" VerticalAlignment="Center"/>

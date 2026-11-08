@@ -135,3 +135,5 @@ Jira, Word или письмо. Не нужно вставлять картин�
 ## Лицензия
 
 [MIT](LICENSE) © Кантемир Битоков · [SadlyBear.pro](https://sadlybear.pro)
+
+Буквы и цифры меток набраны шрифтом [Nunito](https://github.com/googlefonts/nunito) (подмножество; SIL Open Font License 1.1, см. [`OFL-Nunito.txt`](src/SnapMark.App/Assets/Fonts/OFL-Nunito.txt)).

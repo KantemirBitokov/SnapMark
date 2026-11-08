@@ -277,6 +277,8 @@ public sealed class LiveStyleWindow : Window
         Add(NumberingRow());
         Add(OverlayWindow.Row(
             ShapeButtons(m.Shape, shape => Mutate(a => ((MarkerAnnotation)a).Shape = shape)),
+            OverlayWindow.Chip(L.T("Стекло"), m.Glass, on => Mutate(a => ((MarkerAnnotation)a).Glass = on),
+                tip: L.T("Эффект стекла: градиент, блик и цветная тень")),
             OverlayWindow.Stepper(m.FontSize, 12, 120, 2, v => Mutate(a => ((MarkerAnnotation)a).FontSize = v), L.T("Размер метки")),
             OverlayWindow.Spacer(),
             ObjectActions()));
@@ -385,6 +387,12 @@ public sealed class LiveStyleWindow : Window
         Add(NumberingRow());
         Add(OverlayWindow.Row(
             ShapeButtons(St.MarkerShape, shape => Defaults(() => St.MarkerShape = shape)),
+            OverlayWindow.Chip(L.T("Стекло"), St.MarkerGlass, on => Defaults(() =>
+            {
+                St.MarkerGlass = on;
+                AppServices.Settings.MarkerGlass = on;
+                AppServices.SaveSettings();
+            }), tip: L.T("Эффект стекла: градиент, блик и цветная тень")),
             OverlayWindow.Stepper(St.FontSize, 12, 120, 2, v => Defaults(() => St.FontSize = v), L.T("Размер метки"))));
         Add(Separator());
         Add(OverlayWindow.Row(OverlayWindow.Label(L.T("Подпись")),

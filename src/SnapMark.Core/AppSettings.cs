@@ -160,6 +160,8 @@ public sealed class AppSettings
 
     // ── Метки ────────────────────────────────────────────────────────
     public MarkerShape MarkerShape { get; set; } = MarkerShape.Circle;
+    /// <summary>Метки «Liquid Glass»: градиент, блик и цветная тень. false — плоские.</summary>
+    public bool MarkerGlass { get; set; } = true;
     public MarkerNumbering MarkerNumbering { get; set; } = MarkerNumbering.Letters;
 
     // ── Комментарии прямо на картинке ────────────────────────────────

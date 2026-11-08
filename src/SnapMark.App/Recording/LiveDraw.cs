@@ -819,6 +819,8 @@ public sealed class LiveDrawWindow : Window
         if (Color.TryParse(s.LastColor, out var c)) Board.DrawStyle.Color = c;
         if (s.LastThickness > 0) Board.DrawStyle.Thickness = s.LastThickness;
         if (s.LastFontSize > 0) Board.DrawStyle.FontSize = s.LastFontSize;
+        Board.DrawStyle.MarkerShape = s.MarkerShape;
+        Board.DrawStyle.MarkerGlass = s.MarkerGlass;
         Board.Document.Numbering = s.MarkerNumbering; // как в редакторе: буквы или цифры
         Content = Board;
 

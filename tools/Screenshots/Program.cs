@@ -55,6 +55,8 @@ async Task RunAll()
     var page = Page();
     var screen = new Screen(1.0, new PixelRect(0, 0, 1920, 1080), new PixelRect(0, 0, 1920, 1040), true);
 
+    await Scene("markers-grid", () => MarkersGrid());
+    if (Environment.GetEnvironmentVariable("SNAPMARK_SHOTS_ONLY") == "markers") return;
     await Scene("editor", () => EditorScene(Page(), screen));
     await Scene("record", () => RecordScene(Page(), screen));
     await Scene("ocr", () => OcrScene(page));
@@ -64,6 +66,54 @@ async Task RunAll()
     await Scene("settings", () => SettingsScene());
     if (Environment.GetEnvironmentVariable("SNAPMARK_SHOTS_LAYOUT") == "1")
         await Scene("layout", () => LayoutScene(Page(), screen));
+}
+
+// Все формы меток: стекло и плоские, на светлом и тёмном фоне, два размера.
+Task MarkersGrid()
+{
+    const int W = 1500, H = 1180;
+    var bg = new RenderTargetBitmap(new PixelSize(W, H));
+    using (var dc = bg.CreateDrawingContext())
+    {
+        dc.FillRectangle(new SolidColorBrush(Color.Parse("#F2F2F7")), new Rect(0, 0, W, H / 2));
+        dc.FillRectangle(new SolidColorBrush(Color.Parse("#1C1C1E")), new Rect(0, H / 2, W, H / 2));
+    }
+    var items = new List<Annotation>();
+    var shapes = new[] { MarkerShape.Circle, MarkerShape.RoundedSquare, MarkerShape.Diamond, MarkerShape.Pin };
+    var colors = new[] { "#FF3B30", "#0A84FF", "#34C759", "#FFCC00", "#FFFFFF", "#AF52DE" };
+    for (int half = 0; half < 2; half++)
+        for (int g = 0; g < 2; g++)
+        {
+            bool glass = g == 0;
+            double y0 = half * H / 2 + 70 + g * 270;
+            // Ряд 1: обычный размер, все формы × цвета.
+            int i = 0;
+            foreach (var shape in shapes)
+                for (int c = 0; c < 3; c++, i++)
+                    items.Add(new MarkerAnnotation
+                    {
+                        Label = i % 4 == 3 ? "12" : AnnotationDocument.IndexToLabel(i), Shape = shape, Glass = glass,
+                        Color = Color.Parse(colors[(i + half * 3) % colors.Length]), FontSize = 28,
+                        Center = new Point(60 + i * 62, y0),
+                    });
+            // Ряд 2: крупно.
+            for (int k = 0; k < 4; k++)
+                items.Add(new MarkerAnnotation
+                {
+                    Label = k == 3 ? "7" : AnnotationDocument.IndexToLabel(k), Shape = shapes[k], Glass = glass,
+                    Color = Color.Parse(colors[k == 0 ? 0 : k == 1 ? 1 : k == 2 ? 5 : 2]), FontSize = 64,
+                    Center = new Point(110 + k * 170, y0 + 140),
+                    Tail = k == 0 ? new Point(110 + k * 170 + 90, y0 + 200) : null,
+                });
+            items.Add(new MarkerAnnotation
+            {
+                Label = "B", Shape = MarkerShape.Circle, Glass = glass, Color = Color.Parse("#FF9500"), FontSize = 40,
+                Center = new Point(900, y0 + 120), Tail = new Point(1050, y0 + 60),
+            });
+        }
+    using var r = ImageRenderer.Render(bg, new PixelRect(0, 0, W, H), items);
+    File.WriteAllBytes(Path.Combine(outDir, "markers-grid.png"), ImageEncoder.ToPng(r));
+    return Task.CompletedTask;
 }
 
 async Task Scene(string name, Func<Task> run)

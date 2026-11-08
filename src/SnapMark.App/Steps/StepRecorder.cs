@@ -244,6 +244,7 @@ public static class StepRecorder
                 Color = color,
                 FontSize = Math.Max(20, s.LastFontSize) * k,
                 Shape = s.MarkerShape,
+                Glass = s.MarkerGlass,
             };
 
             byte[] png;

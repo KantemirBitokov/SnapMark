@@ -42,6 +42,7 @@ public sealed class AnnotationStyle
     public Color? PlateColor { get; set; }
     public Color? BorderColor { get; set; }
     public MarkerShape MarkerShape { get; set; } = MarkerShape.Circle;
+    public bool MarkerGlass { get; set; } = true;
     public bool Dashed { get; set; }
     public bool Filled { get; set; }
     /// <summary>Непрозрачность 0.1…1 (как ползунок в Markup на iOS).</summary>
@@ -638,6 +639,8 @@ public sealed class MarkerAnnotation : Annotation
     public Point? Tail { get; set; }
     public double FontSize { get; set; } = 28;
     public MarkerShape Shape { get; set; } = MarkerShape.Circle;
+    /// <summary>Эффект стекла: градиент, блик и цветная тень. false — плоская заливка.</summary>
+    public bool Glass { get; set; } = true;
     /// <summary>Цвет буквы/цифры. null — автоматически (белый на тёмном, тёмный на светлом).</summary>
     public Color? LabelColor { get; set; }
 
@@ -674,9 +677,7 @@ public sealed class MarkerAnnotation : Annotation
     {
         get
         {
-            double r = Radius * (Shape == MarkerShape.Diamond ? 1.25 : 1.05);
-            var rect = new Rect(Center.X - r, Center.Y - r, r * 2, r * 2).Inflate(3);
-            if (Shape == MarkerShape.Pin) rect = rect.Union(new Rect(Center.X - 2, Center.Y, 4, Radius * 2.15 + 6));
+            var rect = MarkerLook.Extent(Shape, Center, Radius * 1.075).Inflate(3);
             if (Tail is Point t) rect = rect.Union(new Rect(t.X - 8, t.Y - 8, 16, 16));
             return rect;
         }
@@ -697,77 +698,15 @@ public sealed class MarkerAnnotation : Annotation
             ctx.DrawLine(new Pen(brush, t, lineCap: PenLineCap.Round), start, end);
         }
 
-        // Тень → обводка (фигура чуть больше) → заливка. Так у любой формы ровный контур без швов.
-        double outline = Math.Max(2, Radius * 0.13);
-        IBrush outlineBrush = light ? new SolidColorBrush(Color.FromRgb(40, 40, 42)) : Brushes.White;
-        using (ctx.PushTransform(Matrix.CreateTranslation(0, Radius * 0.08)))
-            DrawShape(ctx, new SolidColorBrush(Color.FromArgb(70, 0, 0, 0)), Radius + outline + 1.5);
-        DrawShape(ctx, outlineBrush, Radius + outline);
-        DrawShape(ctx, brush, Radius);
-
-        var ft = new FormattedText(Label, CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
-            new Typeface(UiFonts.Display, FontStyle.Normal, Avalonia.Media.FontWeight.Bold),
-            Radius * (Label.Length > 1 ? 0.95 : 1.2),
+        MarkerLook.DrawBody(ctx, Shape, Center, Radius, Color, Glass);
+        MarkerLook.DrawLabel(ctx, Label, Center, Radius,
             LabelColor is Color lc ? new SolidColorBrush(lc)
-                : light ? new SolidColorBrush(Color.FromRgb(28, 28, 30)) : (IBrush)Brushes.White);
-        ctx.DrawText(ft, new Point(Center.X - ft.Width / 2, Center.Y - ft.Height / 2));
-    }
-
-    void DrawShape(DrawingContext ctx, IBrush brush, double r)
-    {
-        double cx = Center.X, cy = Center.Y;
-        switch (Shape)
-        {
-            case MarkerShape.RoundedSquare:
-            {
-                double half = r * 0.95;
-                ctx.DrawRectangle(brush, null, new Rect(cx - half, cy - half, half * 2, half * 2), r * 0.34, r * 0.34);
-                break;
-            }
-            case MarkerShape.Diamond:
-            {
-                double d = r * 1.22;
-                ctx.DrawGeometry(brush, null, Polygon(new Point(cx, cy - d), new Point(cx + d, cy), new Point(cx, cy + d), new Point(cx - d, cy)));
-                break;
-            }
-            case MarkerShape.Pin:
-            {
-                // Булавка: ровная симметричная капля — круглая «голова» плавно переходит в остриё.
-                double extra = r - Radius;
-                double d = Radius * 1.75 + extra * 1.5;           // от центра до острия
-                var geo = new StreamGeometry();
-                using (var g = geo.Open())
-                {
-                    g.BeginFigure(new Point(cx, cy + d), true);
-                    g.CubicBezierTo(new Point(cx - r * 0.46, cy + d * 0.68), new Point(cx - r, cy + d * 0.36), new Point(cx - r, cy));
-                    g.ArcTo(new Point(cx + r, cy), new Size(r, r), 0, false, SweepDirection.Clockwise);
-                    g.CubicBezierTo(new Point(cx + r, cy + d * 0.36), new Point(cx + r * 0.46, cy + d * 0.68), new Point(cx, cy + d));
-                    g.EndFigure(true);
-                }
-                ctx.DrawGeometry(brush, null, geo);
-                break;
-            }
-            default:
-                ctx.DrawEllipse(brush, null, Center, r, r);
-                break;
-        }
-    }
-
-    static StreamGeometry Polygon(params Point[] pts)
-    {
-        var geo = new StreamGeometry();
-        using (var g = geo.Open())
-        {
-            g.BeginFigure(pts[0], true);
-            for (int i = 1; i < pts.Length; i++) g.LineTo(pts[i]);
-            g.EndFigure(true);
-        }
-        return geo;
+                : light ? new SolidColorBrush(Color.FromRgb(28, 28, 30)) : Brushes.White);
     }
 
     public override bool HitTest(Point p, double tolerance)
     {
-        if (Distance(p, Center) <= Radius * 1.2 + tolerance) return true;
+        if (Distance(p, Center) <= Radius * (Shape == MarkerShape.Diamond ? 1.3 : 1.15) + tolerance) return true;
         if (Shape == MarkerShape.Pin && Math.Abs(p.X - Center.X) <= Radius * 0.6 + tolerance &&
             p.Y >= Center.Y && p.Y <= Center.Y + Radius * 1.8 + tolerance) return true;
         return Tail is Point t && DistanceToSegment(p, Center, t) <= tolerance + 4;
@@ -785,6 +724,7 @@ public sealed class MarkerAnnotation : Annotation
         Color = Color.FromRgb(s.Color.R, s.Color.G, s.Color.B);
         FontSize = s.FontSize;
         Shape = s.MarkerShape;
+        Glass = s.MarkerGlass;
     }
 
     public override void ReadStyle(AnnotationStyle s)
@@ -793,11 +733,12 @@ public sealed class MarkerAnnotation : Annotation
         s.Opacity = 1;
         s.FontSize = FontSize;
         s.MarkerShape = Shape;
+        s.MarkerGlass = Glass;
     }
 
     public override Annotation Clone() => CopyBaseTo(new MarkerAnnotation
     {
-        Id = Id, Sequence = Sequence, Center = Center, Label = Label, Tail = Tail, FontSize = FontSize, Shape = Shape,
+        Id = Id, Sequence = Sequence, Center = Center, Label = Label, Tail = Tail, FontSize = FontSize, Shape = Shape, Glass = Glass,
         LabelColor = LabelColor, CommentFont = CommentFont, CommentWeight = CommentWeight, CommentItalic = CommentItalic,
         CommentSize = CommentSize, CommentColor = CommentColor, CommentFrame = CommentFrame,
         CommentShadow = CommentShadow, CommentShadowColor = CommentShadowColor,

@@ -149,3 +149,5 @@ Translations into more languages are welcome: all texts live in [`Strings.tsv`](
 ## License
 
 [MIT](LICENSE) © Kantemir Bitokov · [SadlyBear.pro](https://sadlybear.pro)
+
+Marker labels use a subset of the [Nunito](https://github.com/googlefonts/nunito) font (SIL Open Font License 1.1, see [`OFL-Nunito.txt`](src/SnapMark.App/Assets/Fonts/OFL-Nunito.txt)).

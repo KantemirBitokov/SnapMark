@@ -256,8 +256,10 @@ public partial class OverlayWindow
             b.Classes.Set("selected", m.Shape == shape);
             shapes.Children.Add(b);
         }
+        var glass = Chip(L.T("Стекло"), m.Glass, on => Mutate(a => ((MarkerAnnotation)a).Glass = on),
+            tip: L.T("Эффект стекла: градиент, блик и цветная тень"));
         var size = Stepper(m.FontSize, 12, 120, 2, v => Mutate(a => ((MarkerAnnotation)a).FontSize = v), L.T("Размер метки"));
-        ContextContent.Children.Add(Row(shapes, size, Spacer(), ObjectActions()));
+        ContextContent.Children.Add(Row(shapes, glass, size, Spacer(), ObjectActions()));
 
         if (!Surface.CommentStyle.Enabled) return;
 

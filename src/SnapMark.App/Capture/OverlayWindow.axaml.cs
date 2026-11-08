@@ -85,6 +85,7 @@ public partial class OverlayWindow : Window
         Surface.DrawStyle.PlateColor = Color.TryParse(s.TextPlateColor, out var tpc) ? tpc : null;
         Surface.DrawStyle.BorderColor = Color.TryParse(s.TextBorderColor, out var tbc) ? tbc : null;
         Surface.DrawStyle.MarkerShape = s.MarkerShape;
+        Surface.DrawStyle.MarkerGlass = s.MarkerGlass;
         Surface.Document.Numbering = s.MarkerNumbering;
         var cs = Surface.CommentStyle;
         cs.Enabled = s.CommentsOnImage;
@@ -455,6 +456,7 @@ public partial class OverlayWindow : Window
         SelectFont(FontCombo, st.FontFamily);
         foreach (var b in MarkerShapeButtons.Children.OfType<Button>())
             b.Classes.Set("selected", b.Tag is string t && t == st.MarkerShape.ToString());
+        MarkerGlassToggle.IsChecked = st.MarkerGlass;
         LettersToggle.IsChecked = Surface.Document.Numbering == MarkerNumbering.Letters;
         NumbersToggle.IsChecked = Surface.Document.Numbering == MarkerNumbering.Numbers;
 
@@ -588,6 +590,15 @@ public partial class OverlayWindow : Window
         if (sender is not Button { Tag: string t } || !Enum.TryParse<MarkerShape>(t, out var shape)) return;
         Surface.DrawStyle.MarkerShape = shape; // форма по умолчанию для новых меток
         AppServices.Settings.MarkerShape = shape;
+        AppServices.SaveSettings();
+        SyncStyleControls();
+    }
+
+    void OnMarkerGlassClick(object? sender, RoutedEventArgs e)
+    {
+        bool on = MarkerGlassToggle.IsChecked == true;
+        Surface.DrawStyle.MarkerGlass = on; // для новых меток
+        AppServices.Settings.MarkerGlass = on;
         AppServices.SaveSettings();
         SyncStyleControls();
     }
