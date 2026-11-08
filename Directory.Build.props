@@ -1,0 +1,23 @@
+<Project>
+  <!--
+    Урезанная сборка (dotnet publish -p:PublishTrimmed=true): из встроенного .NET выкидывается то, чем SnapMark
+    не пользуется, — установщик почти вдвое меньше. Режим partial: урезаются только библиотеки, помеченные как
+    безопасные для этого (.NET, Avalonia); код SnapMark, NAudio, SkiaSharp остаются целиком. Остальные настройки
+    возвращают поведение обычной сборки там, где урезание по умолчанию его меняет.
+  -->
+  <PropertyGroup Condition="'$(PublishTrimmed)' == 'true'">
+    <TrimMode>partial</TrimMode>
+    <!-- Настройки в JSON читаются и пишутся через отражение (как в обычной сборке). -->
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    <!-- Звук компьютера и микрофон (NAudio, WASAPI) работают через COM. -->
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <!-- Понятные тексты ошибок (они показываются в уведомлениях), а не коды ресурсов. -->
+    <UseSystemResourceKeys>false</UseSystemResourceKeys>
+    <!-- Ничего не выкидывать из атрибутов и сведений о nullability — как в обычной сборке. -->
+    <_AggressiveAttributeTrimming>false</_AggressiveAttributeTrimming>
+    <NullabilityInfoContextSupport>true</NullabilityInfoContextSupport>
+    <!-- Все предупреждения урезания — в лог сборки, по одному на место. -->
+    <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+  </PropertyGroup>
+</Project>

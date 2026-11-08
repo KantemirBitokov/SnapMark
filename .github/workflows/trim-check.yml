@@ -1,0 +1,102 @@
+# Урезанная сборка (PublishTrimmed) против обычной: одни и те же проверки на обеих, результаты сравниваются.
+# Итог и все материалы — в ветку ci-trim-check (summary.txt, картинки обеих сборок, логи).
+name: Trim check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feature/trim']
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [normal, trimmed]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with: { dotnet-version: '8.0.x' }
+      - name: ffmpeg and test videos
+        shell: bash
+        run: |
+          ffmpeg -version >/dev/null 2>&1 || choco install ffmpeg -y --no-progress
+          mkdir -p out
+          ffmpeg -hide_banner -loglevel error -y -f lavfi -i testsrc2=size=640x360:rate=30 -f lavfi -i sine=frequency=440 -t 6 -c:v libx264 -pix_fmt yuv420p -c:a aac "$RUNNER_TEMP/test.mp4"
+          ffmpeg -hide_banner -loglevel error -y -loop 1 -i tools/Screenshots/page.png \
+            -vf "zoompan=z='1+0.25*on/180':x='iw/2-(iw/zoom/2)+on*1.2':y='ih/2-(ih/zoom/2)':d=1:s=1280x720:fps=30" \
+            -t 6 -c:v libx264 -pix_fmt yuv420p "$RUNNER_TEMP/demo.mp4"
+      - name: Publish
+        shell: bash
+        run: |
+          T=""; [ "${{ matrix.variant }}" = trimmed ] && T="-p:PublishTrimmed=true"
+          common="-c Release -r win-x64 --self-contained true -p:DebugType=None"
+          dotnet publish src/SnapMark.App $common -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:PublishReadyToRun=true $T -o app > out/build-app.log 2>&1 || { tail -50 out/build-app.log; exit 1; }
+          grep -oE "warning IL[0-9]+: [^[]+" out/build-app.log | sort | uniq -c | sort -rn > out/trim-warnings.txt || true
+          echo "app exe: $(stat -c %s app/SnapMark.exe) bytes" | tee out/size.txt
+          7z a -t7z -m0=lzma2 -mx=9 app.7z ./app/SnapMark.exe > /dev/null && echo "lzma2 (installer-like): $(stat -c %s app.7z) bytes" | tee -a out/size.txt
+          for p in FeatureTest GlassWin Screenshots; do
+            dotnet publish tools/$p $common $T -o pub-$p > out/build-$p.log 2>&1 || { tail -30 out/build-$p.log; exit 1; }
+          done
+      - name: Feature checks
+        shell: bash
+        continue-on-error: true
+        timeout-minutes: 8
+        run: |
+          export SNAPMARK_TEST_INPUT=1 SNAPMARK_TEST_VIDEO="$RUNNER_TEMP/test.mp4"
+          mkdir -p out/feature
+          ./pub-FeatureTest/FeatureTest.exe "$PWD/out/feature" > out/feature-test.txt 2>&1; cat out/feature-test.txt
+      - name: Screenshots (all windows)
+        shell: bash
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          export SNAPMARK_SHOTS_ALLPAGES=1
+          mkdir -p out/shots
+          ./pub-Screenshots/SnapMarkShots.exe "$PWD/out/shots" "$PWD/tools/Screenshots" "$RUNNER_TEMP/demo.mp4" > out/shots/log.txt 2>&1; tail -5 out/shots/log.txt
+      - name: Windows (glass, OCR, toasts, long shot, trim, PrtSc)
+        shell: bash
+        continue-on-error: true
+        run: |
+          export SNAPMARK_TEST_INPUT=1 SNAPMARK_TEST_VIDEO="$RUNNER_TEMP/test.mp4"
+          mkdir -p out/glass
+          ./pub-GlassWin/GlassWin.exe "$PWD/out/glass" "$PWD/docs/media/markers.png" &
+          pid=$!
+          for i in $(seq 1 1200); do kill -0 $pid 2>/dev/null || break; sleep 1; done
+          kill $pid 2>/dev/null || true
+          grep -E "^[a-z]" out/glass/log.txt | cut -c1-160 | head -60
+      - name: The app itself (start, PrtSc, commands, settings, steps)
+        shell: pwsh
+        continue-on-error: true
+        timeout-minutes: 6
+        run: ./tools/e2e/app-e2e.ps1 -exe "$PWD/app/SnapMark.exe" -out "$PWD/out/e2e"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: 'out-${{ matrix.variant }}', path: out }
+
+  compare:
+    needs: run
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with: { path: res }
+      - name: Compare
+        shell: bash
+        run: |
+          pip install --quiet pillow numpy
+          python3 tools/e2e/compare.py res/out-normal res/out-trimmed | tee res/summary.txt
+      - name: Publish
+        if: always()
+        shell: bash
+        run: |
+          cd res
+          git init -q -b ci-trim-check
+          git config user.name "github-actions"; git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -qm "trim check ${{ github.sha }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" ci-trim-check

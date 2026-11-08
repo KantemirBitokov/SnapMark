@@ -219,6 +219,97 @@ if (video is not null && File.Exists(video))
     }
 }
 
+// ── Общие механизмы программы (важно для урезанной сборки: всё должно работать как в обычной) ──
+try
+{
+    // Настройки: сохранить изменённые значения и прочитать обратно — JSON должен совпасть до символа.
+    var custom = new SnapMark.Core.AppSettings();
+    custom.ImageFormat = SnapMark.Core.ImageFileFormat.WebP;
+    custom.ImageQuality = 77;
+    custom.GlassAppearance = "Dark";
+    custom.CaptureRegionHotkey = new SnapMark.Core.Hotkey { Key = "F9", Ctrl = true, Alt = true };
+    custom.VideoCameraSize = 240;
+    custom.LastRedactStrength = 9;
+    var path = SnapMark.Core.SettingsStore.FilePath;
+    var backup = File.Exists(path) ? File.ReadAllText(path) : null;
+    SnapMark.Core.SettingsStore.Save(custom);
+    var written = File.Exists(path) ? File.ReadAllText(path) : "";
+    var loaded = SnapMark.Core.SettingsStore.Load();
+    SnapMark.Core.SettingsStore.Save(loaded);
+    var again = File.ReadAllText(path);
+    if (backup is null) File.Delete(path); else File.WriteAllText(path, backup);
+    Check("settings-roundtrip", written.Length > 500 && written == again && loaded.ImageFormat == SnapMark.Core.ImageFileFormat.WebP
+        && loaded.CaptureRegionHotkey.Key == "F9" && loaded.CaptureRegionHotkey.Alt && loaded.ImageQuality == 77,
+        $"{written.Length} chars, format={loaded.ImageFormat}, hotkey={loaded.CaptureRegionHotkey}");
+}
+catch (Exception ex) { Check("settings-roundtrip", false, ex.GetType().Name + ": " + ex.Message); }
+
+try
+{
+    var langs = new List<string>();
+    foreach (var code in new[] { "en", "de", "fr", "it", "es", "ru" })
+    {
+        SnapMark.Core.L.Set(code);
+        langs.Add($"{code}={SnapMark.Core.L.T("Готово")}/{SnapMark.Core.L.F("Кадров: {0} · {1} px", 3, 1200)}");
+    }
+    SnapMark.Core.L.Set("en");
+    Check("languages", langs.Select(x => x.Split('=')[1]).Distinct().Count() >= 5, string.Join("; ", langs));
+}
+catch (Exception ex) { Check("languages", false, ex.Message); }
+
+try
+{
+    byte[] png;
+    using (var sb = new SKBitmap(240, 120))
+    using (var sc = new SKCanvas(sb))
+    {
+        sc.Clear(SKColors.White);
+        using var sp = new SKPaint { Color = new SKColor(10, 132, 255), IsAntialias = true };
+        sc.DrawCircle(60, 60, 40, sp);
+        using var im = SKImage.FromBitmap(sb);
+        using var enc = im.Encode(SKEncodedImageFormat.Png, 100);
+        png = enc.ToArray();
+    }
+    var sizes = Enum.GetValues<SnapMark.Core.ImageFileFormat>().Select(f => $"{f}:{ImageEncoder.Encode(png, f, 90).Length}").ToList();
+    var dib = ImageEncoder.ToDib(png);
+    Check("image-formats", sizes.All(x => int.Parse(x.Split(':')[1]) > 100) && dib.Length > 100, string.Join(" ", sizes) + $" dib:{dib.Length}");
+    Check("file-naming", SnapMark.Core.FileNaming.Build(new SnapMark.Core.AppSettings().FileNameTemplate, new DateTime(2026, 11, 8, 3, 25, 0), 7).Length > 5,
+        SnapMark.Core.FileNaming.Build(new SnapMark.Core.AppSettings().FileNameTemplate, new DateTime(2026, 11, 8, 3, 25, 0), 7));
+}
+catch (Exception ex) { Check("image-formats", false, ex.GetType().Name + ": " + ex.Message); }
+
+try
+{
+    // Понятный текст ошибки (в уведомлениях показываем ex.Message), а не код ресурса.
+    try { File.ReadAllText(@"Z:\no\such\file.txt"); }
+    catch (Exception ex) { Check("error-messages", ex.Message.Contains(' ') && !ex.Message.StartsWith("IO_"), ex.Message); }
+}
+catch (Exception ex) { Check("error-messages", false, ex.Message); }
+
+try
+{
+    // Звук компьютера и микрофон: NAudio открывает устройства через COM.
+    using var en = new NAudio.CoreAudioApi.MMDeviceEnumerator();
+    var outs = en.EnumerateAudioEndPoints(NAudio.CoreAudioApi.DataFlow.All, NAudio.CoreAudioApi.DeviceState.All).Count;
+    Check("audio-com", true, $"endpoints={outs}");
+}
+catch (Exception ex) { Check("audio-com", ex is System.Runtime.InteropServices.COMException, ex.GetType().Name + ": " + ex.Message); }
+
+try
+{
+    var r = await UpdateChecker.CheckAsync();
+    Check("update-check", r.Ok && r.Latest is not null, $"latest={r.Latest} url={r.Url} error={r.Error}");
+}
+catch (Exception ex) { Check("update-check", false, ex.GetType().Name + ": " + ex.Message); }
+
+try
+{
+    // Ресурсы сборки: иконки и строки, встроенные в программу.
+    var logo = new Bitmap(Avalonia.Platform.AssetLoader.Open(new Uri("avares://SnapMark/Assets/snapmark_1024.png")));
+    Check("assets", logo.PixelSize.Width == 1024, $"{logo.PixelSize}");
+}
+catch (Exception ex) { Check("assets", false, ex.GetType().Name + ": " + ex.Message); }
+
 Console.WriteLine(failures == 0 ? "ALL PASSED" : $"{failures} FAILED");
 return failures == 0 ? 0 : 1;
 }

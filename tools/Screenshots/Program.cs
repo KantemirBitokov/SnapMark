@@ -317,6 +317,14 @@ async Task SettingsScene()
     SnapMark.Settings.SettingsWindow.ShowSingle(4);
     await Pump(800);
     await Save(w, "settings-video");
+    // Для проверки сборок — все страницы настроек.
+    if (Environment.GetEnvironmentVariable("SNAPMARK_SHOTS_ALLPAGES") == "1")
+        for (int pageIndex = 0; pageIndex < 6; pageIndex++)
+        {
+            SnapMark.Settings.SettingsWindow.ShowSingle(pageIndex);
+            await Pump(800);
+            await Save(w, $"settings-p{pageIndex}");
+        }
     w.Close();
 }
 
