@@ -13,6 +13,7 @@ Add-Type -Namespace E -Name U -MemberDefinition @'
   [DllImport("user32.dll")] public static extern void mouse_event(uint f, int x, int y, uint d, IntPtr e);
   [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
   [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint m, IntPtr w, IntPtr l);
+  [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
   public delegate bool EnumProc(IntPtr h, IntPtr l);
   [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc f, IntPtr l);
   [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);
@@ -53,10 +54,12 @@ while ($sw.Elapsed.TotalSeconds -lt 30) {
 }
 Say ("start-prtsc: " + $(if ($t -ge 0) { 'ok' } else { 'FAIL' }) + " ($([math]::Round($t,1)) s)")
 Start-Sleep -Milliseconds 800; Shot 'e2e-overlay'
+$fp = [uint32]0; [E.U]::GetWindowThreadProcessId([E.U]::GetForegroundWindow(), [ref]$fp) | Out-Null
 Key 0x1B
 $closed = WaitFor { -not (Fullscreen $app) } 3
-if ($closed -lt 0) { Shot 'e2e-esc-fail'; Key 0x1B; Start-Sleep -Milliseconds 800 }
-Say ("overlay-esc: " + $(if ($closed -ge 0) { 'ok' } else { 'FAIL' }))
+$second = ''
+if ($closed -lt 0) { Shot 'e2e-esc-fail'; Key 0x1B; $second = if ((WaitFor { -not (Fullscreen $app) } 3) -ge 0) { 'closed by 2nd Esc' } else { 'still open' } }
+Say ("overlay-esc: " + $(if ($closed -ge 0) { 'ok' } else { 'FAIL' }) + " (foreground is SnapMark: $($fp -eq $app.Id); $second)")
 # Пять раз подряд: PrtSc → редактор открылся → Esc → закрылся.
 $cycles = 0
 for ($k = 1; $k -le 5; $k++) {
