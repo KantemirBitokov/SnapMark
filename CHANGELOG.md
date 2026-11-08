@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.13
+- The “Marker comments” panel no longer covers the side actions bar. When the selection takes the whole screen (or reaches the screen edge) the actions bar sits inside it, and the comments panel used to be pushed to the right edge on top of it; now it goes next to the actions bar, and also stays clear of the toolbar and the style panel. Checked for full-screen, edge, wide, tall and small selections.
+
 ## 1.9.12
 - **Recording starts even when an audio device can't be opened.** If “computer sound” or the microphone is on but there are no speakers/headphones, or the microphone is unplugged or busy, the video is recorded without that sound and a notification says why — instead of the whole recording failing to start.
 - **Shadows of selected buttons and chips are round again.** The soft shadow under a selected chip (Auto, Plate, Shadow, On image…), shape button or settings section was cut off at the button's square edges; now it fades out smoothly around the rounded shape.
