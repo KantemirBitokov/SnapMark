@@ -321,6 +321,8 @@ public static class RecordingController
                     L.T("Скачать"), () => ShellOpen.Open(Platform.Mac.MacSystemAudio.BlackHoleUrl));
             else if (recorder.SystemAudioProblem is { } problem)
                 Toast.Show(L.T("Запись без звука компьютера"), problem);
+            if (recorder.MicProblem is { } micProblem)
+                Toast.Show(L.T("Запись без микрофона"), micProblem);
         }
         catch (Exception ex)
         {

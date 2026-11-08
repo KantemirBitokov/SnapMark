@@ -35,6 +35,8 @@ public sealed class FfmpegRecorder
 
     /// <summary>Звук компьютера не удалось подключить: «blackhole» — нужен драйвер (macOS 11–12), иначе текст ошибки.</summary>
     public string? SystemAudioProblem { get; private set; }
+    /// <summary>Микрофон не открылся — запись идёт без него (текст причины).</summary>
+    public string? MicProblem { get; private set; }
 
     /// <summary>ffmpeg пишет звук прямо в видео (микрофон на macOS, PulseAudio в Linux).</summary>
     bool _liveAudioInVideo;
@@ -151,16 +153,14 @@ public sealed class FfmpegRecorder
         // ── Звук (Windows): отдельные WAV-файлы через WASAPI ──────────────
         if (wantAudio && OperatingSystem.IsWindows())
         {
-            try
-            {
-                if (withSystem) AddWindowsTrack(loopback: true, s.SystemAudioDevice, "system");
-                if (withMic) AddWindowsTrack(loopback: false, s.MicrophoneDevice, "mic");
-            }
-            catch (Exception ex)
-            {
-                DisposeAudio();
-                throw new InvalidOperationException(L.T("Не удалось открыть звуковое устройство: ") + ex.Message, ex);
-            }
+            // Устройство не открылось (нет колонок/наушников, микрофон отключён или занят) — пишем без этой
+            // дорожки и сообщаем, а не отменяем всю запись.
+            if (withSystem)
+                try { AddWindowsTrack(loopback: true, s.SystemAudioDevice, "system"); }
+                catch (Exception ex) { SystemAudioProblem = L.T("Не удалось открыть звуковое устройство: ") + ex.Message; }
+            if (withMic)
+                try { AddWindowsTrack(loopback: false, s.MicrophoneDevice, "mic"); }
+                catch (Exception ex) { MicProblem = L.T("Не удалось открыть звуковое устройство: ") + ex.Message; }
         }
         // ── Звук компьютера (macOS 13+): встроенный помощник на ScreenCaptureKit ──
         if (wantAudio && withSystem && OperatingSystem.IsMacOS())

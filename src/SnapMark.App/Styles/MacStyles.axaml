@@ -320,6 +320,14 @@
     <Setter Property="BorderBrush" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
 
+  <!-- Тень у выбранных кнопок и чипов («линза») должна выходить за края кнопки, а не обрезаться по квадрату. -->
+  <Style Selector="Button, ToggleButton, ListBoxItem">
+    <Setter Property="ClipToBounds" Value="False"/>
+  </Style>
+  <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter, ToggleButton /template/ ContentPresenter#PART_ContentPresenter, ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="ClipToBounds" Value="False"/>
+  </Style>
+
   <!-- Маленькие переключатели (B, I, Подложка…). -->
   <Style Selector="ToggleButton.chip">
     <Setter Property="CornerRadius" Value="13"/>
