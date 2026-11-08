@@ -56,6 +56,7 @@ async Task RunAll()
     var screen = new Screen(1.0, new PixelRect(0, 0, 1920, 1080), new PixelRect(0, 0, 1920, 1040), true);
 
     await Scene("markers-grid", () => MarkersGrid());
+    await Scene("pin", () => PinScene(page));
     if (Environment.GetEnvironmentVariable("SNAPMARK_SHOTS_ONLY") == "markers") return;
     await Scene("editor", () => EditorScene(Page(), screen));
     await Scene("record", () => RecordScene(Page(), screen));
@@ -289,6 +290,21 @@ async Task OcrScene(Bitmap page)
     double ox = 15.5, oy = 15.5;
     await Drag(w, new Point(ox + 88, oy + 84), new Point(ox + 150, oy + 165));
     await SaveMatte(w, "ocr");
+    w.Close();
+}
+
+// «Закрепить поверх окон»: окно с картинкой (для проверки окантовки по углам — кадр на чёрном фоне).
+async Task PinScene(Bitmap page)
+{
+    var at = new PixelRect(420, 90, 600, 360);
+    var rtb = new RenderTargetBitmap(new PixelSize(at.Width, at.Height), new Vector(96, 96));
+    using (var ctx = rtb.CreateDrawingContext())
+        ctx.DrawImage(page, new Rect(at.X, at.Y, at.Width, at.Height), new Rect(0, 0, at.Width, at.Height));
+    PinWindow.Pin(ImageEncoder.ToPng(rtb), at);
+    await Pump(500);
+    var open = (System.Collections.IList)typeof(PinWindow).GetField("Open", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(null)!;
+    var w = (Window)open[open.Count - 1]!;
+    await SaveMatte(w, "pin");
     w.Close();
 }
 

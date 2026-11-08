@@ -75,13 +75,20 @@ public sealed class PinWindow : Window
 
         _image = new Image { Source = _bitmap, Stretch = Stretch.Fill };
         RenderOptions.SetBitmapInterpolationMode(_image, BitmapInterpolationMode.HighQuality);
+        // Картинка обрезается по скруглению, а окантовка рисуется отдельным слоем поверх неё
+        // (как у окна распознавания текста): иначе углы картинки ложатся на рамку и в углах она пропадает.
         _frame = new Border
         {
             Child = _image,
             CornerRadius = new CornerRadius(10),
             ClipToBounds = true,
+        };
+        var outline = new Border
+        {
+            CornerRadius = new CornerRadius(10),
             BorderThickness = new Thickness(1),
             BorderBrush = new SolidColorBrush(Color.FromArgb(70, 255, 255, 255)),
+            IsHitTestVisible = false,
         };
         var shadow = new Border
         {
@@ -89,7 +96,7 @@ public sealed class PinWindow : Window
             CornerRadius = new CornerRadius(10),
             BoxShadow = BoxShadows.Parse("0 10 28 0 #59000000, 0 1 4 0 #33000000"),
             Background = Brushes.Black,
-            Child = _frame,
+            Child = new Grid { Children = { _frame, outline } },
         };
 
         // Кнопка «закрыть» в углу — появляется при наведении.
