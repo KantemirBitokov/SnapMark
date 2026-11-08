@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.11
+- **Half the size on Windows.** Parts of the built-in .NET that SnapMark never uses are now left out of the Windows build: the installer is about 19 MB instead of 37 MB, the installed app takes about 62 MB instead of 119 MB, and the portable zip is smaller too. Startup stays as fast as in 1.9.9.
+- Nothing else changes: before the release the trimmed and the normal builds were run through the same checks side by side — screenshots and the editor, markers and comments, blur, text recognition, step-by-step guide with the clipboard, scrolling screenshots in Chrome, Edge, Firefox, Notepad and Explorer, screen recording, trimming and GIF export, settings saving, all six languages, update check, PrtSc and the command line — with identical results, and the windows were compared pixel by pixel.
+- The editor that opens right after SnapMark starts is given keyboard focus more reliably.
+
 ## 1.9.10
 - PrtSc and Snipping Tool: SnapMark now recognises a conflict whichever of its shortcuts is set to plain PrtSc (region, full screen, video or step guide), and no longer touches the Windows setting when its shortcuts only use PrtSc with Ctrl, Shift or Alt — those don't open Snipping Tool.
 

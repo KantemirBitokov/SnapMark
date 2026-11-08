@@ -35,6 +35,9 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1
 6 языков, ярлыки, автозапуск по желанию) и `SnapMark-<версия>-portable.zip`.
 Для установщика программа собирается заранее скомпилированной (ReadyToRun) и без сжатия внутри exe — сжимает
 её сам установщик (LZMA2): так он меньше, а программа запускается быстрее. Портативный zip — сжатый exe без ReadyToRun.
+Обе сборки урезанные (`PublishTrimmed`, настройки — в `Directory.Build.props`): из встроенного .NET выкинуто то,
+чем SnapMark не пользуется. Что урезанная сборка работает так же, как обычная, проверяет `.github/workflows/trim-check.yml`
+(запуск вручную: Actions → Trim check) — после обновления .NET, Avalonia или новых библиотек его стоит прогнать.
 Версия берётся из `<Version>` в `src/SnapMark.App/SnapMark.App.csproj`. Скрипт установщика — `installer/SnapMark.iss`.
 
 ## macOS и Linux
