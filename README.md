@@ -43,7 +43,7 @@ ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separate
 - Clean macOS-style selection frame with your color of choice
 
 **Annotate**
-- **Markers** A, B, C… or 1, 2, 3 — circle, rounded square, diamond or pin, with or without an arrow; per-marker colors
+- **Markers** A, B, C… or 1, 2, 3 — circle, rounded square, diamond or pin, in the iOS “Liquid Glass” style or flat, with or without an arrow; per-marker colors
 - **Comments** for each marker — copied as text, optionally drawn on the image with their own font and frame
 - Pen with pressure/speed-sensitive width, pencil, highlighter, eraser
 - Hold the stroke to snap it into a clean line, arrow, rectangle or ellipse

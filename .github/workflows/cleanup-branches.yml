@@ -31,3 +31,12 @@ jobs:
             echo "delete  $ref (experiment)"
             git push -q origin --delete "$ref"
           done
+          # Служебные ci-* ветки, в которые больше не пишет ни один workflow (остались от экспериментов).
+          for ref in $(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -E '^ci-'); do
+            if grep -rqF "$ref" .github/workflows; then
+              echo "keep    $ref (used by a workflow)"
+            else
+              echo "delete  $ref (no workflow writes to it)"
+              git push -q origin --delete "$ref"
+            fi
+          done

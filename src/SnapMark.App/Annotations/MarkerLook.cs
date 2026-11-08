@@ -228,7 +228,12 @@ internal static class MarkerLook
         lock (Cache)
         {
             if (Cache.TryGetValue(key, out var hit)) return hit;
-            if (Cache.Count > 256) Cache.Clear();
+            if (Cache.Count > 256)
+            {
+                // Уже записанные кадры держат свои ссылки на картинки — освобождать безопасно.
+                foreach (var old in Cache.Values) old?.Image.Dispose();
+                Cache.Clear();
+            }
             var img = BuildShadow(shape, key.Item2 / 4.0, key.Item3 / 4.0, color);
             Cache[key] = img;
             return img;

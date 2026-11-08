@@ -706,7 +706,12 @@ public sealed class MarkerAnnotation : Annotation
 
     public override bool HitTest(Point p, double tolerance)
     {
-        if (Distance(p, Center) <= Radius * (Shape == MarkerShape.Diamond ? 1.3 : 1.15) + tolerance) return true;
+        if (Distance(p, Center) <= Radius * (Shape switch
+            {
+                MarkerShape.Diamond => 1.3,
+                MarkerShape.RoundedSquare => 1.25, // углы «сквиркла» дальше от центра, чем у круга
+                _ => 1.15,
+            }) + tolerance) return true;
         if (Shape == MarkerShape.Pin && Math.Abs(p.X - Center.X) <= Radius * 0.6 + tolerance &&
             p.Y >= Center.Y && p.Y <= Center.Y + Radius * 1.8 + tolerance) return true;
         return Tail is Point t && DistanceToSegment(p, Center, t) <= tolerance + 4;

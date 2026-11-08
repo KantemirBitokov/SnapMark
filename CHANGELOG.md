@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.17
+- The shape buttons for markers (in the style panel, the marker's own panel and in screen recording) now show the new shapes — the continuous-corner square and the rounded diamond.
+- A rounded-square marker can be picked up by its corners too, not only near the centre.
+- Small memory cleanup for marker shadows when many different marker sizes are used.
+
 ## 1.9.16
 - **New marker design in the style of iOS 26.** Markers get a soft “Liquid Glass” look: a gentle top-to-bottom gradient, a glassy highlight on the upper half, a luminous white rim and a soft shadow in the marker's own colour. The shapes are redrawn too — a continuous-corner square like iOS icons, a diamond with rounded corners and a smoother pin — and letters and numbers use a rounded typeface, like the counters in iOS apps.
 - **Glass on or off.** The new “Glass” switch next to the marker shapes turns the effect off for a flat look: the same shapes and typeface with a solid colour, a crisp white rim and a soft neutral shadow. It works for the selected marker, as the default for new markers (style panel), in screen recording and in the step-by-step guide, and is remembered.
