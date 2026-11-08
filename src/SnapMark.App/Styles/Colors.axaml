@@ -105,6 +105,17 @@
   <Color x:Key="SystemAccentColorDark3">#0053A6</Color>
 
   <SolidColorBrush x:Key="Sm.Accent" Color="#0A84FF"/>
+  <!-- Нажатые / включённые кнопки: заливка акцентом, сверху чуть светлее — как у системных кнопок macOS. -->
+  <LinearGradientBrush x:Key="Sm.AccentFill" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#2A96FF"/>
+    <GradientStop Offset="1" Color="#0A84FF"/>
+  </LinearGradientBrush>
+  <LinearGradientBrush x:Key="Sm.AccentFillHover" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Offset="0" Color="#47A5FF"/>
+    <GradientStop Offset="1" Color="#1E8EFF"/>
+  </LinearGradientBrush>
+  <SolidColorBrush x:Key="Sm.AccentRim" Color="#33FFFFFF"/>
+  <SolidColorBrush x:Key="Sm.OnAccent" Color="#FFFFFF"/>
   <SolidColorBrush x:Key="Sm.Red" Color="#FF3B30"/>
   <SolidColorBrush x:Key="Sm.HudBg" Color="#D91C1C1E"/>
 

@@ -165,11 +165,15 @@
   <Style Selector="Button.tool:pressed /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource Sm.PressedBg}"/>
   </Style>
-  <!-- Выбранный инструмент — стеклянная «линза» с бликом, как в iOS / macOS 26. -->
+  <!-- Выбранная кнопка (форма метки, толщина, инструменты записи…) — синяя с белым значком.
+       Основные инструменты на стеклянной панели (seg) выделяет «линза», которую рисует сама панель. -->
   <Style Selector="Button.tool.selected /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
-    <Setter Property="BoxShadow" Value="0 3 10 0 #2E000000"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.AccentFill}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.AccentRim}"/>
+    <Setter Property="BoxShadow" Value="0 3 10 0 #4D0A84FF"/>
+  </Style>
+  <Style Selector="Button.tool.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.AccentFillHover}"/>
   </Style>
   <Style Selector="Button.tool.small">
     <Setter Property="Width" Value="26"/>
@@ -281,6 +285,19 @@
   <Style Selector="Button.tool Ellipse.dot">
     <Setter Property="Fill" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
+  <!-- Значки на синей кнопке — белые (после общих правил для значков, чтобы перекрыть их). -->
+  <Style Selector="Button.tool.selected:not(.seg) Path">
+    <Setter Property="Stroke" Value="{DynamicResource Sm.OnAccent}"/>
+  </Style>
+  <Style Selector="Button.tool.selected:not(.seg) Path.solid">
+    <Setter Property="Fill" Value="{DynamicResource Sm.OnAccent}"/>
+  </Style>
+  <Style Selector="Button.tool.selected:not(.seg) TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.OnAccent}"/>
+  </Style>
+  <Style Selector="Button.tool.selected:not(.seg) Ellipse.dot">
+    <Setter Property="Fill" Value="{DynamicResource Sm.OnAccent}"/>
+  </Style>
 
   <!-- Подзаголовок секции во всплывающих панелях. -->
   <Style Selector="TextBlock.group">
@@ -351,16 +368,17 @@
     <Setter Property="Background" Value="{DynamicResource Sm.HoverBg}"/>
     <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
   </Style>
+  <!-- Включённый чип — синий (акцент) с белым текстом: сразу видно, что выбрано, и на светлой теме тоже. -->
   <Style Selector="ToggleButton.chip:checked /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
-    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
-    <Setter Property="BoxShadow" Value="0 2 8 0 #29000000"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.AccentFill}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.AccentRim}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.OnAccent}"/>
+    <Setter Property="BoxShadow" Value="0 2 8 0 #4D0A84FF"/>
   </Style>
   <Style Selector="ToggleButton.chip:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
-    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+    <Setter Property="Background" Value="{DynamicResource Sm.AccentFillHover}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.AccentRim}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.OnAccent}"/>
   </Style>
   <!-- В группе инструментов (seg) на стекле линзу рисует сама панель и «перетекает» её между кнопками. -->
   <Style Selector="ui|GlassPanel Button.tool.seg.selected /template/ ContentPresenter#PART_ContentPresenter">
@@ -369,7 +387,7 @@
     <Setter Property="BoxShadow" Value="0 0 0 0 #00000000"/>
   </Style>
   <Style Selector="ToggleButton.chip:checked TextBlock">
-    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Sm.OnAccent}"/>
   </Style>
 
   <!-- Подсказки — маленькие стеклянные плашки. -->
