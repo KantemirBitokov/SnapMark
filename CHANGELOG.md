@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.10
+- PrtSc and Snipping Tool: SnapMark now recognises a conflict whichever of its shortcuts is set to plain PrtSc (region, full screen, video or step guide), and no longer touches the Windows setting when its shortcuts only use PrtSc with Ctrl, Shift or Alt — those don't open Snipping Tool.
+
 ## 1.9.9
 - **Smaller installer, same fast start.** In 1.9.8 the installer grew to 49 MB: the precompiled (ReadyToRun) app was additionally compressed inside the exe, and an already compressed file can't be packed further by the installer. Now the installer carries the app uncompressed and packs it itself with LZMA2 — about 35 MB, smaller than before 1.9.8 — and the app no longer unpacks itself on every start.
 - The portable zip is built as before 1.9.8 (about 39 MB).
