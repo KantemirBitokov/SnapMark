@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.15
+- The toolbars (the editor's bottom toolbar, the actions bar, recording and step-guide panels) keep the white glass highlight for the selected button — for example the line thickness — like the drawing tools. Blue stays for switched-on chips and buttons in the panels.
+
 ## 1.9.14
 - **Selected buttons are blue.** Chips that are switched on (Auto, Plain/Border/Plate, Shadow, font weights, On image, A B C / 1 2 3…) and selected buttons (marker shape, line thickness, recording tools…) now use the accent blue with white text and icons, instead of a pale glass highlight that was hard to tell apart, especially in the light theme. The main toolbar keeps its glass lens.
 
