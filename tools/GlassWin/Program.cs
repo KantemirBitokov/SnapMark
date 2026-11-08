@@ -55,7 +55,7 @@ class WinApp : Application
         {
             try
             {
-                foreach (var (name, t, f, v) in new[]
+                if (Want("glass")) foreach (var (name, t, f, v) in new[]
                          {
                              ("win-t50-f0", 0.5, 0.0, GlassVariant.Regular),
                              ("win-t50-f45", 0.5, 0.45, GlassVariant.Regular),
@@ -68,25 +68,25 @@ class WinApp : Application
                 }
             }
             catch (Exception ex) { Program.Log.WriteLine("ERROR " + ex); }
-            try { await EffectsTest(); }
+            if (Want("effects")) try { await EffectsTest(); }
             catch (Exception ex) { Program.Log.WriteLine("EFFECTS ERROR " + ex); }
-            try { await OcrTest(); }
+            if (Want("ocr")) try { await OcrTest(); }
             catch (Exception ex) { Program.Log.WriteLine("OCR ERROR " + ex); }
-            try { await ToastTest(); }
+            if (Want("toast")) try { await ToastTest(); }
             catch (Exception ex) { Program.Log.WriteLine("TOAST ERROR " + ex); }
-            try { await LongShotTest(); }
+            if (Want("longshot")) try { await LongShotTest(); }
             catch (Exception ex) { Program.Log.WriteLine("LONGSHOT ERROR " + ex); }
-            try { PrtScRestoreTest(); }
+            if (Want("prtsc")) try { PrtScRestoreTest(); }
             catch (Exception ex) { Program.Log.WriteLine("PRTSC ERROR " + ex); }
-            try { await BrowserLongShotTest(); }
+            if (Want("browser")) try { await BrowserLongShotTest(); }
             catch (Exception ex) { Program.Log.WriteLine("BROWSER LONGSHOT ERROR " + ex); }
-            try { await AppLongShotTest(); }
+            if (Want("apps")) try { await AppLongShotTest(); }
             catch (Exception ex) { Program.Log.WriteLine("APP LONGSHOT ERROR " + ex); }
-            try { await AppLongShotTest2(); }
+            if (Want("apps2")) try { await AppLongShotTest2(); }
             catch (Exception ex) { Program.Log.WriteLine("APP LONGSHOT2 ERROR " + ex); }
-            try { await TrimTest(); }
+            if (Want("trim")) try { await TrimTest(); }
             catch (Exception ex) { Program.Log.WriteLine("TRIM ERROR " + ex); }
-            try { await RecordTest(); }
+            if (Want("record")) try { await RecordTest(); }
             catch (Exception ex) { Program.Log.WriteLine("RECORD ERROR " + ex); }
             life.Shutdown();
         });
@@ -638,6 +638,10 @@ class WinApp : Application
 
     [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
 
+    /// <summary>GLASSWIN_ONLY=record,trim — запустить только эти проверки (для быстрых прогонов).</summary>
+    static bool Want(string name) =>
+        Environment.GetEnvironmentVariable("GLASSWIN_ONLY") is not { Length: > 0 } only || only.Split(',').Contains(name);
+
     /// <summary>Запись экрана целиком, как из программы: ffmpeg + звук компьютера (NAudio, WASAPI), затем «Стоп».</summary>
     static async Task RecordTest()
     {
@@ -647,11 +651,14 @@ class WinApp : Application
         Directory.CreateDirectory(folder);
         s.VideoFolder = folder;
         s.VideoCamera = false;
+        Program.Log.WriteLine($"record: starting, ffmpeg={SnapMark.Recording.VideoTools.Ffmpeg}");
         SnapMark.Recording.RecordingController.Start(new PixelRect(100, 100, 640, 360), 1, false, true);
         for (int i = 0; i < 40 && !SnapMark.Recording.RecordingController.IsRecording; i++) await Task.Delay(100);
         bool started = SnapMark.Recording.RecordingController.IsRecording;
+        Program.Log.WriteLine($"record: started={started}");
         await Task.Delay(4000);
         if (started) await SnapMark.Recording.RecordingController.StopAsync();
+        Program.Log.WriteLine("record: stopped");
         await Task.Delay(1500);
         var file = Directory.GetFiles(folder).OrderByDescending(File.GetLastWriteTime).FirstOrDefault();
         double dur = 0; int w = 0, h = 0; bool audio = false;
