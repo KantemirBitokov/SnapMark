@@ -299,7 +299,11 @@ async Task PinScene(Bitmap page)
     var at = new PixelRect(420, 90, 600, 360);
     var rtb = new RenderTargetBitmap(new PixelSize(at.Width, at.Height), new Vector(96, 96));
     using (var ctx = rtb.CreateDrawingContext())
+    {
         ctx.DrawImage(page, new Rect(at.X, at.Y, at.Width, at.Height), new Rect(0, 0, at.Width, at.Height));
+        // Тёмная картинка — на ней видна светлая окантовка, как на скриншоте тёмного сайта.
+        ctx.FillRectangle(new SolidColorBrush(Color.FromArgb(235, 0, 0, 0)), new Rect(0, 0, at.Width, at.Height));
+    }
     PinWindow.Pin(ImageEncoder.ToPng(rtb), at);
     await Pump(500);
     var open = (System.Collections.IList)typeof(PinWindow).GetField("Open", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)!.GetValue(null)!;
