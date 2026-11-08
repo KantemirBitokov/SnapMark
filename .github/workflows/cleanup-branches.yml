@@ -1,4 +1,5 @@
-# Уборка: удаляет рабочие ветки feature/* и fix/*, которые уже целиком влиты в main.
+# Уборка: удаляет рабочие ветки feature/* и fix/*, которые уже целиком влиты в main, и одноразовые
+# ветки экспериментов probe/* и test/* (замеры, сравнения — в main их не вливают).
 # Ветки с невлитыми изменениями и служебные ci-* не трогает. Запуск вручную: Actions → Cleanup branches → Run workflow.
 name: Cleanup branches
 
@@ -25,4 +26,8 @@ jobs:
             else
               echo "keep    $ref (has commits not in main)"
             fi
+          done
+          for ref in $(git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin | grep -E '^(probe|test)/'); do
+            echo "delete  $ref (experiment)"
+            git push -q origin --delete "$ref"
           done
