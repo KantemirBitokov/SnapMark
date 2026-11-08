@@ -298,6 +298,28 @@
   <Style Selector="Button.tool.selected:not(.seg) Ellipse.dot">
     <Setter Property="Fill" Value="{DynamicResource Sm.OnAccent}"/>
   </Style>
+  <!-- На панелях-капсулах (нижнее меню инструментов, панель действий, панели записи) выбранное — белая
+       стеклянная «линза», как у основных инструментов, а не синяя заливка. -->
+  <Style Selector="ui|GlassPanel.bar Button.tool.selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Sm.LensBorder}"/>
+    <Setter Property="BoxShadow" Value="0 3 10 0 #2E000000"/>
+  </Style>
+  <Style Selector="ui|GlassPanel.bar Button.tool.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.LensBg}"/>
+  </Style>
+  <Style Selector="ui|GlassPanel.bar Button.tool.selected Path">
+    <Setter Property="Stroke" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="ui|GlassPanel.bar Button.tool.selected Path.solid">
+    <Setter Property="Fill" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="ui|GlassPanel.bar Button.tool.selected TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
+  <Style Selector="ui|GlassPanel.bar Button.tool.selected Ellipse.dot">
+    <Setter Property="Fill" Value="{DynamicResource Sm.TextPrimary}"/>
+  </Style>
 
   <!-- Подзаголовок секции во всплывающих панелях. -->
   <Style Selector="TextBlock.group">
