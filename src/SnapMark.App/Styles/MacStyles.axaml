@@ -545,7 +545,9 @@
   </Style>
   <Style Selector="Border.badge TextBlock">
     <Setter Property="Foreground" Value="White"/>
-    <Setter Property="FontWeight" Value="Bold"/>
+    <!-- Тот же скруглённый шрифт, что у меток на картинке (уже насыщенный — без синтетического жирного). -->
+    <Setter Property="FontFamily" Value="avares://SnapMark/Assets/Fonts#SnapMark Marker"/>
+    <Setter Property="FontWeight" Value="Normal"/>
     <Setter Property="FontSize" Value="{DynamicResource Sm.Size.Callout}"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
