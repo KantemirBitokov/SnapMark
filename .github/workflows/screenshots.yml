@@ -30,7 +30,7 @@ jobs:
         run: |
           dotnet build -c Release tools/Screenshots
           mkdir -p out
-          export SNAPMARK_SHOTS_LAYOUT=1
+          export SNAPMARK_SHOTS_LAYOUT=1 SNAPMARK_SHOTS_ALLPAGES=1
           dotnet tools/Screenshots/bin/Release/net8.0/SnapMarkShots.dll "$PWD/out" "$PWD/tools/Screenshots" "$RUNNER_TEMP/demo.mp4" 2>&1 | tee out/log.txt
       - name: Publish
         if: always()
