@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.14
+- **Selected buttons are blue.** Chips that are switched on (Auto, Plain/Border/Plate, Shadow, font weights, On image, A B C / 1 2 3…) and selected buttons (marker shape, line thickness, recording tools…) now use the accent blue with white text and icons, instead of a pale glass highlight that was hard to tell apart, especially in the light theme. The main toolbar keeps its glass lens.
+
 ## 1.9.13
 - The “Marker comments” panel no longer covers the side actions bar. When the selection takes the whole screen (or reaches the screen edge) the actions bar sits inside it, and the comments panel used to be pushed to the right edge on top of it; now it goes next to the actions bar, and also stays clear of the toolbar and the style panel. Checked for full-screen, edge, wide, tall and small selections.
 
