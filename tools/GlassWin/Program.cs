@@ -86,6 +86,8 @@ class WinApp : Application
             catch (Exception ex) { Program.Log.WriteLine("APP LONGSHOT2 ERROR " + ex); }
             try { await TrimTest(); }
             catch (Exception ex) { Program.Log.WriteLine("TRIM ERROR " + ex); }
+            try { await RecordTest(); }
+            catch (Exception ex) { Program.Log.WriteLine("RECORD ERROR " + ex); }
             life.Shutdown();
         });
         base.OnFrameworkInitializationCompleted();
@@ -635,6 +637,34 @@ class WinApp : Application
     }
 
     [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
+
+    /// <summary>Запись экрана целиком, как из программы: ffmpeg + звук компьютера (NAudio, WASAPI), затем «Стоп».</summary>
+    static async Task RecordTest()
+    {
+        var s = SnapMark.Services.AppServices.Settings;
+        var folder = Path.Combine(Path.GetTempPath(), "snapmark-rec");
+        if (Directory.Exists(folder)) Directory.Delete(folder, true);
+        Directory.CreateDirectory(folder);
+        s.VideoFolder = folder;
+        s.VideoCamera = false;
+        SnapMark.Recording.RecordingController.Start(new PixelRect(100, 100, 640, 360), 1, false, true);
+        for (int i = 0; i < 40 && !SnapMark.Recording.RecordingController.IsRecording; i++) await Task.Delay(100);
+        bool started = SnapMark.Recording.RecordingController.IsRecording;
+        await Task.Delay(4000);
+        if (started) await SnapMark.Recording.RecordingController.StopAsync();
+        await Task.Delay(1500);
+        var file = Directory.GetFiles(folder).OrderByDescending(File.GetLastWriteTime).FirstOrDefault();
+        double dur = 0; int w = 0, h = 0; bool audio = false;
+        if (file is not null)
+        {
+            (dur, w, h) = await SnapMark.Recording.VideoTools.ProbeAsync(file);
+            var psi = new System.Diagnostics.ProcessStartInfo(SnapMark.Recording.VideoTools.Ffmpeg!, $"-hide_banner -i \"{file}\"") { RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true };
+            using var p = System.Diagnostics.Process.Start(psi)!;
+            audio = (await p.StandardError.ReadToEndAsync()).Contains("Audio:");
+        }
+        bool ok = started && file is not null && dur is > 2.5 and < 8 && w == 640 && h == 360;
+        Program.Log.WriteLine($"record: {(ok ? "OK" : "FAIL")} started={started} file={Path.GetFileName(file)} duration={dur:0.0}s size={w}x{h} audioTrack={audio}");
+    }
 
     /// <summary>Окно обрезки видео (нужен ffmpeg и тестовое видео).</summary>
     static async Task TrimTest()
