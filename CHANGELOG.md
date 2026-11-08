@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.18
+- “Pin on top”: the thin outline around a pinned screenshot now has the same thickness all the way round — it no longer fades out at the rounded corners (the same fix as for the text-recognition frame in 1.9.5).
+
 ## 1.9.17
 - The shape buttons for markers (in the style panel, the marker's own panel and in screen recording) now show the new shapes — the continuous-corner square and the rounded diamond.
 - A rounded-square marker can be picked up by its corners too, not only near the centre.
