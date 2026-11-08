@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.12
+- **Recording starts even when an audio device can't be opened.** If “computer sound” or the microphone is on but there are no speakers/headphones, or the microphone is unplugged or busy, the video is recorded without that sound and a notification says why — instead of the whole recording failing to start.
+- **Shadows of selected buttons and chips are round again.** The soft shadow under a selected chip (Auto, Plate, Shadow, On image…), shape button or settings section was cut off at the button's square edges; now it fades out smoothly around the rounded shape.
+- Scrolling screenshot: if the window suddenly stops reacting to the wheel or jumps far ahead, SnapMark switches to manual mode (scroll yourself — a little back is fine, stitching continues) instead of ending the capture, and it no longer guesses the scroll distance right after such a pause.
+
 ## 1.9.11
 - **Half the size on Windows.** Parts of the built-in .NET that SnapMark never uses are now left out of the Windows build: the installer is about 19 MB instead of 37 MB, the installed app takes about 62 MB instead of 119 MB, and the portable zip is smaller too. Startup stays as fast as in 1.9.9.
 - Nothing else changes: before the release the trimmed and the normal builds were run through the same checks side by side — screenshots and the editor, markers and comments, blur, text recognition, step-by-step guide with the clipboard, scrolling screenshots in Chrome, Edge, Firefox, Notepad and Explorer, screen recording, trimming and GIF export, settings saving, all six languages, update check, PrtSc and the command line — with identical results, and the windows were compared pixel by pixel.
