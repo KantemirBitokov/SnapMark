@@ -264,14 +264,36 @@ public partial class OverlayWindow : Window
 
         if (CommentsPanel.IsVisible)
         {
+            // Комментарии — там, где они не закрывают панель действий и инструменты: рядом с действиями снаружи,
+            // по другую сторону выделения, слева от действий, под или над ними, в углах. Если выделение во весь
+            // экран, действия стоят внутри у правого края — тогда панель встаёт левее них, а не поверх.
             var cp = MeasureOf(CommentsPanel);
-            double cx = actionsRight ? ax + ab.Width + 10 : ax - cp.Width - 10;
-            if (cx + cp.Width > W - 8 || cx < 8)
-                cx = actionsRight ? v.Left - cp.Width - 10 : v.Right + 10;
-            if (cx + cp.Width > W - 8 || cx < 8)
-                cx = W - cp.Width - 16;
-            double cy = Clamp(v.Top, 8, H - cp.Height - 8);
-            Place(CommentsPanel, cx, cy);
+            var actionsRect = new Rect(ax, ay, ab.Width, ab.Height).Inflate(8);
+            var toolsRect = new Rect(tx, ty, tb.Width, tb.Height).Inflate(8);
+            var popovers = new[] { StylePanel, ShapesPanel }.Where(p => p.IsVisible)
+                .Select(p => new Rect(Canvas.GetLeft(p), Canvas.GetTop(p), MeasureOf(p).Width, MeasureOf(p).Height).Inflate(8)).ToList();
+            double topCy = Clamp(v.Top, 8, H - cp.Height - 8);
+            var spots = new (double X, double Y)[]
+            {
+                (actionsRight ? ax + ab.Width + 10 : ax - cp.Width - 10, topCy),
+                (actionsRight ? v.Left - cp.Width - 10 : v.Right + 10, topCy),
+                (ax - cp.Width - 10, Clamp(ay, 8, H - cp.Height - 8)),
+                (ax + ab.Width + 10, Clamp(ay, 8, H - cp.Height - 8)),
+                (Clamp(ax + ab.Width - cp.Width, 8, W - cp.Width - 8), ay + ab.Height + 10),
+                (Clamp(ax + ab.Width - cp.Width, 8, W - cp.Width - 8), ay - cp.Height - 10),
+                (Clamp(v.Left + 10, 8, W - cp.Width - 8), topCy),
+                (8, 8), (W - cp.Width - 8, 8), (8, H - cp.Height - 8), (W - cp.Width - 8, H - cp.Height - 8),
+            };
+            double cx = ax - cp.Width - 10, cy = topCy;
+            foreach (var (sx, sy) in spots)
+            {
+                if (sx < 8 || sy < 8 || sx + cp.Width > W - 8 || sy + cp.Height > H - 8) continue;
+                var r = new Rect(sx, sy, cp.Width, cp.Height);
+                if (r.Intersects(actionsRect) || r.Intersects(toolsRect) || popovers.Any(p => r.Intersects(p))) continue;
+                (cx, cy) = (sx, sy);
+                break;
+            }
+            Place(CommentsPanel, Clamp(cx, 8, Math.Max(8, W - cp.Width - 8)), cy);
         }
 
         LayoutObjectBar();

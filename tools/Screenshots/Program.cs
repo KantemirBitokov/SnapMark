@@ -62,6 +62,8 @@ async Task RunAll()
     await Scene("longshot", () => LongShotScene());
     await Scene("trim", () => TrimScene());
     await Scene("settings", () => SettingsScene());
+    if (Environment.GetEnvironmentVariable("SNAPMARK_SHOTS_LAYOUT") == "1")
+        await Scene("layout", () => LayoutScene(Page(), screen));
 }
 
 async Task Scene(string name, Func<Task> run)
@@ -306,6 +308,46 @@ async Task TrimScene()
     await Pump(1500);
     await Save(w, "trim");
     w.Close();
+}
+
+// Раскладка панелей редактора при разных выделениях: панель комментариев не должна закрывать панели действий,
+// инструментов и стиля. Пишет «layout <имя>: ok|OVERLAP …» и снимок для каждого случая.
+async Task LayoutScene(Bitmap page, Screen screen)
+{
+    var cases = new (string Name, PixelRect Sel)[]
+    {
+        ("full", new PixelRect(0, 0, 1920, 1080)),
+        ("right-edge", new PixelRect(900, 60, 1020, 900)),
+        ("left-edge", new PixelRect(0, 60, 1000, 900)),
+        ("center-small", new PixelRect(860, 480, 200, 120)),
+        ("top-wide", new PixelRect(0, 0, 1920, 400)),
+        ("bottom-wide", new PixelRect(0, 680, 1920, 400)),
+        ("tall-right", new PixelRect(1500, 0, 420, 1080)),
+    };
+    foreach (var (name, sel) in cases)
+    {
+        var ov = new OverlayWindow(screen, page, CaptureMode.Region) { Width = 1920, Height = 1080 };
+        ov.Show();
+        await Pump(300);
+        ov.Surface.SetSelection(sel);
+        await Pump(200);
+        var c = new Point(sel.X + sel.Width / 2.0, sel.Y + sel.Height / 2.0);
+        Click(ToolButton(ov, "MarkerArrow"));
+        await Pump(80);
+        await Drag(ov, c, new Point(c.X - 40, c.Y + 20));
+        await Pump(200);
+        ov.KeyTextInput("Comment");
+        await Pump(300);
+        Rect B(string n) { var x = ov.FindControl<Control>(n); return x is { IsVisible: true } ? x.Bounds : default; }
+        var comments = B("CommentsPanel");
+        var others = new[] { ("actions", B("ActionsBar")), ("tools", B("ToolsBar")), ("style", B("StylePanel")) };
+        var hits = others.Where(o => o.Item2.Width > 0 && comments.Width > 0 && comments.Intersects(o.Item2)).Select(o => o.Item1).ToList();
+        bool inside = comments.Width > 0 && comments.X >= 0 && comments.Y >= 0 && comments.Right <= 1920 && comments.Bottom <= 1080;
+        Console.WriteLine($"layout {name}: {(hits.Count == 0 && inside ? "ok" : "OVERLAP " + string.Join(",", hits) + (inside ? "" : " offscreen"))} comments={comments}");
+        await Save(ov, "layout-" + name);
+        ov.Close();
+        page = new Bitmap(Path.Combine(assets, "page.png"));
+    }
 }
 
 async Task SettingsScene()
