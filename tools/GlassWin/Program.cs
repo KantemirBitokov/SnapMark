@@ -652,8 +652,9 @@ class WinApp : Application
         s.VideoFolder = folder;
         s.VideoCamera = false;
         Program.Log.WriteLine($"record: starting, ffmpeg={SnapMark.Recording.VideoTools.Ffmpeg}");
-        SnapMark.Recording.RecordingController.Start(new PixelRect(100, 100, 640, 360), 1, false, true);
-        for (int i = 0; i < 40 && !SnapMark.Recording.RecordingController.IsRecording; i++) await Task.Delay(100);
+        // На машине CI нет звуковых устройств — пишем только видео (звук проверяется отдельно в FeatureTest).
+        SnapMark.Recording.RecordingController.Start(new PixelRect(100, 100, 640, 360), 1, false, false);
+        await Task.Delay(1500);
         bool started = SnapMark.Recording.RecordingController.IsRecording;
         Program.Log.WriteLine($"record: started={started}");
         await Task.Delay(4000);

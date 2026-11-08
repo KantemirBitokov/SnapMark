@@ -295,6 +295,17 @@ try
 }
 catch (Exception ex) { Check("audio-com", ex is System.Runtime.InteropServices.COMException, ex.GetType().Name + ": " + ex.Message); }
 
+// Путь записи звука до самого устройства (на машине без звука — одинаковая ошибка «устройство не найдено»).
+foreach (var (name, make) in new (string, Func<IDisposable>)[]
+{
+    ("audio-loopback", () => new NAudio.Wave.WasapiLoopbackCapture()),
+    ("audio-mic", () => new NAudio.CoreAudioApi.WasapiCapture()),
+})
+{
+    try { using var c = make(); Check(name, true, "created"); }
+    catch (Exception ex) { Check(name, ex is System.Runtime.InteropServices.COMException, ex.GetType().Name + ": " + ex.Message.Split('\n')[0]); }
+}
+
 try
 {
     var r = await UpdateChecker.CheckAsync();
