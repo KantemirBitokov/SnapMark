@@ -64,7 +64,7 @@ public partial class App : Application
 
             // PrtSc: пока SnapMark запущен — его клавиша; при выходе — снова у Windows (если отключал её SnapMark).
             var prtsc = PlatformServices.PrintScreenConflict;
-            prtsc.ApplyWhileRunning(AppServices.Settings.CaptureRegionHotkey.Key is "PrintScreen" or "Snapshot");
+            prtsc.ApplyWhileRunning(AppServices.Settings.UsesPlainPrintScreen());
             AppDomain.CurrentDomain.ProcessExit += (_, _) => prtsc.RestoreOnExit();
             desktop.Exit += (_, _) =>
             {
@@ -290,7 +290,7 @@ public partial class App : Application
                 L.T("Настройки"), () => SettingsWindow.ShowSingle(1)), TimeSpan.FromSeconds(3));
         }
 
-        bool usesPrtSc = s.CaptureRegionHotkey.Key is "PrintScreen" or "Snapshot";
+        bool usesPrtSc = s.UsesPlainPrintScreen();
         if (usesPrtSc && conflict.IsSupported && conflict.IsSystemToolBoundToPrintScreen())
         {
             DispatcherTimer.RunOnce(() => Toast.Show(L.T("PrtSc и «Ножницы»"),

@@ -33,6 +33,8 @@ powershell -ExecutionPolicy Bypass -File .\build-release.ps1
 
 В папке `release\` появятся `SnapMark-<версия>-Setup.exe` (установщик, без прав администратора,
 6 языков, ярлыки, автозапуск по желанию) и `SnapMark-<версия>-portable.zip`.
+Для установщика программа собирается заранее скомпилированной (ReadyToRun) и без сжатия внутри exe — сжимает
+её сам установщик (LZMA2): так он меньше, а программа запускается быстрее. Портативный zip — сжатый exe без ReadyToRun.
 Версия берётся из `<Version>` в `src/SnapMark.App/SnapMark.App.csproj`. Скрипт установщика — `installer/SnapMark.iss`.
 
 ## macOS и Linux

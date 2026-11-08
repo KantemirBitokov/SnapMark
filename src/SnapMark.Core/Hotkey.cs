@@ -14,6 +14,9 @@ public sealed class Hotkey
 
     public bool IsEmpty => string.IsNullOrWhiteSpace(Key);
 
+    /// <summary>Просто PrtSc, без модификаторов, — ту же клавишу Windows 11 отдаёт «Ножницам».</summary>
+    public bool IsPlainPrintScreen() => Key is "PrintScreen" or "Snapshot" && !Ctrl && !Shift && !Alt && !Win;
+
     public Hotkey Clone() => new() { Key = Key, Ctrl = Ctrl, Shift = Shift, Alt = Alt, Win = Win };
 
     public bool SameAs(Hotkey? other) =>

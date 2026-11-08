@@ -57,6 +57,11 @@ public sealed class AppSettings
         ? new() { Key = "D8", Win = true, Shift = true }
         : new() { Key = "PrintScreen", Ctrl = true, Shift = true };
 
+    /// <summary>Какое-то из сочетаний SnapMark — просто PrtSc (конфликт с «Ножницами» Windows 11).</summary>
+    public bool UsesPlainPrintScreen() =>
+        CaptureRegionHotkey.IsPlainPrintScreen() || CaptureFullHotkey.IsPlainPrintScreen()
+        || RecordVideoHotkey.IsPlainPrintScreen() || StepGuideHotkey.IsPlainPrintScreen();
+
     // ── Основные ─────────────────────────────────────────────────────
     /// <summary>Язык интерфейса: en, ru, de, fr, it, es. По умолчанию — английский.</summary>
     public string Language { get; set; } = "en";

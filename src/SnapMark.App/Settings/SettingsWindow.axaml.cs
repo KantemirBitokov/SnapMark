@@ -429,7 +429,7 @@ public partial class SettingsWindow : Window
         assign(hk);
         Save();
         PlatformServices.Hotkeys.Apply(S);
-        PlatformServices.PrintScreenConflict.ApplyWhileRunning(S.CaptureRegionHotkey.Key is "PrintScreen" or "Snapshot");
+        PlatformServices.PrintScreenConflict.ApplyWhileRunning(S.UsesPlainPrintScreen());
         // Статус обновляется в потоке хоткеев — перечитываем чуть позже.
         Avalonia.Threading.DispatcherTimer.RunOnce(RefreshHotkeyInfo, TimeSpan.FromMilliseconds(300));
     }
@@ -442,8 +442,7 @@ public partial class SettingsWindow : Window
             : hk.Status;
 
         var conflict = PlatformServices.PrintScreenConflict;
-        bool usesPrtSc = new[] { S.CaptureRegionHotkey, S.CaptureFullHotkey, S.RecordVideoHotkey, S.StepGuideHotkey }
-            .Any(h => h.Key is "PrintScreen" or "Snapshot");
+        bool usesPrtSc = S.UsesPlainPrintScreen();
         PrtScCard.IsVisible = conflict.IsSupported && usesPrtSc && conflict.IsSystemToolBoundToPrintScreen();
     }
 
