@@ -27,7 +27,10 @@ Write-Host "SnapMark $version" -ForegroundColor Cyan
 #      получается даже меньше прежнего, а программе не нужно распаковывать себя при каждом запуске;
 #    • для портативного zip — как раньше, сжатый exe без ReadyToRun: самый маленький архив.
 Remove-Item -Recurse -Force publish, publish-portable, release -ErrorAction SilentlyContinue
-$common = @('-c', 'Release', '-r', 'win-x64', '--self-contained', 'true',
+#    Обе — урезанные (PublishTrimmed): из встроенного .NET выкинуто то, чем SnapMark не пользуется (настройки —
+#    в Directory.Build.props). Установщик ~19 МБ вместо ~37, на диске ~62 МБ вместо ~119. Проверка, что урезанная
+#    сборка работает так же, как обычная, — .github/workflows/trim-check.yml.
+$common = @('-c', 'Release', '-r', 'win-x64', '--self-contained', 'true', '-p:PublishTrimmed=true',
     '-p:PublishSingleFile=true', '-p:IncludeNativeLibrariesForSelfExtract=true', '-p:DebugType=None', '-p:DebugSymbols=false')
 dotnet publish $proj @common -p:PublishReadyToRun=true -o publish
 if ($LASTEXITCODE -ne 0) { throw 'dotnet publish завершился с ошибкой' }

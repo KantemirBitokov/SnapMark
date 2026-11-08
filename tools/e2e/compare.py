@@ -53,4 +53,10 @@ for f in sorted((a/'shots').glob('*.png')):
     if x.shape != y.shape: print(f'  {f.name:28} SIZE {x.shape} vs {y.shape}'); bad += 1; continue
     d = (np.abs(x - y).sum(axis=2) > 24).mean() * 100
     print(f'  {f.name:28} {d:6.2f} %')
+print('\n== Windows pictures (glass, OCR, toast, trim window): share of differing pixels')
+for n in ['effects-1','effects-2','ocr-select','toast-light-on-dark','trim-window','win-clear-f20','win-t50-f0','win-t50-f100','win-t50-f45','longshot']:
+    f, g = a/'glass'/f'{n}.png', b/'glass'/f'{n}.png'
+    if not f.exists() or not g.exists(): print(f'  {n:28} missing'); continue
+    x = np.asarray(Image.open(f).convert('RGB')).astype(int); y = np.asarray(Image.open(g).convert('RGB')).astype(int)
+    print(f'  {n:28} {(np.abs(x - y).sum(axis=2) > 24).mean() * 100:6.2f} %' if x.shape == y.shape else f'  {n:28} SIZE differs')
 print('\nRESULT:', 'no differences in checks' if bad == 0 else f'{bad} differences/failures in checks')

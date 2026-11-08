@@ -53,8 +53,22 @@ while ($sw.Elapsed.TotalSeconds -lt 30) {
 }
 Say ("start-prtsc: " + $(if ($t -ge 0) { 'ok' } else { 'FAIL' }) + " ($([math]::Round($t,1)) s)")
 Start-Sleep -Milliseconds 800; Shot 'e2e-overlay'
-Key 0x1B; Start-Sleep -Milliseconds 800
-Say ("overlay-esc: " + $(if (-not (Fullscreen $app)) { 'ok' } else { 'FAIL' }))
+Key 0x1B
+$closed = WaitFor { -not (Fullscreen $app) } 3
+if ($closed -lt 0) { Shot 'e2e-esc-fail'; Key 0x1B; Start-Sleep -Milliseconds 800 }
+Say ("overlay-esc: " + $(if ($closed -ge 0) { 'ok' } else { 'FAIL' }))
+# Пять раз подряд: PrtSc → редактор открылся → Esc → закрылся.
+$cycles = 0
+for ($k = 1; $k -le 5; $k++) {
+  Start-Sleep -Milliseconds 600
+  Key 0x2C
+  if ((WaitFor { Fullscreen $app } 5) -lt 0) { Shot "e2e-cycle$k-noopen"; continue }
+  Start-Sleep -Milliseconds 700
+  Key 0x1B
+  if ((WaitFor { -not (Fullscreen $app) } 3) -lt 0) { Shot "e2e-cycle$k-noclose"; Key 0x1B; Start-Sleep -Milliseconds 800; continue }
+  $cycles++
+}
+Say ("prtsc-esc-cycles: " + $(if ($cycles -eq 5) { 'ok' } else { 'FAIL' }) + " ($cycles/5)")
 
 # 2. Команды из командной строки (как у ярлыков и второго запуска).
 & $exe --full; $t = WaitFor { Fullscreen $app } 8
