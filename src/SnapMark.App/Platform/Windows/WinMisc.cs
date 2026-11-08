@@ -189,16 +189,6 @@ internal sealed class WinWindowHelper : IWindowHelper
         {
             SetForegroundWindow(hwnd);
         }
-        // Не вышло (активного окна нет вовсе — например, только что закрылся системный инструмент «Ножницы»,
-        // или Windows не отдаёт фокус процессу, который ещё не получал ввода): короткое нажатие Alt даёт
-        // программе право сменить активное окно — стандартный приём. Только в этом редком случае.
-        if (GetForegroundWindow() != hwnd)
-        {
-            keybd_event((byte)VK_MENU, 0, 0, UIntPtr.Zero);
-            keybd_event((byte)VK_MENU, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
-            SetForegroundWindow(hwnd);
-            BringWindowToTop(hwnd);
-        }
         window.Activate();
     }
 
