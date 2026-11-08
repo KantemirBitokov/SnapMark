@@ -60,6 +60,8 @@ $closed = WaitFor { -not (Fullscreen $app) } 3
 $second = ''
 if ($closed -lt 0) { Shot 'e2e-esc-fail'; Key 0x1B; $second = if ((WaitFor { -not (Fullscreen $app) } 3) -ge 0) { 'closed by 2nd Esc' } else { 'still open' } }
 $fgName = (Get-Process -Id $fp -ErrorAction SilentlyContinue).ProcessName
+$snip = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match 'ScreenClipping|SnippingTool' } | ForEach-Object ProcessName) -join ','
+$fgName = "$fgName; snipping processes: $snip"
 Say ("overlay-esc: " + $(if ($closed -ge 0) { 'ok' } else { 'FAIL' }) + " (foreground: $fgName; $second)")
 # Пять раз подряд: PrtSc → редактор открылся → Esc → закрылся.
 $cycles = 0
@@ -73,6 +75,18 @@ for ($k = 1; $k -le 5; $k++) {
   $cycles++
 }
 Say ("prtsc-esc-cycles: " + $(if ($cycles -eq 5) { 'ok' } else { 'FAIL' }) + " ($cycles/5)")
+
+# 1б. Первый снимок после спокойного запуска: подождали, пока программа загрузится, и нажали PrtSc один раз.
+Stop-Process -Id $app.Id -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2
+$app = Start-Process $exe -PassThru
+Start-Sleep -Seconds 5
+Key 0x2C
+if ((WaitFor { Fullscreen $app } 5) -ge 0) {
+  Start-Sleep -Milliseconds 800
+  Key 0x1B
+  Say ("first-shot-esc: " + $(if ((WaitFor { -not (Fullscreen $app) } 3) -ge 0) { 'ok' } else { 'FAIL' }))
+  if (Fullscreen $app) { Key 0x1B; Start-Sleep -Milliseconds 800 }
+} else { Say "first-shot-esc: FAIL (did not open)" }
 
 # 2. Команды из командной строки (как у ярлыков и второго запуска).
 & $exe --full; $t = WaitFor { Fullscreen $app } 8
