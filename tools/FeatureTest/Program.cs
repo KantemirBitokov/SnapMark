@@ -259,7 +259,7 @@ catch (Exception ex) { Check("languages", false, ex.Message); }
 
 try
 {
-    byte[] png;
+    byte[] samplePng;
     using (var sb = new SKBitmap(240, 120))
     using (var sc = new SKCanvas(sb))
     {
@@ -268,10 +268,10 @@ try
         sc.DrawCircle(60, 60, 40, sp);
         using var im = SKImage.FromBitmap(sb);
         using var enc = im.Encode(SKEncodedImageFormat.Png, 100);
-        png = enc.ToArray();
+        samplePng = enc.ToArray();
     }
-    var sizes = Enum.GetValues<SnapMark.Core.ImageFileFormat>().Select(f => $"{f}:{ImageEncoder.Encode(png, f, 90).Length}").ToList();
-    var dib = ImageEncoder.ToDib(png);
+    var sizes = Enum.GetValues<SnapMark.Core.ImageFileFormat>().Select(f => $"{f}:{ImageEncoder.Encode(samplePng, f, 90).Length}").ToList();
+    var dib = ImageEncoder.ToDib(samplePng);
     Check("image-formats", sizes.All(x => int.Parse(x.Split(':')[1]) > 100) && dib.Length > 100, string.Join(" ", sizes) + $" dib:{dib.Length}");
     Check("file-naming", SnapMark.Core.FileNaming.Build(new SnapMark.Core.AppSettings().FileNameTemplate, new DateTime(2026, 11, 8, 3, 25, 0), 7).Length > 5,
         SnapMark.Core.FileNaming.Build(new SnapMark.Core.AppSettings().FileNameTemplate, new DateTime(2026, 11, 8, 3, 25, 0), 7));
