@@ -1,0 +1,9 @@
+23:45:14.362 start supported=True problem=
+23:45:14.403 started screens=1 problem=
+23:45:17.473 click InputClick { X = 260, Y = 620, Button = Left } paused=False overHud=False active=True
+23:45:17.504 add shot=1024, 768 title=C:\ProgramData\GitHub\HostedComputeAgent\hosted-compute-agent
+23:45:19.101 click InputClick { X = 900, Y = 450, Button = Left } paused=False overHud=False active=True
+23:45:19.127 add shot=1024, 768 title=C:\ProgramData\GitHub\HostedComputeAgent\hosted-compute-agent
+23:45:20.747 click InputClick { X = 1023, Y = 700, Button = Left } paused=False overHud=False active=True
+23:45:20.785 add shot=1024, 768 title=Desktop
+23:45:23.421 finish steps=3 series=3
