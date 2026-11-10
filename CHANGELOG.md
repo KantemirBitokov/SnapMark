@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.21
+- If the shot name is changed in the middle of a series, the shots already taken are renamed too, so a series never mixes Screenshot_1.png and Capture_2.png.
+- README: mentions double-press PrtSc and the customizable shot name.
+
 ## 1.9.20
 - **Your own word instead of “Screenshot”.** Settings → Series & export → “Shot name”: type e.g. “Capture” and comments become Capture_1_A, headings Capture_1:, and the series files Capture_1.png. The “Default” button brings back “Screenshot”. The marker line and heading templates are updated automatically; the rest of their text stays as you wrote it.
 

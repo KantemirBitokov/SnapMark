@@ -23,6 +23,9 @@ public sealed class SeriesService
     public SeriesShot Add(byte[] png, int width, int height, List<SeriesMarker> markers)
     {
         Directory.CreateDirectory(_dir);
+        // Название снимка могли поменять посреди серии — подтягиваем имена уже снятых файлов,
+        // чтобы в серии не было вперемешку Screenshot_1.png и Capture_2.png.
+        Renumber();
         int n = _shots.Count + 1;
         var path = Path.Combine(_dir, $"{AppServices.Settings.ShotNameOrDefault()}_{n}.png");
         File.WriteAllBytes(path, png);

@@ -33,13 +33,15 @@ Screenshot_1_B — Typo in the heading
 Screenshot_2_A — Wrong indent
 ```
 
+(The line format and the word “Screenshot” itself are yours to change — e.g. `Capture_1_A`.)
+
 Press **Ctrl+C** once — and **Ctrl+V** pastes the screenshots *and* this text into Slack, Telegram,
 ChatGPT/Claude, Jira, Word or an email. No more pasting images and text separately.
 
 ## Features
 
 **Capture**
-- Region or full screen on <kbd>PrtSc</kbd> (customizable hotkeys); works across multiple monitors with different scaling
+- Region or full screen on <kbd>PrtSc</kbd> (customizable hotkeys); press <kbd>PrtSc</kbd> twice to copy and/or save the whole screen without the editor; works across multiple monitors with different scaling
 - Clean macOS-style selection frame with your color of choice
 
 **Annotate**
