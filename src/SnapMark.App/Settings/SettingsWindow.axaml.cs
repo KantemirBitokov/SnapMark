@@ -142,6 +142,8 @@ public partial class SettingsWindow : Window
         AutoSaveToggle.IsChecked = S.AutoSaveCopy;
         SearchCombo.SelectedIndex = (int)S.ImageSearch;
 
+        ShotNameBox.Text = S.ShotName;
+        ShotNameDefaultButton.IsVisible = S.ShotNameOrDefault() != AppSettings.DefaultShotName;
         LineTemplateBox.Text = S.SeriesLineTemplate;
         HeadersToggle.IsChecked = S.SeriesIncludeHeaders;
         HeaderTemplateBox.Text = S.SeriesHeaderTemplate;
@@ -306,6 +308,14 @@ public partial class SettingsWindow : Window
         };
 
         // Серия
+        ShotNameBox.PropertyChanged += (_, e) =>
+        {
+            if (e.Property != TextBox.TextProperty || _loading) return;
+            var typed = (ShotNameBox.Text ?? "").Trim();
+            if (typed.Length == 0) return; // поле очищают, чтобы ввести новое слово — шаблоны пока не трогаем
+            SetShotName(typed);
+        };
+        ShotNameDefaultButton.Click += (_, _) => ShotNameBox.Text = AppSettings.DefaultShotName;
         LineTemplateBox.PropertyChanged += (_, e) =>
         {
             if (e.Property != TextBox.TextProperty) return;
@@ -486,12 +496,12 @@ public partial class SettingsWindow : Window
         {
             new()
             {
-                Number = 1, ImagePath = "Screenshot_1.png",
+                Number = 1, ImagePath = S.ShotNameOrDefault() + "_1.png",
                 Markers = { new SeriesMarker { Label = "A", Comment = L.T("кнопка не нажимается") }, new SeriesMarker { Label = "B", Comment = L.T("опечатка в заголовке") } },
             },
             new()
             {
-                Number = 2, ImagePath = "Screenshot_2.png",
+                Number = 2, ImagePath = S.ShotNameOrDefault() + "_2.png",
                 Markers = { new SeriesMarker { Label = "A", Comment = L.T("сдвинут отступ") } },
             },
         };
@@ -675,5 +685,23 @@ public partial class SettingsWindow : Window
             ? L.F("По умолчанию — как у скриншотов: {0}", S.SaveFolder)
             : S.DoublePressFolder;
         DoublePressDefaultButton.IsVisible = !string.IsNullOrWhiteSpace(S.DoublePressFolder);
+    }
+
+    /// <summary>Новое название снимка: переписываем им строки метки и заголовка, имена файлов серии берут его сами.</summary>
+    void SetShotName(string typed)
+    {
+        var oldName = S.ShotNameOrDefault();
+        S.ShotName = typed;
+        var newName = S.ShotNameOrDefault();
+        if (newName != oldName)
+        {
+            LineTemplateBox.Text = FileNaming.RenameShot(LineTemplateBox.Text ?? S.SeriesLineTemplate, oldName, newName);
+            HeaderTemplateBox.Text = FileNaming.RenameShot(HeaderTemplateBox.Text ?? S.SeriesHeaderTemplate, oldName, newName);
+            S.SeriesLineTemplate = LineTemplateBox.Text ?? "";
+            S.SeriesHeaderTemplate = HeaderTemplateBox.Text ?? "";
+        }
+        ShotNameDefaultButton.IsVisible = newName != AppSettings.DefaultShotName;
+        Save();
+        UpdatePreview();
     }
 }

@@ -24,6 +24,17 @@ public static class FileNaming
         return name.Length == 0 ? "Screenshot" : name;
     }
 
+    /// <summary>
+    /// Меняет название снимка в шаблоне: «Screenshot_{n}_{label}» → «Capture_{n}_{label}».
+    /// Трогаем только слово прямо перед «_{» (перед подстановкой), остальной текст шаблона не меняется.
+    /// </summary>
+    public static string RenameShot(string template, string oldName, string newName)
+    {
+        if (string.IsNullOrEmpty(template) || string.IsNullOrEmpty(oldName) || oldName == newName) return template;
+        return System.Text.RegularExpressions.Regex.Replace(template,
+            @"(?<![\p{L}\p{N}_])" + System.Text.RegularExpressions.Regex.Escape(oldName) + @"(?=_\{)", newName.Replace("$", "$$"));
+    }
+
     /// <summary>Если файл существует — добавляет _2, _3…</summary>
     public static string EnsureUnique(string path)
     {

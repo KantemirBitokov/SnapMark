@@ -334,6 +334,19 @@
               <TextBlock Classes="section" Text="{l:Tr 'Текст комментариев'}"/>
               <Border Classes="card">
                 <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Название снимка'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock Classes="caption" TextWrapping="Wrap"
+                                 Text="{l:Tr 'Первое слово в строках, заголовках и именах файлов серии: Screenshot_1_A'}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                      <TextBox x:Name="ShotNameBox" Width="180" MaxLength="40"/>
+                      <Button x:Name="ShotNameDefaultButton" Classes="soft" Content="{l:Tr 'По умолчанию'}"
+                              ToolTip.Tip="{l:Tr 'Вернуть «Screenshot»'}"/>
+                    </StackPanel>
+                  </Grid>
+                  <Border Classes="hsep"/>
                   <Grid Classes="row" ColumnDefinitions="*,290">
                     <StackPanel VerticalAlignment="Center" Spacing="1">
                       <TextBlock Text="{l:Tr 'Строка метки'}" Foreground="{DynamicResource Sm.TextPrimary}"/>

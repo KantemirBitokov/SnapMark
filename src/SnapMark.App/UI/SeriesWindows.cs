@@ -337,7 +337,7 @@ public sealed class SeriesWindow : Window
         image.PointerPressed += (_, _) => ShellOpen.Open(shot.ImagePath);
         ToolTip.SetTip(image, L.T("Открыть в просмотрщике"));
 
-        var title = new TextBlock { Text = $"Screenshot_{shot.Number}" }.Style("title3");
+        var title = new TextBlock { Text = $"{AppServices.Settings.ShotNameOrDefault()}_{shot.Number}" }.Style("title3");
         var info = UiKit.Caption($"{shot.Width} × {shot.Height}  ·  {shot.CreatedAt:HH:mm:ss}");
         var head = new StackPanel { Spacing = 1 };
         head.Children.Add(title);

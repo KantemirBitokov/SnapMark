@@ -24,7 +24,7 @@ public sealed class SeriesService
     {
         Directory.CreateDirectory(_dir);
         int n = _shots.Count + 1;
-        var path = Path.Combine(_dir, $"Screenshot_{n}.png");
+        var path = Path.Combine(_dir, $"{AppServices.Settings.ShotNameOrDefault()}_{n}.png");
         File.WriteAllBytes(path, png);
 
         var shot = new SeriesShot { Number = n, ImagePath = path, Width = width, Height = height, Markers = markers };
@@ -55,7 +55,7 @@ public sealed class SeriesService
         {
             var shot = _shots[i];
             shot.Number = i + 1;
-            var desired = Path.Combine(_dir, $"Screenshot_{shot.Number}.png");
+            var desired = Path.Combine(_dir, $"{AppServices.Settings.ShotNameOrDefault()}_{shot.Number}.png");
             if (!string.Equals(shot.ImagePath, desired, StringComparison.OrdinalIgnoreCase))
             {
                 try
@@ -149,7 +149,7 @@ public sealed class SeriesService
         foreach (var shot in _shots)
         {
             var png = File.ReadAllBytes(shot.ImagePath);
-            var name = $"Screenshot_{shot.Number}.{ImageEncoder.Extension(s.ImageFormat)}";
+            var name = $"{s.ShotNameOrDefault()}_{shot.Number}.{ImageEncoder.Extension(s.ImageFormat)}";
             File.WriteAllBytes(Path.Combine(target, name), ImageEncoder.Encode(png, s.ImageFormat, s.ImageQuality));
         }
         File.WriteAllText(Path.Combine(target, "comments.txt"), BuildText(_shots), new UTF8Encoding(true));

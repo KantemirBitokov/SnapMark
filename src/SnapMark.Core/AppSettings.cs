@@ -103,6 +103,12 @@ public sealed class AppSettings
     public string SelectionColor { get; set; } = "#0A84FF";
 
     // ── Серия / экспорт текста ───────────────────────────────────────
+    /// <summary>Первое слово в строках комментариев, заголовках и именах файлов серии: Screenshot_1_A.</summary>
+    public string ShotName { get; set; } = DefaultShotName;
+    public const string DefaultShotName = "Screenshot";
+    /// <summary>Название, пригодное для имён файлов; пусто — «Screenshot».</summary>
+    public string ShotNameOrDefault() =>
+        string.IsNullOrWhiteSpace(ShotName) ? DefaultShotName : FileNaming.Sanitize(ShotName);
     public string SeriesLineTemplate { get; set; } = "Screenshot_{n}_{label} — {comment}";
     public bool SeriesIncludeHeaders { get; set; }
     public string SeriesHeaderTemplate { get; set; } = "Screenshot_{n}:";

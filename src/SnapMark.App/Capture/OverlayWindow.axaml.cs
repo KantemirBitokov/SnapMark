@@ -1286,7 +1286,7 @@ public partial class OverlayWindow : Window
             if (r.Markers.Count > 0)
             {
                 // Один скриншот с метками: картинка + комментарии, с умной вставкой.
-                var path = TempFiles.Write(r.Png, "Screenshot_1.png");
+                var path = TempFiles.Write(r.Png, AppServices.Settings.ShotNameOrDefault() + "_1.png");
                 var shot = new SeriesShot { Number = 1, ImagePath = path, Width = r.Width, Height = r.Height, Markers = r.Markers };
                 Finish();
                 await SmartPaste.CopyAsync(SeriesService.BuildBundle(new[] { shot }, r.Png));

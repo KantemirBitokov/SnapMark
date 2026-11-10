@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.20
+- **Your own word instead of “Screenshot”.** Settings → Series & export → “Shot name”: type e.g. “Capture” and comments become Capture_1_A, headings Capture_1:, and the series files Capture_1.png. The “Default” button brings back “Screenshot”. The marker line and heading templates are updated automatically; the rest of their text stays as you wrote it.
+
 ## 1.9.19
 - **Double-press PrtSc — whole screen, no editor.** Press the region-screenshot key twice in a row and SnapMark takes the whole screen (the monitor under the cursor) at once. In Settings → Hotkeys → “Double press” choose what happens: copy and save (default), copy only, save only, or nothing. Shots go to the main screenshots folder or to a folder of your own.
 - The marker panel no longer covers the marker's comment on the image, so you can see what you type; the text panel likewise keeps clear of a text you are typing as it grows.

@@ -280,6 +280,27 @@ catch (Exception ex) { Check("image-formats", false, ex.GetType().Name + ": " + 
 
 try
 {
+    // Название снимка: меняется только слово перед подстановкой, остальной текст шаблона — нет.
+    string R(string t, string o, string n) => SnapMark.Core.FileNaming.RenameShot(t, o, n);
+    var cases = new[]
+    {
+        (R("Screenshot_{n}_{label} — {comment}", "Screenshot", "Capture"), "Capture_{n}_{label} — {comment}"),
+        (R("Screenshot_{n}:", "Screenshot", "Скрин"), "Скрин_{n}:"),
+        (R("Capture_{n}_{label} — Screenshot {comment}", "Capture", "Screenshot"), "Screenshot_{n}_{label} — Screenshot {comment}"),
+        (R("MyScreenshot_{n}", "Screenshot", "X"), "MyScreenshot_{n}"),
+        (R("Shot$_{n}", "Shot$", "A$1"), "A$1_{n}"),
+    };
+    var bad = cases.Where(c => c.Item1 != c.Item2).Select(c => c.Item1 + " ≠ " + c.Item2).ToList();
+    var st = new SnapMark.Core.AppSettings { ShotName = "  " };
+    var st2 = new SnapMark.Core.AppSettings { ShotName = "a/b" };
+    if (st.ShotNameOrDefault() != "Screenshot") bad.Add("empty → " + st.ShotNameOrDefault());
+    if (st2.ShotNameOrDefault() != "a_b") bad.Add("a/b → " + st2.ShotNameOrDefault());
+    Check("shot-name", bad.Count == 0, bad.Count == 0 ? "ok" : string.Join("; ", bad));
+}
+catch (Exception ex) { Check("shot-name", false, ex.GetType().Name + ": " + ex.Message); }
+
+try
+{
     // Понятный текст ошибки (в уведомлениях показываем ex.Message), а не код ресурса.
     try { File.ReadAllText(@"Z:\no\such\file.txt"); }
     catch (Exception ex) { Check("error-messages", ex.Message.Contains(' ') && !ex.Message.StartsWith("IO_"), ex.Message); }
