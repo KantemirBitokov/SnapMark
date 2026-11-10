@@ -1,0 +1,639 @@
+[Glass] render: gpu=True, edge shader=True
+win-t50-f0: scaling=1
+saved win-t50-f0
+win-t50-f45: scaling=1
+saved win-t50-f45
+win-t50-f100: scaling=1
+saved win-t50-f100
+win-clear-f20: scaling=1
+saved win-clear-f20
+effects problem=
+saved effects
+saved ocr
+saved toast
+longshot: frames=32 size=520x4844 scrollOk=True
+prtsc: OK supported=True fix=0 exit=1 start=0 otherKey=1 time=101ms
+browser-longshot: screen 1024x768
+  base-chrome-100: step=1 point=0 added=100 height=828 pxPerNotch=0 still=0 misses=0 | exact s=100 e=1.00 t=1.00 e0=0.00 t0=0.00 moving=64/64 expected=0
+  base-chrome-100: step=2 point=0 added=200 height=1028 pxPerNotch=100 still=0 misses=0 | exact s=200 e=1.00 t=1.00 e0=0.00 t0=0.10 moving=64/64 expected=200
+  base-chrome-100: step=3 point=0 added=300 height=1328 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.31 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=1628 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.35 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=1928 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.39 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=2228 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.29 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=2528 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.31 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=2828 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.35 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=3128 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.39 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=3428 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.29 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=3728 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.31 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=4028 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.35 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=4328 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=4628 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.08 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=4928 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.21 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=5228 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.36 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=5528 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.39 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=5828 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.30 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=6128 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.31 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=6428 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.36 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=6728 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.39 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=7028 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.30 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=7328 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.31 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=7628 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.36 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=7928 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.39 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=300 height=8228 pxPerNotch=100 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-100: step=3 point=0 added=2 height=8230 pxPerNotch=100 still=0 misses=0 | exact s=2 e=1.00 t=1.00 e0=0.06 t0=0.45 moving=64/64 expected=300
+  base-chrome-100: step=6 point=0 added=0 height=8230 pxPerNotch=0.7 still=0 misses=0 | same
+  base-chrome-100: step=6 point=0 added=0 height=8230 pxPerNotch=0.7 still=1 misses=0 | same
+  base-chrome-100: step=6 point=0 added=0 height=8230 pxPerNotch=0.7 still=2 misses=0 | same
+  base-chrome-100: step=1 point=1 added=0 height=8230 pxPerNotch=0.7 still=0 misses=0 | same
+  base-chrome-100: step=1 point=1 added=0 height=8230 pxPerNotch=0.7 still=1 misses=0 | same
+  base-chrome-100: step=1 point=1 added=0 height=8230 pxPerNotch=0.7 still=2 misses=0 | same
+base-chrome-100: OK frames=28 size=760x8230 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=19.1s
+  base-chrome-150: step=1 point=0 added=150 height=878 pxPerNotch=0 still=0 misses=0 | exact s=150 e=1.00 t=1.00 e0=0.00 t0=0.00 moving=64/64 expected=0
+  base-chrome-150: step=2 point=0 added=300 height=1178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.11 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=1478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.15 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=1778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=2078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=2378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=2678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=2978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=3278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=3578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=3878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=4178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=4478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=4778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=5078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=5378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=5678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=5978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=6278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.15 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=6578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.12 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=6878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.15 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=7178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=7478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=7778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=8078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=8378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=8678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=8978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=9278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=9578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=9878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=10178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=10478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=10778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=11078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=11378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=11678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=11978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=300 height=12278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.16 moving=64/64 expected=300
+  base-chrome-150: step=2 point=0 added=87 height=12365 pxPerNotch=150 still=0 misses=0 | exact s=87 e=1.00 t=1.00 e0=0.00 t0=0.22 moving=64/64 expected=300
+  base-chrome-150: step=4 point=0 added=0 height=12365 pxPerNotch=43.5 still=0 misses=0 | same
+  base-chrome-150: step=4 point=0 added=0 height=12365 pxPerNotch=43.5 still=1 misses=0 | same
+  base-chrome-150: step=4 point=0 added=0 height=12365 pxPerNotch=43.5 still=2 misses=0 | same
+  base-chrome-150: step=1 point=1 added=0 height=12365 pxPerNotch=43.5 still=0 misses=0 | same
+  base-chrome-150: step=1 point=1 added=0 height=12365 pxPerNotch=43.5 still=1 misses=0 | same
+  base-chrome-150: step=1 point=1 added=0 height=12365 pxPerNotch=43.5 still=2 misses=0 | same
+base-chrome-150: OK frames=41 size=760x12365 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=23.5s
+  base-edge-150: step=1 point=0 added=150 height=878 pxPerNotch=0 still=0 misses=0 | exact s=150 e=1.00 t=1.00 e0=0.00 t0=0.00 moving=64/64 expected=0
+  base-edge-150: step=2 point=0 added=300 height=1178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.11 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=1478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.15 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=1778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=2078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=2378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=2678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=2978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=3278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=3578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=3878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=4178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=4478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=4778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=5078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=5378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=5678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=5978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.18 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=6278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.15 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=6578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.12 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=6878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.15 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=7178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=7478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=7778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=8078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=8378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=8678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=8978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=9278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=9578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=9878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=10178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=10478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=10778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=11078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=11378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=11678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=11978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.19 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=300 height=12278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=1.00 t=1.00 e0=0.00 t0=0.16 moving=64/64 expected=300
+  base-edge-150: step=2 point=0 added=87 height=12365 pxPerNotch=150 still=0 misses=0 | exact s=87 e=1.00 t=1.00 e0=0.00 t0=0.22 moving=64/64 expected=300
+  base-edge-150: step=4 point=0 added=0 height=12365 pxPerNotch=43.5 still=0 misses=0 | same
+  base-edge-150: step=4 point=0 added=0 height=12365 pxPerNotch=43.5 still=1 misses=0 | same
+  base-edge-150: step=4 point=0 added=0 height=12365 pxPerNotch=43.5 still=2 misses=0 | same
+  base-edge-150: step=1 point=1 added=0 height=12365 pxPerNotch=43.5 still=0 misses=0 | same
+  base-edge-150: step=1 point=1 added=0 height=12365 pxPerNotch=43.5 still=1 misses=0 | same
+  base-edge-150: step=1 point=1 added=0 height=12365 pxPerNotch=43.5 still=2 misses=0 | same
+base-edge-150: OK frames=41 size=760x12365 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=23.3s
+  base-firefox-100: step=1 point=0 added=102 height=830 pxPerNotch=0 still=0 misses=0 | exact s=102 e=1.00 t=1.00 e0=0.00 t0=0.00 moving=64/64 expected=0
+  base-firefox-100: step=2 point=0 added=204 height=1034 pxPerNotch=102 still=0 misses=0 | exact s=204 e=1.00 t=1.00 e0=0.00 t0=0.03 moving=64/64 expected=204
+  base-firefox-100: step=3 point=0 added=306 height=1340 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.28 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=1646 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.33 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=1952 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.39 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=2258 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.30 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=2564 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.30 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=2870 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.30 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=3176 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.40 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=3482 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.33 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=3788 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.28 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=4094 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.29 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=4400 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.14 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=4706 pxPerNotch=102 still=0 misses=0 | exact s=306 e=1.00 t=1.00 e0=0.00 t0=0.10 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=5012 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.27 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=5318 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.30 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=5624 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.35 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=5930 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.38 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=6236 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.29 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=6542 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.29 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=6848 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.34 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=7154 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.68 t=0.69 e0=0.01 t0=0.39 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=7460 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.68 t=0.69 e0=0.01 t0=0.31 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=7766 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.69 t=0.69 e0=0.01 t0=0.32 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=306 height=8072 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.68 t=0.68 e0=0.01 t0=0.31 moving=64/64 expected=306
+  base-firefox-100: step=3 point=0 added=158 height=8230 pxPerNotch=102 still=0 misses=0 | exact s=158 e=0.75 t=0.75 e0=0.01 t0=0.05 moving=64/64 expected=306
+  base-firefox-100: step=6 point=0 added=0 height=8230 pxPerNotch=52.7 still=0 misses=0 | same
+  base-firefox-100: step=6 point=0 added=0 height=8230 pxPerNotch=52.7 still=1 misses=0 | same
+  base-firefox-100: step=6 point=0 added=0 height=8230 pxPerNotch=52.7 still=2 misses=0 | same
+  base-firefox-100: step=1 point=1 added=0 height=8230 pxPerNotch=52.7 still=0 misses=0 | same
+  base-firefox-100: step=1 point=1 added=0 height=8230 pxPerNotch=52.7 still=1 misses=0 | same
+  base-firefox-100: step=1 point=1 added=0 height=8230 pxPerNotch=52.7 still=2 misses=0 | same
+base-firefox-100: OK frames=27 size=760x8230 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=20.8s
+  base-firefox-150: step=1 point=0 added=156 height=884 pxPerNotch=0 still=0 misses=0 | exact s=156 e=0.79 t=0.80 e0=0.01 t0=0.01 moving=64/64 expected=0
+  base-firefox-150: step=2 point=0 added=312 height=1196 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.62 t=0.62 e0=0.01 t0=0.02 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=1508 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.71 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=1820 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=2132 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.67 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=2444 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.69 t=0.70 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=2756 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.72 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=3068 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.71 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=3380 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=3692 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.67 t=0.68 e0=0.01 t0=0.02 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=4004 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.69 t=0.70 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=4316 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.72 t=0.73 e0=0.01 t0=0.02 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=4628 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.71 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=4940 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=5252 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.67 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=5564 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.69 t=0.70 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=5876 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.72 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=6188 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.71 t=0.71 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=6500 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.02 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=6812 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.02 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=7124 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.70 t=0.70 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=7436 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.72 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=7748 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.71 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=8060 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=8372 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=8684 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.70 t=0.70 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=8996 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.72 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=9308 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.71 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=9620 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=9932 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=10244 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.70 t=0.70 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=10556 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.72 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=10868 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.71 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=11180 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=11492 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.68 t=0.68 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=11804 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.70 t=0.70 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=312 height=12116 pxPerNotch=156 still=0 misses=0 | exact s=312 e=0.72 t=0.72 e0=0.01 t0=0.03 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=249 height=12365 pxPerNotch=156 still=0 misses=0 | exact s=249 e=0.75 t=0.76 e0=0.01 t0=0.04 moving=64/64 expected=312
+  base-firefox-150: step=2 point=0 added=0 height=12365 pxPerNotch=124.5 still=0 misses=0 | same
+  base-firefox-150: step=2 point=0 added=0 height=12365 pxPerNotch=124.5 still=1 misses=0 | same
+  base-firefox-150: step=2 point=0 added=0 height=12365 pxPerNotch=124.5 still=2 misses=0 | same
+  base-firefox-150: step=1 point=1 added=0 height=12365 pxPerNotch=124.5 still=0 misses=0 | same
+  base-firefox-150: step=1 point=1 added=0 height=12365 pxPerNotch=124.5 still=1 misses=0 | same
+  base-firefox-150: step=1 point=1 added=0 height=12365 pxPerNotch=124.5 still=2 misses=0 | same
+base-firefox-150: OK frames=39 size=760x12365 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=24.7s
+  anim-chrome-150: step=1 point=0 added=150 height=878 pxPerNotch=0 still=0 misses=0 | exact s=150 e=0.81 t=0.81 e0=0.01 t0=0.01 moving=64/64 expected=0
+  anim-chrome-150: step=2 point=0 added=300 height=1178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.62 t=0.63 e0=0.01 t0=0.11 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=1478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.15 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=1778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=2078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.17 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=2378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.75 t=0.76 e0=0.01 t0=0.09 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=2678 pxPerNotch=150 still=0 misses=0 | none(bestE 1:0.00/27859 bestT 300:0.20/1830 top=90 bottom=44) s=-1 e=0.00 t=0.00 e0=0.01 t0=0.01 moving=64/64 expected=300 → blind
+  anim-chrome-150: step=2 point=0 added=300 height=2978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.48 t=0.48 e0=0.01 t0=0.06 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=3278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.15 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=3578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=3878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=4178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.18 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=4478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.13 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=4778 pxPerNotch=150 still=0 misses=0 | soft s=300 e=0.25 t=0.73 e0=0.02 t0=0.07 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=5078 pxPerNotch=150 still=0 misses=0 | soft s=300 e=0.04 t=0.57 e0=0.03 t0=0.06 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=5378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.03 t0=0.05 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=5678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.77 t=0.77 e0=0.01 t0=0.03 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=5978 pxPerNotch=150 still=0 misses=0 | none(bestE 1:0.00/18955 bestT 1:0.03/18955 top=90 bottom=44) s=-1 e=0.00 t=0.00 e0=0.02 t0=0.02 moving=64/64 expected=300 → blind
+  anim-chrome-150: step=2 point=0 added=300 height=6278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.59 t=0.60 e0=0.01 t0=0.07 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=6578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.15 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=6878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=7178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.70 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=7478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=7778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.70 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=8078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.70 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=8378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.70 t=0.70 e0=0.01 t0=0.13 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=8678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.12 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=8978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.18 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=9278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=9578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=9878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=10178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=10478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=10778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=11078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=11378 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=11678 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=11978 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=12278 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=12578 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=12878 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=13178 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=13478 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=13778 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.20 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=300 height=14078 pxPerNotch=150 still=0 misses=0 | exact s=300 e=0.71 t=0.71 e0=0.01 t0=0.19 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=237 height=14315 pxPerNotch=150 still=0 misses=0 | exact s=237 e=0.75 t=0.75 e0=0.01 t0=0.07 moving=64/64 expected=300
+  anim-chrome-150: step=2 point=0 added=0 height=14315 pxPerNotch=118.5 still=0 misses=0 | same
+  anim-chrome-150: step=2 point=0 added=0 height=14315 pxPerNotch=118.5 still=1 misses=0 | same
+  anim-chrome-150: step=2 point=0 added=0 height=14315 pxPerNotch=118.5 still=2 misses=0 | same
+  anim-chrome-150: step=1 point=1 added=0 height=14315 pxPerNotch=118.5 still=0 misses=0 | same
+  anim-chrome-150: step=1 point=1 added=0 height=14315 pxPerNotch=118.5 still=1 misses=0 | same
+  anim-chrome-150: step=1 point=1 added=0 height=14315 pxPerNotch=118.5 still=2 misses=0 | same
+anim-chrome-150: OK frames=47 size=760x14315 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=30.3s
+  anim-edge-125: step=1 point=0 added=125 height=853 pxPerNotch=0 still=0 misses=0 | exact s=125 e=0.79 t=0.79 e0=0.01 t0=0.01 moving=64/64 expected=0
+  anim-edge-125: step=2 point=0 added=250 height=1103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.62 t=0.63 e0=0.01 t0=0.11 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=1353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.70 t=0.70 e0=0.01 t0=0.15 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=1603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.70 t=0.70 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=1853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.69 t=0.70 e0=0.01 t0=0.13 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=2103 pxPerNotch=125 still=0 misses=0 | none(bestE 250:0.17/13437 bestT 200:0.37/27129 top=75 bottom=29) s=-1 e=0.00 t=0.00 e0=0.01 t0=0.07 moving=64/64 expected=250 → blind
+  anim-edge-125: step=2 point=0 added=250 height=2353 pxPerNotch=125 still=0 misses=0 | none(bestE 250:0.06/21682 bestT 200:0.17/27134 top=75 bottom=29) s=-1 e=0.00 t=0.00 e0=0.01 t0=0.03 moving=64/64 expected=250 → blind
+  anim-edge-125: step=2 point=0 added=250 height=2603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.56 t=0.56 e0=0.01 t0=0.09 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=2853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.71 e0=0.01 t0=0.16 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=3103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=3353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=3603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.72 e0=0.01 t0=0.17 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=3853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.72 e0=0.01 t0=0.11 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=4103 pxPerNotch=125 still=0 misses=0 | soft s=250 e=0.19 t=0.69 e0=0.02 t0=0.07 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=4353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.50 t=0.60 e0=0.03 t0=0.05 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=4603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.77 t=0.77 e0=0.03 t0=0.04 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=4853 pxPerNotch=125 still=0 misses=0 | none(bestE 250:0.21/2257 bestT 250:0.21/2257 top=83 bottom=29) s=-1 e=0.00 t=0.00 e0=0.04 t0=0.05 moving=64/64 expected=250 → blind
+  anim-edge-125: step=2 point=0 added=250 height=5103 pxPerNotch=125 still=0 misses=0 | none(bestE 250:0.24/2354 bestT 200:0.37/6991 top=83 bottom=29) s=-1 e=0.00 t=0.00 e0=0.02 t0=0.05 moving=64/64 expected=250 → blind
+  anim-edge-125: step=2 point=0 added=250 height=5353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.67 t=0.67 e0=0.01 t0=0.10 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=5603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.72 e0=0.01 t0=0.16 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=5853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.73 t=0.74 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=6103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=6353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=6603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.73 t=0.74 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=6853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.71 e0=0.01 t0=0.16 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=7103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.71 e0=0.01 t0=0.13 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=7353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.13 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=7603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.17 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=7853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.71 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=8103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=8353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=8603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=8853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=9103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.73 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=9353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.73 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=9603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=9853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.74 t=0.74 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=10103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=10353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.73 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=10603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.73 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=10853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=11103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.73 t=0.74 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=11353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=11603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.18 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=250 height=11853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.72 t=0.72 e0=0.01 t0=0.16 moving=64/64 expected=250
+  anim-edge-125: step=2 point=0 added=69 height=11922 pxPerNotch=125 still=0 misses=0 | exact s=69 e=0.84 t=0.85 e0=0.01 t0=0.24 moving=64/64 expected=250
+  anim-edge-125: step=4 point=0 added=0 height=11922 pxPerNotch=34.5 still=0 misses=0 | same
+  anim-edge-125: step=4 point=0 added=0 height=11922 pxPerNotch=34.5 still=1 misses=0 | same
+  anim-edge-125: step=4 point=0 added=0 height=11922 pxPerNotch=34.5 still=2 misses=0 | same
+  anim-edge-125: step=1 point=1 added=0 height=11922 pxPerNotch=34.5 still=0 misses=0 | same
+  anim-edge-125: step=1 point=1 added=0 height=11922 pxPerNotch=34.5 still=1 misses=0 | same
+  anim-edge-125: step=1 point=1 added=0 height=11922 pxPerNotch=34.5 still=2 misses=0 | same
+anim-edge-125: OK frames=47 size=760x11922 rows=200 badLen=0 end=True manual=False ready=True bubbles=1 missing=[] dup=[] gaps=[] time=31.1s
+  anim-firefox-125: step=1 point=0 added=132 height=860 pxPerNotch=0 still=0 misses=0 | exact s=132 e=0.78 t=0.79 e0=0.01 t0=0.01 moving=64/64 expected=0
+  anim-firefox-125: step=2 point=0 added=264 height=1124 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.62 t=0.62 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=1388 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.69 t=0.70 e0=0.01 t0=0.02 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=1652 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.69 t=0.69 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=1916 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.69 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=2180 pxPerNotch=132 still=0 misses=0 | none(bestE 264:0.09/16608 bestT 214:0.19/26171 top=75 bottom=30) s=-1 e=0.00 t=0.00 e0=0.01 t0=0.01 moving=64/64 expected=264 → blind
+  anim-firefox-125: step=2 point=0 added=264 height=2444 pxPerNotch=132 still=0 misses=0 | none(bestE 264:0.20/17371 bestT 214:0.45/26170 top=75 bottom=30) s=-1 e=0.00 t=0.00 e0=0.01 t0=0.01 moving=64/64 expected=264 → blind
+  anim-firefox-125: step=2 point=0 added=264 height=2708 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=2972 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.69 t=0.69 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=3236 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.69 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=3500 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=3764 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=4028 pxPerNotch=132 still=0 misses=0 | soft s=264 e=0.29 t=0.71 e0=0.02 t0=0.03 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=4292 pxPerNotch=132 still=0 misses=0 | soft s=264 e=0.28 t=0.56 e0=0.02 t0=0.04 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=4556 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.71 e0=0.03 t0=0.04 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=4820 pxPerNotch=132 still=0 misses=0 | none(bestE 264:0.21/2252 bestT 264:0.21/2252 top=75 bottom=30) s=-1 e=0.00 t=0.00 e0=0.05 t0=0.05 moving=64/64 expected=264 → blind
+  anim-firefox-125: step=2 point=0 added=264 height=5084 pxPerNotch=132 still=0 misses=0 | none(bestE 1:0.01/19151 bestT 214:0.16/5255 top=75 bottom=30) s=-1 e=0.00 t=0.00 e0=0.02 t0=0.02 moving=64/64 expected=264 → blind
+  anim-firefox-125: step=2 point=0 added=264 height=5348 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.64 t=0.65 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=5612 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=5876 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=6140 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=6404 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=6668 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.72 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=6932 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.69 t=0.69 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=7196 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=7460 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=7724 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.02 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=7988 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=8252 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.72 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=8516 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=8780 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=9044 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.72 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=9308 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=9572 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=9836 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=10100 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.72 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=10364 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=10628 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.71 t=0.71 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=10892 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=11156 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.72 t=0.73 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=11420 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=264 height=11684 pxPerNotch=132 still=0 misses=0 | exact s=264 e=0.70 t=0.70 e0=0.01 t0=0.01 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=239 height=11923 pxPerNotch=132 still=0 misses=0 | exact s=239 e=0.71 t=0.71 e0=0.01 t0=0.02 moving=64/64 expected=264
+  anim-firefox-125: step=2 point=0 added=0 height=11923 pxPerNotch=119.5 still=0 misses=0 | same
+  anim-firefox-125: step=2 point=0 added=0 height=11923 pxPerNotch=119.5 still=1 misses=0 | same
+  anim-firefox-125: step=2 point=0 added=0 height=11923 pxPerNotch=119.5 still=2 misses=0 | same
+  anim-firefox-125: step=1 point=1 added=0 height=11923 pxPerNotch=119.5 still=0 misses=0 | same
+  anim-firefox-125: step=1 point=1 added=0 height=11923 pxPerNotch=119.5 still=1 misses=0 | same
+  anim-firefox-125: step=1 point=1 added=0 height=11923 pxPerNotch=119.5 still=2 misses=0 | same
+anim-firefox-125: OK frames=44 size=760x11923 rows=200 badLen=0 end=True manual=False ready=True bubbles=1 missing=[] dup=[] gaps=[] time=30.6s
+  sidebar-chrome-125: step=1 point=0 added=125 height=853 pxPerNotch=0 still=0 misses=0 | exact s=125 e=0.69 t=0.70 e0=0.01 t0=0.02 moving=39/53 expected=0
+  sidebar-chrome-125: step=2 point=0 added=250 height=1103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.52 t=0.52 e0=0.06 t0=0.17 moving=64/64 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=1353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.14 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=1603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=1853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=2103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=2353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=2603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=2853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=3103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=3353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=3603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=3853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=4103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=4353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=4603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=4853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=5103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=5353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.12 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=5603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.12 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=5853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.14 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=6103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=6353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=6603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=6853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=7103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=7353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=7603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.16 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=7853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=8103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=8353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=8603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=8853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=9103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=9353 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=9603 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=9853 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.60 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=250 height=10103 pxPerNotch=125 still=0 misses=0 | exact s=250 e=0.60 t=0.61 e0=0.01 t0=0.17 moving=39/53 expected=250
+  sidebar-chrome-125: step=2 point=0 added=194 height=10297 pxPerNotch=125 still=0 misses=0 | exact s=194 e=0.63 t=0.63 e0=0.01 t0=0.04 moving=39/53 expected=250
+  sidebar-chrome-125: step=3 point=0 added=0 height=10297 pxPerNotch=97 still=0 misses=0 | same
+  sidebar-chrome-125: step=3 point=0 added=0 height=10297 pxPerNotch=97 still=1 misses=0 | same
+  sidebar-chrome-125: step=3 point=0 added=0 height=10297 pxPerNotch=97 still=2 misses=0 | same
+  sidebar-chrome-125: step=1 point=1 added=0 height=10297 pxPerNotch=97 still=0 misses=0 | same
+  sidebar-chrome-125: step=1 point=1 added=0 height=10297 pxPerNotch=97 still=1 misses=0 | same
+  sidebar-chrome-125: step=1 point=1 added=0 height=10297 pxPerNotch=97 still=2 misses=0 | same
+sidebar-chrome-125: OK frames=40 size=760x10297 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=22.7s
+  sidebar-firefox-100: step=1 point=0 added=102 height=830 pxPerNotch=0 still=0 misses=0 | exact s=102 e=0.77 t=0.78 e0=0.01 t0=0.01 moving=44/55 expected=0
+  sidebar-firefox-100: step=2 point=0 added=204 height=1034 pxPerNotch=102 still=0 misses=0 | exact s=204 e=0.66 t=0.66 e0=0.04 t0=0.10 moving=64/64 expected=204
+  sidebar-firefox-100: step=3 point=0 added=306 height=1340 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.26 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=1646 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.31 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=1952 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.34 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=2258 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.27 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=2564 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.28 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=2870 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.28 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=3176 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.65 e0=0.01 t0=0.36 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=3482 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.30 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=3788 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.26 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=4094 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.65 e0=0.01 t0=0.28 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=4400 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.64 e0=0.01 t0=0.15 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=4706 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.11 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=5012 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.66 e0=0.01 t0=0.25 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=5318 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.28 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=5624 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.66 e0=0.01 t0=0.31 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=5930 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.66 e0=0.01 t0=0.34 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=6236 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.26 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=6542 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.66 e0=0.01 t0=0.26 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=6848 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.66 e0=0.01 t0=0.31 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=7154 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.34 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=7460 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.66 e0=0.01 t0=0.28 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=7766 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.65 t=0.66 e0=0.01 t0=0.29 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=306 height=8072 pxPerNotch=102 still=0 misses=0 | exact s=306 e=0.64 t=0.65 e0=0.01 t0=0.28 moving=44/55 expected=306
+  sidebar-firefox-100: step=3 point=0 added=158 height=8230 pxPerNotch=102 still=0 misses=0 | exact s=158 e=0.72 t=0.73 e0=0.01 t0=0.07 moving=44/55 expected=306
+  sidebar-firefox-100: step=6 point=0 added=0 height=8230 pxPerNotch=52.7 still=0 misses=0 | same
+  sidebar-firefox-100: step=6 point=0 added=0 height=8230 pxPerNotch=52.7 still=1 misses=0 | same
+  sidebar-firefox-100: step=6 point=0 added=0 height=8230 pxPerNotch=52.7 still=2 misses=0 | same
+  sidebar-firefox-100: step=1 point=1 added=0 height=8230 pxPerNotch=52.7 still=0 misses=0 | same
+  sidebar-firefox-100: step=1 point=1 added=0 height=8230 pxPerNotch=52.7 still=1 misses=0 | same
+  sidebar-firefox-100: step=1 point=1 added=0 height=8230 pxPerNotch=52.7 still=2 misses=0 | same
+sidebar-firefox-100: OK frames=27 size=760x8230 rows=200 badLen=0 end=True manual=False ready=True bubbles=0 missing=[] dup=[] gaps=[] time=20.0s
+browser-longshot: 10/10 OK
+  app-notepad: step=1 point=0 added=54 height=611 pxPerNotch=0 still=0 misses=0 | exact s=54 e=1.00 t=1.00 e0=0.03 t0=0.26 moving=36/43 expected=0
+  app-notepad: step=2 point=0 added=108 height=719 pxPerNotch=54 still=0 misses=0 | exact s=108 e=1.00 t=1.00 e0=0.04 t0=0.27 moving=36/43 expected=108
+  app-notepad: step=4 point=0 added=216 height=935 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=1151 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.19 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=1367 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.19 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=1583 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=1799 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=2015 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.19 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=2231 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.19 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=2447 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=2663 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.02 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=2879 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=3095 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=3311 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=3527 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=3743 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=3959 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=4175 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=4391 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=4607 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=4823 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=5039 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=5255 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=5471 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=5687 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.19 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=5903 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.19 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=6119 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=6335 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=6551 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=6767 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=216 height=6983 pxPerNotch=54 still=0 misses=0 | exact s=216 e=1.00 t=1.00 e0=0.01 t0=0.20 moving=36/43 expected=216
+  app-notepad: step=4 point=0 added=162 height=7145 pxPerNotch=54 still=0 misses=0 | exact s=162 e=1.00 t=1.00 e0=0.01 t0=0.21 moving=36/43 expected=216
+  app-notepad: step=6 point=0 added=0 height=7145 pxPerNotch=40.5 still=0 misses=0 | same
+  app-notepad: step=6 point=0 added=0 height=7145 pxPerNotch=40.5 still=1 misses=0 | same
+  app-notepad: step=6 point=0 added=0 height=7145 pxPerNotch=40.5 still=2 misses=0 | same
+  app-notepad: step=1 point=1 added=0 height=7145 pxPerNotch=40.5 still=0 misses=0 | same
+  app-notepad: step=1 point=1 added=0 height=7145 pxPerNotch=40.5 still=1 misses=0 | same
+  app-notepad: step=1 point=1 added=0 height=7145 pxPerNotch=40.5 still=2 misses=0 | same
+  app-notepad ocr: 194 lines, first: Line
+app-notepad: OK size=700x7145 lines 11..400 recognized=367 holes=23 dupsInOcr=0 manual=False
+  app-explorer: step=1 point=0 added=77 height=545 pxPerNotch=0 still=0 misses=0 | exact s=77 e=1.00 t=1.00 e0=0.00 t0=0.04 moving=29/50 expected=0
+  app-explorer: step=2 point=0 added=168 height=713 pxPerNotch=77 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.38 t0=0.51 moving=22/50 expected=154
+  app-explorer: step=2 point=0 added=168 height=881 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.38 t0=0.53 moving=23/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=1049 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.42 t0=0.57 moving=23/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=1217 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.42 t0=0.56 moving=19/46 expected=168
+  app-explorer: step=2 point=0 added=168 height=1385 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.31 t0=0.47 moving=19/46 expected=168
+  app-explorer: step=2 point=0 added=168 height=1553 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.27 t0=0.45 moving=19/46 expected=168
+  app-explorer: step=2 point=0 added=168 height=1721 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.22 t0=0.43 moving=19/46 expected=168
+  app-explorer: step=2 point=0 added=168 height=1889 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.39 t0=0.56 moving=17/25 expected=168
+  app-explorer: step=2 point=0 added=168 height=2057 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.56 t0=0.65 moving=23/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=2225 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.48 t0=0.60 moving=24/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=2393 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.30 t0=0.47 moving=24/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=2561 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.18 t0=0.41 moving=24/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=2729 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.30 t0=0.50 moving=18/45 expected=168
+  app-explorer: step=2 point=0 added=168 height=2897 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.39 t0=0.54 moving=25/52 expected=168
+  app-explorer: step=2 point=0 added=168 height=3065 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.39 t0=0.51 moving=24/52 expected=168
+  app-explorer: step=2 point=0 added=168 height=3233 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.28 t0=0.41 moving=24/52 expected=168
+  app-explorer: step=2 point=0 added=168 height=3401 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.29 t0=0.47 moving=25/52 expected=168
+  app-explorer: step=2 point=0 added=168 height=3569 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.25 t0=0.47 moving=19/46 expected=168
+  app-explorer: step=2 point=0 added=168 height=3737 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.20 t0=0.45 moving=19/46 expected=168
+  app-explorer: step=2 point=0 added=168 height=3905 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.28 t0=0.49 moving=24/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=4073 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.34 t0=0.51 moving=24/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=4241 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.34 t0=0.49 moving=24/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=4409 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.30 t0=0.47 moving=23/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=4577 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.20 t0=0.41 moving=23/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=4745 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.13 t0=0.38 moving=23/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=4913 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.28 t0=0.48 moving=20/47 expected=168
+  app-explorer: step=2 point=0 added=168 height=5081 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.37 t0=0.53 moving=16/44 expected=168
+  app-explorer: step=2 point=0 added=168 height=5249 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.32 t0=0.50 moving=22/49 expected=168
+  app-explorer: step=2 point=0 added=168 height=5417 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.35 t0=0.53 moving=35/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=5585 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.87 t=0.87 e0=0.30 t0=0.46 moving=38/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=5753 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.88 t=0.89 e0=0.34 t0=0.47 moving=41/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=5921 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.83 t=0.83 e0=0.36 t0=0.48 moving=43/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=6089 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.80 t=0.81 e0=0.26 t0=0.40 moving=45/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=6257 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.83 t=0.83 e0=0.27 t0=0.39 moving=45/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=6425 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.82 t=0.82 e0=0.44 t0=0.53 moving=43/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=6593 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.86 t=0.86 e0=0.36 t0=0.47 moving=35/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=6761 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.85 t=0.85 e0=0.37 t0=0.52 moving=32/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=6929 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.89 t=0.89 e0=0.48 t0=0.61 moving=37/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=7097 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.76 t=0.76 e0=0.51 t0=0.63 moving=42/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=7265 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.54 t0=0.64 moving=36/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=7433 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.70 t=0.71 e0=0.56 t0=0.66 moving=31/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=7601 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.83 t=0.83 e0=0.43 t0=0.58 moving=23/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=7769 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.71 t=0.72 e0=0.48 t0=0.60 moving=25/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=7937 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.73 t=0.74 e0=0.54 t0=0.65 moving=35/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=8105 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.72 t=0.73 e0=0.49 t0=0.60 moving=41/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=8273 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.75 t=0.75 e0=0.54 t0=0.65 moving=41/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=8441 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.76 t=0.77 e0=0.48 t0=0.59 moving=34/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=8609 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.58 t=0.59 e0=0.25 t0=0.40 moving=26/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=8777 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.62 t=0.64 e0=0.22 t0=0.38 moving=25/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=8945 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.63 t=0.64 e0=0.22 t0=0.37 moving=26/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=9113 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.63 t=0.64 e0=0.32 t0=0.45 moving=28/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=9281 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.68 t=0.69 e0=0.43 t0=0.55 moving=33/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=9449 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.74 e0=0.40 t0=0.54 moving=36/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=9617 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.35 t0=0.50 moving=36/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=9785 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.76 t=0.76 e0=0.44 t0=0.56 moving=35/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=9953 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.67 t=0.68 e0=0.46 t0=0.57 moving=31/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=10121 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.67 t=0.67 e0=0.35 t0=0.48 moving=33/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=10289 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.71 t=0.71 e0=0.32 t0=0.43 moving=33/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=10457 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.71 t=0.72 e0=0.43 t0=0.52 moving=37/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=10625 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.73 t=0.74 e0=0.49 t0=0.60 moving=43/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=10793 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.74 e0=0.38 t0=0.52 moving=34/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=10961 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.72 t=0.73 e0=0.41 t0=0.52 moving=32/54 expected=168
+  app-explorer: step=2 point=0 added=168 height=11129 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.70 t=0.71 e0=0.48 t0=0.57 moving=31/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=11297 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.62 t=0.63 e0=0.33 t0=0.47 moving=23/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=11465 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.67 t=0.68 e0=0.48 t0=0.61 moving=31/55 expected=168
+  app-explorer: step=2 point=0 added=168 height=11633 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.71 t=0.72 e0=0.52 t0=0.62 moving=36/55 expected=168
+  app-explorer: step=2 point=0 added=168 height=11801 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.75 t=0.75 e0=0.51 t0=0.63 moving=40/55 expected=168
+  app-explorer: step=2 point=0 added=168 height=11969 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.73 t=0.74 e0=0.48 t0=0.59 moving=40/55 expected=168
+  app-explorer: step=2 point=0 added=168 height=12137 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.76 t=0.77 e0=0.46 t0=0.58 moving=40/55 expected=168
+  app-explorer: step=2 point=0 added=168 height=12305 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.47 t0=0.58 moving=38/55 expected=168
+  app-explorer: step=2 point=0 added=168 height=12473 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.75 t=0.76 e0=0.48 t0=0.60 moving=38/54 expected=168
+  app-explorer: step=2 point=0 added=168 height=12641 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.75 t=0.76 e0=0.45 t0=0.60 moving=35/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=12809 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.75 t=0.76 e0=0.46 t0=0.62 moving=33/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=12977 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.72 t=0.73 e0=0.47 t0=0.64 moving=34/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=13145 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.68 t=0.69 e0=0.40 t0=0.58 moving=29/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=13313 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.70 t=0.71 e0=0.42 t0=0.58 moving=29/51 expected=168
+  app-explorer: step=2 point=0 added=168 height=13481 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.72 t=0.73 e0=0.47 t0=0.59 moving=44/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=13649 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.78 t=0.79 e0=0.33 t0=0.46 moving=45/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=13817 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.77 t=0.78 e0=0.21 t0=0.35 moving=46/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=13985 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.75 t=0.76 e0=0.25 t0=0.41 moving=47/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=14153 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.39 t0=0.53 moving=47/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=14321 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.73 t=0.74 e0=0.47 t0=0.60 moving=37/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=14489 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.72 t=0.73 e0=0.50 t0=0.61 moving=34/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=14657 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.53 t0=0.64 moving=36/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=14825 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.81 t=0.82 e0=0.39 t0=0.54 moving=38/52 expected=168
+  app-explorer: step=2 point=0 added=168 height=14993 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.32 t0=0.50 moving=38/40 expected=168
+  app-explorer: step=2 point=0 added=0 height=14993 pxPerNotch=84 still=0 misses=0 | small change 168 rows
+  app-explorer: step=2 point=0 added=0 height=14993 pxPerNotch=84 still=1 misses=0 | small change 168 rows
+  app-explorer: step=2 point=0 added=28 height=15021 pxPerNotch=84 still=2 misses=0 | exact s=28 e=0.64 t=0.73 e0=0.60 t0=0.72 moving=33/50 expected=168
+  app-explorer:   recheck: added=-1 | none(bestE 28:0.12/690 bestT 28:0.45/690 top=21 bottom=131) s=-1 e=0.00 t=0.00 e0=0.12 t0=0.45 moving=7/24 expected=56
+  app-explorer: step=4 point=0 added=-1 height=15021 pxPerNotch=14 still=0 misses=0 | none(bestE 28:0.12/690 bestT 28:0.45/690 top=21 bottom=131) s=-1 e=0.00 t=0.00 e0=0.12 t0=0.45 moving=7/24 expected=56
+  app-explorer: step=2 point=0 added=168 height=15189 pxPerNotch=14 still=0 misses=1 | exact s=168 e=1.00 t=1.00 e0=0.21 t0=0.52 moving=7/24 expected=28
+  app-explorer: step=2 point=0 added=0 height=15189 pxPerNotch=84 still=0 misses=0 | small change 149 rows
+  app-explorer: step=2 point=0 added=0 height=15189 pxPerNotch=84 still=1 misses=0 | small change 169 rows
+  app-explorer: step=2 point=0 added=168 height=15357 pxPerNotch=84 still=2 misses=0 | exact s=168 e=0.43 t=0.58 e0=0.24 t0=0.50 moving=8/42 expected=168
+  app-explorer: step=2 point=0 added=0 height=15357 pxPerNotch=84 still=0 misses=0 | small change 173 rows
+  app-explorer:   recheck: added=-1 | none(bestE 336:0.49/272 bestT 168:0.54/648 top=0 bottom=49) s=-1 e=0.00 t=0.00 e0=0.30 t0=0.48 moving=7/42 expected=168
+  app-explorer: step=2 point=0 added=-1 height=15357 pxPerNotch=84 still=1 misses=0 | none(bestE 336:0.49/272 bestT 168:0.54/648 top=0 bottom=49) s=-1 e=0.00 t=0.00 e0=0.30 t0=0.48 moving=7/42 expected=168
+  app-explorer: step=1 point=0 added=252 height=15609 pxPerNotch=84 still=0 misses=1 | exact s=252 e=1.00 t=1.00 e0=0.24 t0=0.40 moving=7/25 expected=84
+  app-explorer: step=1 point=0 added=84 height=15693 pxPerNotch=252 still=0 misses=0 | exact s=84 e=1.00 t=1.00 e0=0.49 t0=0.69 moving=7/25 expected=252
+  app-explorer: step=2 point=0 added=0 height=15693 pxPerNotch=84 still=0 misses=0 | still moving=6/42
+  app-explorer:   recheck: added=-1 | none(bestE 336:0.48/123 bestT 252:0.55/301 top=23 bottom=76) s=-1 e=0.00 t=0.00 e0=0.26 t0=0.58 moving=6/32 expected=168
+  app-explorer: step=2 point=0 added=-1 height=15693 pxPerNotch=84 still=1 misses=0 | none(bestE 336:0.48/123 bestT 252:0.55/301 top=23 bottom=76) s=-1 e=0.00 t=0.00 e0=0.26 t0=0.58 moving=6/32 expected=168
+  app-explorer: step=1 point=0 added=252 height=15945 pxPerNotch=84 still=0 misses=1 | exact s=252 e=0.72 t=0.72 e0=0.32 t0=0.60 moving=6/32 expected=84
+  app-explorer: step=1 point=0 added=84 height=16029 pxPerNotch=252 still=0 misses=0 | exact s=84 e=1.00 t=1.00 e0=0.29 t0=0.57 moving=6/25 expected=252
+  app-explorer: step=2 point=0 added=168 height=16197 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.19 t0=0.47 moving=6/25 expected=168
+  app-explorer: step=2 point=0 added=168 height=16365 pxPerNotch=84 still=0 misses=0 | exact s=168 e=1.00 t=1.00 e0=0.42 t0=0.71 moving=5/25 expected=168
+  app-explorer: step=2 point=0 added=168 height=16533 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.76 t=0.76 e0=0.45 t0=0.73 moving=5/32 expected=168
+  app-explorer: step=2 point=0 added=0 height=16533 pxPerNotch=84 still=0 misses=0 | still moving=5/42
+  app-explorer:   recheck: added=-1 | none(bestE 56:0.41/444 bestT 252:0.57/133 top=49 bottom=105) s=-1 e=0.00 t=0.00 e0=0.28 t0=0.54 moving=5/27 expected=168
+  app-explorer: step=2 point=0 added=-1 height=16533 pxPerNotch=84 still=1 misses=0 | none(bestE 56:0.41/444 bestT 252:0.57/133 top=49 bottom=105) s=-1 e=0.00 t=0.00 e0=0.28 t0=0.54 moving=5/27 expected=168
+  app-explorer: step=1 point=0 added=252 height=16785 pxPerNotch=84 still=0 misses=1 | exact s=252 e=0.61 t=0.61 e0=0.28 t0=0.55 moving=5/32 expected=84
+  app-explorer: step=1 point=0 added=84 height=16869 pxPerNotch=252 still=0 misses=0 | exact s=84 e=1.00 t=1.00 e0=0.17 t0=0.42 moving=5/25 expected=252
+  app-explorer: step=2 point=0 added=168 height=17037 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.84 t=0.85 e0=0.70 t0=0.80 moving=24/46 expected=168
+  app-explorer: step=2 point=0 added=168 height=17205 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.51 t0=0.65 moving=46/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=17373 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.78 t=0.79 e0=0.39 t0=0.52 moving=46/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=17541 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.79 t=0.79 e0=0.43 t0=0.54 moving=46/60 expected=168
+  app-explorer: step=2 point=0 added=168 height=17709 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.77 t=0.77 e0=0.44 t0=0.54 moving=47/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=17877 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.78 t=0.78 e0=0.47 t0=0.55 moving=42/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=18045 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.72 t=0.72 e0=0.44 t0=0.54 moving=39/61 expected=168
+  app-explorer: step=2 point=0 added=168 height=18213 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.67 t=0.68 e0=0.47 t0=0.57 moving=36/57 expected=168
+  app-explorer: step=2 point=0 added=168 height=18381 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.69 t=0.70 e0=0.49 t0=0.59 moving=35/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=18549 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.56 t0=0.65 moving=40/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=18717 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.73 t=0.74 e0=0.50 t0=0.63 moving=41/56 expected=168
+  app-explorer: step=2 point=0 added=168 height=18885 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.73 t=0.74 e0=0.48 t0=0.62 moving=35/50 expected=168
+  app-explorer: step=2 point=0 added=168 height=19053 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.74 t=0.75 e0=0.55 t0=0.68 moving=34/49 expected=168
+  app-explorer: step=2 point=0 added=168 height=19221 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.71 t=0.72 e0=0.55 t0=0.65 moving=30/49 expected=168
+  app-explorer: step=2 point=0 added=168 height=19389 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.71 t=0.72 e0=0.58 t0=0.67 moving=32/49 expected=168
+  app-explorer: step=2 point=0 added=168 height=19557 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.72 t=0.73 e0=0.47 t0=0.58 moving=38/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=19725 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.76 t=0.77 e0=0.44 t0=0.55 moving=37/52 expected=168
+  app-explorer: step=2 point=0 added=168 height=19893 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.75 t=0.75 e0=0.52 t0=0.60 moving=36/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=20061 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.52 t=0.53 e0=0.29 t0=0.42 moving=22/53 expected=168
+  app-explorer: step=2 point=0 added=168 height=20229 pxPerNotch=84 still=0 misses=0 | exact s=168 e=0.64 t=0.65 e0=0.49 t0=0.59 moving=29/52 expected=168
+app-explorer: OK size=700x20229 manual=False time=49.9s (check the picture)
+app-static: OK manual=True after 7.8s height=500
+saved trim
+record: starting, ffmpeg=C:\ProgramData\Chocolatey\bin\ffmpeg.exe
+record: started=True
+record: stopped
+record: OK started=True file=Video_2026-11-10_19-02-30.mp4 duration=5.9s size=640x360 audioTrack=False
