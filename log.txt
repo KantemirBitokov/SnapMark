@@ -1,0 +1,44 @@
+scene ok: markers-grid
+saved pin 628x388 at 406, 76
+scene ok: pin
+saved editor 1920x1080 at 0, 0
+saved editor-style 1920x1080 at 0, 0
+scene ok: editor
+saved record 1920x1080 at 0, 0
+scene ok: record
+saved ocr 458x388 at 1048, 172
+scene ok: ocr
+ocr-small: image at 1730, 300 (expected 1730, 300), window right 1924 (screen right 1920) -> ok
+saved ocr-small 448x198 at 1476, 286
+scene ok: ocr-small
+saved series 760x640 at 448, 256
+saved stephud 323x78 at 798, 4
+scene ok: steps
+saved longshot 657x760 at 448, 256
+scene ok: longshot
+saved trim 820x660 at 448, 256
+scene ok: trim
+saved settings 820x600 at 448, 256
+saved settings-video 820x600 at 448, 256
+saved settings-p0 820x600 at 448, 256
+saved settings-p1 820x600 at 448, 256
+saved settings-p2 820x600 at 448, 256
+saved settings-p3 820x600 at 448, 256
+saved settings-p4 820x600 at 448, 256
+saved settings-p5 820x600 at 448, 256
+scene ok: settings
+layout full: ok comments=1556, 8, 300, 109
+saved layout-full 1920x1080 at 0, 0
+layout right-edge: ok comments=534, 60, 300, 109
+saved layout-right-edge 1920x1080 at 0, 0
+layout left-edge: ok comments=1066, 60, 300, 109
+saved layout-left-edge 1920x1080 at 0, 0
+layout center-small: ok comments=1126, 480, 300, 109
+saved layout-center-small 1920x1080 at 0, 0
+layout top-wide: ok comments=1556, 8, 300, 109
+saved layout-top-wide 1920x1080 at 0, 0
+layout bottom-wide: ok comments=1556, 680, 300, 109
+saved layout-bottom-wide 1920x1080 at 0, 0
+layout tall-right: ok comments=1134, 8, 300, 109
+saved layout-tall-right 1920x1080 at 0, 0
+scene ok: layout
