@@ -1,0 +1,13 @@
+  Determining projects to restore...
+  Restored D:\a\SnapMark\SnapMark\tools\GlassWin\GlassWin.csproj (in 419 ms).
+  2 of 3 projects are up-to-date for restore.
+  SnapMark.Core -> D:\a\SnapMark\SnapMark\src\SnapMark.Core\bin\Release\net8.0\SnapMark.Core.dll
+  SnapMark.App -> D:\a\SnapMark\SnapMark\src\SnapMark.App\bin\Release\net8.0\win-x64\SnapMark.dll
+D:\a\SnapMark\SnapMark\tools\GlassWin\Program.cs(629,24): warning CA1416: This call site is reachable on all platforms. 'Registry.CurrentUser' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\a\SnapMark\SnapMark\tools\GlassWin\GlassWin.csproj]
+D:\a\SnapMark\SnapMark\tools\GlassWin\Program.cs(628,98): warning CA1416: This call site is reachable on all platforms. 'RegistryKey.GetValue(string?)' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\a\SnapMark\SnapMark\tools\GlassWin\GlassWin.csproj]
+D:\a\SnapMark\SnapMark\tools\GlassWin\Program.cs(629,102): warning CA1416: This call site is reachable on all platforms. 'RegistryKey.SetValue(string?, object)' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\a\SnapMark\SnapMark\tools\GlassWin\GlassWin.csproj]
+D:\a\SnapMark\SnapMark\tools\GlassWin\Program.cs(628,23): warning CA1416: This call site is reachable on all platforms. 'RegistryKey.OpenSubKey(string)' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\a\SnapMark\SnapMark\tools\GlassWin\GlassWin.csproj]
+D:\a\SnapMark\SnapMark\tools\GlassWin\Program.cs(628,23): warning CA1416: This call site is reachable on all platforms. 'Registry.CurrentUser' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\a\SnapMark\SnapMark\tools\GlassWin\GlassWin.csproj]
+D:\a\SnapMark\SnapMark\tools\GlassWin\Program.cs(629,24): warning CA1416: This call site is reachable on all platforms. 'RegistryKey.CreateSubKey(string)' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [D:\a\SnapMark\SnapMark\tools\GlassWin\GlassWin.csproj]
+  GlassWin -> D:\a\SnapMark\SnapMark\tools\GlassWin\bin\Release\net8.0\win-x64\GlassWin.dll
+  GlassWin -> D:\a\SnapMark\SnapMark\pub-GlassWin\

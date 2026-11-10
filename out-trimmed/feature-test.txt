@@ -1,0 +1,26 @@
+words: Hello@44,57,97x34 SnapMark@155,57,194x44 2026@363,59,92x32 Password:@44,147,187x34 secret42@247,149,159x32
+PASS ocr-boxes 
+PASS ocr → Hello SnapMark 2026 | Password: secret42
+PASS redact-Blur → Hello SnapMark 2026
+PASS redact-Pixelate → Hello SnapMark 2026
+PASS hook-installed 
+PASS hook-click InputClick { X = 300, Y = 300, Button = Left }
+PASS hook-combo Ctrl + Shift + S;Enter
+PASS hook-typing-hidden Ctrl + Shift + S;Enter
+PASS stitch height=2270 expected=2270 mismatched=0
+PASS stitch-sticky height=2200 expected=2200 mismatched=0 skipped=0
+PASS video-probe 6.00s 640x360
+PASS video-frame 19946 bytes
+PASS video-trim 2.50s
+PASS video-gif 118612 bytes
+PASS settings-roundtrip 2763 chars, format=WebP, hotkey=Ctrl + Alt + F9
+PASS languages en=Done/Frames: 3 · 1200 px; de=Fertig/Bilder: 3 · 1200 px; fr=Terminé/Images : 3 · 1200 px; it=Fatto/Fotogrammi: 3 · 1200 px; es=Listo/Fotogramas: 3 · 1200 px; ru=Готово/Кадров: 3 · 1200 px
+PASS image-formats Png:1921 Jpg:2304 WebP:1274 Bmp:115254 dib:115240
+PASS file-naming Screenshot_2026-11-08_03-25-00
+PASS error-messages Could not find a part of the path 'Z:\no\such\file.txt'.
+PASS audio-com endpoints=0
+PASS audio-loopback COMException: Element not found. (0x80070490)
+PASS audio-mic COMException: Element not found. (0x80070490)
+PASS update-check latest=1.9.18 url=https://github.com/KantemirBitokov/SnapMark/releases/tag/v1.9.18 error=
+PASS assets 1024, 1024
+ALL PASSED

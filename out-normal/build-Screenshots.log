@@ -1,0 +1,7 @@
+  Determining projects to restore...
+  Restored D:\a\SnapMark\SnapMark\tools\Screenshots\SnapMarkShots.csproj (in 398 ms).
+  2 of 3 projects are up-to-date for restore.
+  SnapMark.Core -> D:\a\SnapMark\SnapMark\src\SnapMark.Core\bin\Release\net8.0\SnapMark.Core.dll
+  SnapMark.App -> D:\a\SnapMark\SnapMark\src\SnapMark.App\bin\Release\net8.0\win-x64\SnapMark.dll
+  SnapMarkShots -> D:\a\SnapMark\SnapMark\tools\Screenshots\bin\Release\net8.0\win-x64\SnapMarkShots.dll
+  SnapMarkShots -> D:\a\SnapMark\SnapMark\pub-Screenshots\

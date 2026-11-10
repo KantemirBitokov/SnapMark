@@ -1,0 +1,2 @@
+app exe: 124715952 bytes
+lzma2 (installer-like): 36294323 bytes

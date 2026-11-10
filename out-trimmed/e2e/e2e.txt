@@ -1,0 +1,11 @@
+start-prtsc: ok (1.1 s)
+info-esc-after-early-presses: open (foreground: ; snipping processes: ; closed by 2nd Esc)
+prtsc-esc-cycles: ok (5/5)
+first-shot-esc: ok
+double-press: ok (closed=True, files 0->1, clipboard=1024x768)
+cmd-full: ok
+cmd-region: ok
+cmd-settings: ok
+steps-clipboard: ok (files=3)
+alive: ok
+error-log: ok (empty)

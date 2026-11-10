@@ -1,0 +1,8 @@
+  Determining projects to restore...
+  Restored D:\a\SnapMark\SnapMark\src\SnapMark.Core\SnapMark.Core.csproj (in 261 ms).
+  Restored D:\a\SnapMark\SnapMark\src\SnapMark.App\SnapMark.App.csproj (in 322 ms).
+  Restored D:\a\SnapMark\SnapMark\tools\FeatureTest\FeatureTest.csproj (in 616 ms).
+  SnapMark.Core -> D:\a\SnapMark\SnapMark\src\SnapMark.Core\bin\Release\net8.0\SnapMark.Core.dll
+  SnapMark.App -> D:\a\SnapMark\SnapMark\src\SnapMark.App\bin\Release\net8.0\win-x64\SnapMark.dll
+  FeatureTest -> D:\a\SnapMark\SnapMark\tools\FeatureTest\bin\Release\net8.0\win-x64\FeatureTest.dll
+  FeatureTest -> D:\a\SnapMark\SnapMark\pub-FeatureTest\
