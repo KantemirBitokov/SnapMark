@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.22
+- Text recognition: a small selection (narrower than the button bar), especially near the right edge of the screen, no longer shifts the picture and shows a black area next to it. The picture stays exactly where the fragment was, and the button bar moves to fit on the screen.
+
 ## 1.9.21
 - If the shot name is changed in the middle of a series, the shots already taken are renamed too, so a series never mixes Screenshot_1.png and Capture_2.png.
 - README: mentions double-press PrtSc and the customizable shot name.

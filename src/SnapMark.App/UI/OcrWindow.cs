@@ -79,6 +79,9 @@ public sealed class OcrWindow : Window
         var shadow = new Border
         {
             Margin = new Thickness(Pad),
+            // Ровно по размеру картинки: если панель с кнопками шире маленького фрагмента, окно станет шире,
+            // но рамка не должна растягиваться (иначе картинка уезжает в центр, а по бокам — чёрное поле).
+            HorizontalAlignment = HorizontalAlignment.Left,
             CornerRadius = new CornerRadius(8),
             BoxShadow = BoxShadows.Parse("0 10 28 0 #59000000, 0 1 4 0 #33000000"),
             Background = Brushes.Black,
@@ -97,7 +100,7 @@ public sealed class OcrWindow : Window
                 Children = { _status, _copySelected, _copyAll, close },
             },
             Padding = new Thickness(6),
-            HorizontalAlignment = HorizontalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Left,
             Margin = new Thickness(Pad, 0, Pad, Pad),
         };
         bar.Classes.Add("pill");
@@ -112,11 +115,33 @@ public sealed class OcrWindow : Window
         Content = stack;
         SyncButtons();
 
+        bool opened = false;
+        void Place()
+        {
+            double barH = above ? bar.Bounds.Height + Pad : 0;
+            double sc = _scaling;
+            // Картинка — ровно на месте фрагмента; панель — по центру под ней, но не за краем экрана.
+            int imageLeft = at.X - (int)Math.Round(Pad * sc);
+            double imageW = w + Pad * 2, barW = bar.Bounds.Width + Pad * 2;
+            int barLeft = imageLeft + (int)Math.Round((imageW - barW) / 2 * sc);
+            if (screen is not null)
+            {
+                var wa = screen.WorkingArea;
+                int maxLeft = wa.Right - (int)Math.Ceiling(barW * sc);
+                barLeft = Math.Max(wa.X, Math.Min(barLeft, maxLeft));
+            }
+            int windowLeft = Math.Min(imageLeft, barLeft);
+            shadow.Margin = new Thickness(Pad + (imageLeft - windowLeft) / sc, shadow.Margin.Top, Pad, shadow.Margin.Bottom);
+            bar.Margin = new Thickness(Pad + (barLeft - windowLeft) / sc, bar.Margin.Top, Pad, bar.Margin.Bottom);
+            Position = new PixelPoint(windowLeft, at.Y - (int)Math.Round((Pad + barH) * sc));
+        }
+        // Текст на панели меняется («Распознаю…» → «Выдели текст мышью») — пересчитываем, чтобы она не ушла за край.
+        bar.SizeChanged += (_, e) => { if (opened && Math.Abs(e.NewSize.Width - e.PreviousSize.Width) > 0.5) Place(); };
         Opened += (_, _) =>
         {
             // Картинка ровно на том месте экрана, где был выделенный фрагмент.
-            double barH = above ? bar.Bounds.Height + Pad : 0;
-            Position = new PixelPoint(at.X - (int)Math.Round(Pad * _scaling), at.Y - (int)Math.Round((Pad + barH) * _scaling));
+            opened = true;
+            Place();
             PlatformServices.WindowHelper.ForceForeground(this);
             _layer.Focus();
         };

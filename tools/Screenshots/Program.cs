@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.VisualTree;
 using Avalonia.Platform;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
@@ -61,6 +62,7 @@ async Task RunAll()
     await Scene("editor", () => EditorScene(Page(), screen));
     await Scene("record", () => RecordScene(Page(), screen));
     await Scene("ocr", () => OcrScene(page));
+    await Scene("ocr-small", () => OcrSmallScene(page, screen));
     await Scene("steps", () => StepsScene(page));
     await Scene("longshot", () => LongShotScene());
     await Scene("trim", () => TrimScene());
@@ -273,6 +275,39 @@ async Task RecordScene(Bitmap page, Screen screen)
     ov.Close();
 }
 
+// Где в окне распознавания начинается сама картинка (у маленького фрагмента окно шире картинки).
+static Point ImageOrigin(Window w)
+{
+    var layer = w.GetVisualDescendants().OfType<Control>().First(c => c.GetType().Name == "TextLayer");
+    return layer.TranslatePoint(new Point(0, 0), w) ?? new Point(14, 14);
+}
+
+// Маленький фрагмент у правого края экрана: картинка должна остаться на своём месте, без чёрных полей,
+// а панель с кнопками — сдвинуться влево, чтобы влезть на экран.
+async Task OcrSmallScene(Bitmap page, Screen screen)
+{
+    typeof(App).GetField("TestScreens", BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, new[] { screen });
+    var wa = screen.WorkingArea;
+    var at = new PixelRect(wa.Right - 190, 300, 180, 110);
+    var rtb = new RenderTargetBitmap(new PixelSize(at.Width, at.Height), new Vector(96, 96));
+    using (var ctx = rtb.CreateDrawingContext())
+        ctx.DrawImage(page, new Rect(1100, 200, at.Width, at.Height), new Rect(0, 0, at.Width, at.Height));
+    var png = ImageEncoder.ToPng(rtb);
+    var w = Create<OcrWindow>(png, at);
+    w.Show();
+    await Pump(500);
+    await (Task)CallPrivate(w, "RecognizeAsync", png)!;
+    await Pump(400);
+    var o = ImageOrigin(w);
+    var imageScreen = new PixelPoint(w.Position.X + (int)Math.Round(o.X * w.RenderScaling), w.Position.Y + (int)Math.Round(o.Y * w.RenderScaling));
+    var right = w.Position.X + (int)Math.Round(w.Bounds.Width * w.RenderScaling);
+    Console.WriteLine($"ocr-small: image at {imageScreen} (expected {at.Position}), window right {right} (screen right {wa.Right}) -> " +
+        (Math.Abs(imageScreen.X - at.X) <= 1 && Math.Abs(imageScreen.Y - at.Y) <= 1 && right <= wa.Right ? "ok" : "FAIL"));
+    await SaveMatte(w, "ocr-small");
+    w.Close();
+    typeof(App).GetField("TestScreens", BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, null);
+}
+
 async Task OcrScene(Bitmap page)
 {
     var at = new PixelRect(1062, 186, 430, 300);
@@ -287,7 +322,8 @@ async Task OcrScene(Bitmap page)
     await (Task)CallPrivate(w, "RecognizeAsync", png)!;
     await Pump(300);
     // Выделить «Ethiopia Yirgacheffe … Oat milk» протяжкой (картинка внутри окна сдвинута на поле 14 + рамку).
-    double ox = 15.5, oy = 15.5;
+    var layerPos = ImageOrigin(w);
+    double ox = layerPos.X + 1.5, oy = layerPos.Y + 1.5;
     await Drag(w, new Point(ox + 88, oy + 84), new Point(ox + 150, oy + 165));
     await SaveMatte(w, "ocr");
     w.Close();

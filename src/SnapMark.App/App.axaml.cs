@@ -143,7 +143,10 @@ public partial class App : Application
         catch { }
     }
 
-    public static IReadOnlyList<Screen> GetScreens() => _probe?.Screens.All ?? Array.Empty<Screen>();
+    public static IReadOnlyList<Screen> GetScreens() => TestScreens ?? _probe?.Screens.All ?? Array.Empty<Screen>();
+
+    /// <summary>Только для тестов без настоящего экрана (headless-скриншоты).</summary>
+    internal static IReadOnlyList<Screen>? TestScreens;
 
     /// <summary>Перезапуск (например, после смены языка): новый процесс дождётся, пока этот завершится.</summary>
     public static void Restart()
