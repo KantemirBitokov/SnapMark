@@ -286,7 +286,7 @@ static Point ImageOrigin(Window w)
 // а панель с кнопками — сдвинуться влево, чтобы влезть на экран.
 async Task OcrSmallScene(Bitmap page, Screen screen)
 {
-    typeof(App).GetField("TestScreens", BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, new[] { screen });
+    typeof(global::SnapMark.App).GetField("TestScreens", BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, new[] { screen });
     var wa = screen.WorkingArea;
     var at = new PixelRect(wa.Right - 190, 300, 180, 110);
     var rtb = new RenderTargetBitmap(new PixelSize(at.Width, at.Height), new Vector(96, 96));
@@ -305,7 +305,7 @@ async Task OcrSmallScene(Bitmap page, Screen screen)
         (Math.Abs(imageScreen.X - at.X) <= 1 && Math.Abs(imageScreen.Y - at.Y) <= 1 && right <= wa.Right ? "ok" : "FAIL"));
     await SaveMatte(w, "ocr-small");
     w.Close();
-    typeof(App).GetField("TestScreens", BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, null);
+    typeof(global::SnapMark.App).GetField("TestScreens", BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, null);
 }
 
 async Task OcrScene(Bitmap page)
