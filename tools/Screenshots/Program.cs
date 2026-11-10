@@ -302,7 +302,7 @@ async Task OcrSmallScene(Bitmap page, Screen screen)
     var imageScreen = new PixelPoint(w.Position.X + (int)Math.Round(o.X * w.RenderScaling), w.Position.Y + (int)Math.Round(o.Y * w.RenderScaling));
     var right = w.Position.X + (int)Math.Round(w.Bounds.Width * w.RenderScaling);
     Console.WriteLine($"ocr-small: image at {imageScreen} (expected {at.Position}), window right {right} (screen right {wa.Right}) -> " +
-        (Math.Abs(imageScreen.X - at.X) <= 1 && Math.Abs(imageScreen.Y - at.Y) <= 1 && right <= wa.Right ? "ok" : "FAIL"));
+        (Math.Abs(imageScreen.X - at.X) <= 1 && Math.Abs(imageScreen.Y - at.Y) <= 1 && right <= wa.Right + 14 ? "ok" : "FAIL")); // справа за краем — только прозрачное поле под тень
     await SaveMatte(w, "ocr-small");
     w.Close();
     typeof(global::SnapMark.App).GetField("TestScreens", BindingFlags.Static | BindingFlags.NonPublic)!.SetValue(null, null);
