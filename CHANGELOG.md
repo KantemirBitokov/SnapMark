@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.19
+- **Double-press PrtSc — whole screen, no editor.** Press the region-screenshot key twice in a row and SnapMark takes the whole screen (the monitor under the cursor) at once. In Settings → Hotkeys → “Double press” choose what happens: copy and save (default), copy only, save only, or nothing. Shots go to the main screenshots folder or to a folder of your own.
+- The marker panel no longer covers the marker's comment on the image, so you can see what you type; the text panel likewise keeps clear of a text you are typing as it grows.
+
 ## 1.9.18
 - “Pin on top”: the thin outline around a pinned screenshot now has the same thickness all the way round — it no longer fades out at the rounded corners (the same fix as for the text-recognition frame in 1.9.5).
 

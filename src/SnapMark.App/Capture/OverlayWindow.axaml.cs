@@ -161,6 +161,21 @@ public partial class OverlayWindow : Window
 
     public Screen? TargetScreen => _screen;
 
+    /// <summary>
+    /// Редактор только что открылся и в нём ещё ничего не сделано (нет рисунков и меток) —
+    /// тогда второе нажатие PrtSc можно считать «двойным» и не жалко закрыть редактор.
+    /// </summary>
+    public bool IsUntouched => Surface.Document.Items.Count == 0 && !Surface.IsInteracting;
+
+    /// <summary>Весь снимок этого монитора (сделан до появления оверлея — без наших окон) в PNG.</summary>
+    public byte[]? FullShotPng()
+    {
+        if (_shot is null) return null;
+        var px = _shot.PixelSize;
+        using var rtb = ImageRenderer.Render(_shot, new PixelRect(0, 0, px.Width, px.Height), Array.Empty<Annotation>());
+        return ImageEncoder.ToPng(rtb);
+    }
+
     public void FocusSurface()
     {
         PlatformServices.WindowHelper.ForceForeground(this);
@@ -872,6 +887,11 @@ public partial class OverlayWindow : Window
             }
         };
         tb.LostFocus += (_, _) => CommitTextEdit();
+        // Поле выросло (новая строка, длинная фраза) — переставляем панель, чтобы она не закрыла текст.
+        tb.PropertyChanged += (_, e) =>
+        {
+            if (e.Property == BoundsProperty && ReferenceEquals(_editor, tb)) LayoutObjectBar();
+        };
 
         Layer.Children.Add(tb);
         _editor = tb;
@@ -990,7 +1010,11 @@ public partial class OverlayWindow : Window
             {
                 if (e.Property != TextBox.TextProperty) return;
                 Surface.Document.Comments[id] = box.Text ?? "";
-                if (Surface.CommentStyle.Enabled) Surface.InvalidateVisual();
+                if (Surface.CommentStyle.Enabled)
+                {
+                    Surface.InvalidateVisual();
+                    LayoutObjectBar(); // подпись выросла — панель метки не должна её закрыть
+                }
             };
             // Перехватываем раньше самого поля (туннель): Enter — готово, Shift+Enter — перенос строки, Esc — выйти.
             box.AddHandler(KeyDownEvent, (_, e) =>
@@ -1445,12 +1469,13 @@ public partial class OverlayWindow : Window
     }
 
     // ═══════════════════════════ Файлы ═══════════════════════════
-    static string SaveToFolder(byte[] png)
+    internal static string SaveToFolder(byte[] png, string? folder = null)
     {
         var s = AppServices.Settings;
-        Directory.CreateDirectory(s.SaveFolder);
+        folder ??= s.SaveFolder;
+        Directory.CreateDirectory(folder);
         var name = FileNaming.Build(s.FileNameTemplate, DateTime.Now, AppServices.NextShotNumber());
-        var path = FileNaming.EnsureUnique(Path.Combine(s.SaveFolder, name + "." + ImageEncoder.Extension(s.ImageFormat)));
+        var path = FileNaming.EnsureUnique(Path.Combine(folder, name + "." + ImageEncoder.Extension(s.ImageFormat)));
         File.WriteAllBytes(path, ImageEncoder.Encode(png, s.ImageFormat, s.ImageQuality));
         return path;
     }

@@ -112,6 +112,7 @@ Jira, Word или письмо. Не нужно вставлять картин�
 |---|---|---|
 | Скриншот области | <kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>1</kbd> |
 | Весь экран | <kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>2</kbd> |
+| Весь экран сразу в буфер / в папку, без редактора | <kbd>PrtSc</kbd> дважды | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>1</kbd> дважды |
 | Запись видео (старт/стоп) | <kbd>Ctrl</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>9</kbd> |
 | Пошаговая инструкция (старт/готово) | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>8</kbd> |
 

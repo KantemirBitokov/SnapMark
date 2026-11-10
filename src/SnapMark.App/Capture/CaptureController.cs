@@ -3,6 +3,8 @@ using Avalonia;
 using Avalonia.Platform;
 using SnapMark.Platform;
 using SnapMark.Recording;
+using SnapMark.Export;
+using SnapMark.Services;
 using SnapMark.UI;
 
 namespace SnapMark.Capture;
@@ -17,8 +19,26 @@ public static class CaptureController
 
     public static bool IsActive => Open.Count > 0;
 
+    /// <summary>Два нажатия не дальше этого — «двойное» (как двойной щелчок в Windows по умолчанию).</summary>
+    static readonly TimeSpan DoublePressWindow = TimeSpan.FromMilliseconds(500);
+    static DateTime _lastRegionPress = DateTime.MinValue;
+
     public static void Start(CaptureMode mode)
     {
+        var now = DateTime.UtcNow;
+        if (mode == CaptureMode.Region)
+        {
+            bool quick = IsActive && now - _lastRegionPress <= DoublePressWindow
+                         && AppServices.Settings.DoublePress != DoublePressAction.Off
+                         && Open.All(w => w.IsUntouched);
+            _lastRegionPress = quick ? DateTime.MinValue : now; // третье нажатие начнёт новую пару
+            if (quick)
+            {
+                _ = QuickFullScreenAsync();
+                return;
+            }
+        }
+
         if (IsActive)
         {
             Open.FirstOrDefault()?.FocusSurface();
@@ -84,6 +104,57 @@ public static class CaptureController
             {
                 if (target.IsVisible && !target.IsActive && Open.Contains(target)) target.FocusSurface();
             }, TimeSpan.FromMilliseconds(ms));
+    }
+
+    /// <summary>
+    /// Двойное нажатие: весь экран (монитор под курсором) — в буфер обмена и/или в папку, без редактора.
+    /// Снимок берём из только что открытого оверлея: он сделан до появления наших окон.
+    /// </summary>
+    static async Task QuickFullScreenAsync()
+    {
+        var s = AppServices.Settings;
+        var cursor = PlatformServices.WindowHelper.GetCursorPosition();
+        var overlay = (cursor is PixelPoint p ? Open.FirstOrDefault(w => w.TargetScreen?.Bounds.Contains(p) == true) : null)
+                      ?? Open.FirstOrDefault(w => w.TargetScreen?.IsPrimary == true) ?? Open.FirstOrDefault();
+        byte[]? png = null;
+        try { png = overlay?.FullShotPng(); }
+        catch (Exception ex) { App.LogError(ex); }
+        CloseAll();
+        if (png is null)
+        {
+            Toast.Show(L.T("Скриншот не удался"), L.T("Не удалось получить изображение экрана."));
+            return;
+        }
+
+        bool copy = s.DoublePress is DoublePressAction.Copy or DoublePressAction.CopyAndSave;
+        bool save = s.DoublePress is DoublePressAction.Save or DoublePressAction.CopyAndSave;
+        string? path = null;
+        string? error = null;
+        if (save)
+        {
+            try { path = OverlayWindow.SaveToFolder(png, s.DoublePressFolderOrDefault()); }
+            catch (Exception ex) { error = ex.Message; }
+        }
+        if (copy)
+        {
+            try { await SmartPaste.CopyPlainAsync(new ClipboardPayload { Png = png, Dib = ImageEncoder.ToDib(png) }); }
+            catch (Exception ex) { error ??= ex.Message; copy = false; }
+        }
+
+        if (error is not null && path is null && !copy)
+        {
+            Toast.Show(L.T("Не удалось сохранить"), error);
+            return;
+        }
+        string title = copy && path is not null ? L.T("Весь экран: скопирован и сохранён")
+            : copy ? L.T("Весь экран скопирован")
+            : L.T("Весь экран сохранён");
+        string body = path is not null ? Path.GetFileName(path) : L.T("Скриншот в буфере обмена.");
+        if (error is not null) body += Environment.NewLine + error;
+        if (path is not null)
+            Toast.Show(title, body, L.T("Показать"), () => ShellOpen.ShowInFolder(path));
+        else
+            Toast.Show(title, body);
     }
 
     public static void CloseAll()

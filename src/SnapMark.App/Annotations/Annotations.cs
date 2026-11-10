@@ -855,8 +855,22 @@ public static class CommentLabels
         return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
     }
 
+    /// <summary>Где окажутся подписи меток (в пикселях снимка) — например, чтобы панели их не закрывали.</summary>
+    public static Dictionary<MarkerAnnotation, Rect> Layout(AnnotationDocument doc, CommentLabelStyle st, Rect area)
+    {
+        var result = new Dictionary<MarkerAnnotation, Rect>();
+        Walk(doc, st, area, (m, rect, _, _) => result[m] = rect);
+        return result;
+    }
+
     /// <param name="area">Область выделения в пикселях снимка — подписи стараются не вылезать за неё.</param>
-    public static void Render(DrawingContext ctx, AnnotationDocument doc, CommentLabelStyle st, Rect area)
+    public static void Render(DrawingContext ctx, AnnotationDocument doc, CommentLabelStyle st, Rect area) =>
+        Walk(doc, st, area, (m, rect, make, size) =>
+            TextPlate.Draw(ctx, make, rect, m.CommentColor, m.CommentFrame, size, m.Color,
+                m.CommentShadow, m.CommentShadowColor, m.CommentPlateColor, m.CommentBorderColor));
+
+    static void Walk(AnnotationDocument doc, CommentLabelStyle st, Rect area,
+        Action<MarkerAnnotation, Rect, Func<IBrush, FormattedText>, double> visit)
     {
         if (!st.Enabled) return;
         var placed = new List<Rect>();
@@ -882,9 +896,7 @@ public static class CommentLabels
 
             var rect = PlaceLabel(m, w, h, gap, area, placed, markers);
             placed.Add(rect);
-
-            TextPlate.Draw(ctx, Make, rect, m.CommentColor, m.CommentFrame, size, m.Color,
-                m.CommentShadow, m.CommentShadowColor, m.CommentPlateColor, m.CommentBorderColor);
+            visit(m, rect, Make, size);
         }
     }
 }

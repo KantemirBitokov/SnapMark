@@ -130,6 +130,8 @@ public partial class SettingsWindow : Window
         HkFull.Value = S.CaptureFullHotkey.Clone();
         HkVideo.Value = S.RecordVideoHotkey.Clone();
         HkSteps.Value = S.StepGuideHotkey.Clone();
+        DoublePressCombo.SelectedIndex = (int)S.DoublePress;
+        UpdateDoublePress();
 
         FormatCombo.SelectedIndex = (int)S.ImageFormat;
         QualitySlider.Value = S.ImageQuality;
@@ -231,7 +233,35 @@ public partial class SettingsWindow : Window
         NotifyToggle.IsCheckedChanged += (_, _) => Change(() => S.ShowNotifications = NotifyToggle.IsChecked == true);
 
         // Горячие клавиши
-        HkRegion.ValueChanged += hk => SetHotkey(hk, h => S.CaptureRegionHotkey = h);
+        HkRegion.ValueChanged += hk =>
+        {
+            SetHotkey(hk, h => S.CaptureRegionHotkey = h);
+            UpdateDoublePress();
+        };
+        DoublePressCombo.SelectionChanged += (_, _) =>
+        {
+            Change(() => S.DoublePress = (DoublePressAction)Math.Max(0, DoublePressCombo.SelectedIndex));
+            UpdateDoublePress();
+        };
+        DoublePressOpenButton.Click += (_, _) =>
+        {
+            try { Directory.CreateDirectory(S.DoublePressFolderOrDefault()); } catch { }
+            ShellOpen.OpenFolder(S.DoublePressFolderOrDefault());
+        };
+        DoublePressChooseButton.Click += async (_, _) =>
+        {
+            var path = await PickFolder(L.T("Папка для снимков по двойному нажатию"), S.DoublePressFolderOrDefault());
+            if (path is null) return;
+            S.DoublePressFolder = path;
+            Save();
+            UpdateDoublePress();
+        };
+        DoublePressDefaultButton.Click += (_, _) =>
+        {
+            S.DoublePressFolder = "";
+            Save();
+            UpdateDoublePress();
+        };
         HkFull.ValueChanged += hk => SetHotkey(hk, h => S.CaptureFullHotkey = h);
         HkVideo.ValueChanged += hk => SetHotkey(hk, h => S.RecordVideoHotkey = h);
         HkSteps.ValueChanged += hk => SetHotkey(hk, h => S.StepGuideHotkey = h);
@@ -271,6 +301,7 @@ public partial class SettingsWindow : Window
             if (path is null) return;
             S.SaveFolder = path;
             FolderText.Text = path;
+            UpdateDoublePress();
             Save();
         };
 
@@ -629,5 +660,20 @@ public partial class SettingsWindow : Window
             }
         }
         _fillingCameras = false;
+    }
+
+    void UpdateDoublePress()
+    {
+        var key = S.CaptureRegionHotkey.ToString();
+        DoublePressCaption.Text = S.CaptureRegionHotkey.IsEmpty
+            ? L.T("Задай клавишу «Скриншот области» выше — двойное нажатие на неё снимет весь экран.")
+            : L.F("{0} два раза подряд — снимок всего экрана сразу, без редактора.", key);
+        bool saves = S.DoublePress is DoublePressAction.Save or DoublePressAction.CopyAndSave;
+        DoublePressFolderRow.IsEnabled = saves;
+        DoublePressFolderRow.Opacity = saves ? 1 : 0.5;
+        DoublePressFolderText.Text = string.IsNullOrWhiteSpace(S.DoublePressFolder)
+            ? L.F("По умолчанию — как у скриншотов: {0}", S.SaveFolder)
+            : S.DoublePressFolder;
+        DoublePressDefaultButton.IsVisible = !string.IsNullOrWhiteSpace(S.DoublePressFolder);
     }
 }

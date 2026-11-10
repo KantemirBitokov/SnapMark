@@ -90,6 +90,20 @@ if ((WaitFor { Fullscreen $app } 5) -ge 0) {
   if (Fullscreen $app) { Key 0x1B; Start-Sleep -Milliseconds 800 }
 } else { Say "first-shot-esc: FAIL (did not open)" }
 
+# 1в. Двойное нажатие PrtSc: весь экран сразу в буфер и в папку скриншотов, редактор закрывается сам.
+$shotDir = Join-Path ([Environment]::GetFolderPath('MyPictures')) 'SnapMark'
+$before = @(Get-ChildItem $shotDir -File -ErrorAction SilentlyContinue).Count
+powershell.exe -NoProfile -STA -Command "Set-Clipboard -Value 'empty'" | Out-Null
+Start-Sleep -Seconds 1
+Key 0x2C; Start-Sleep -Milliseconds 200; Key 0x2C
+$gone = WaitFor { -not (Fullscreen $app) } 4
+Start-Sleep -Seconds 2
+$after = @(Get-ChildItem $shotDir -File -ErrorAction SilentlyContinue).Count
+$img = powershell.exe -NoProfile -STA -Command "Add-Type -AssemblyName System.Windows.Forms; `$i = [Windows.Forms.Clipboard]::GetImage(); if (`$i) { '' + `$i.Width + 'x' + `$i.Height }"
+Shot 'e2e-double-press'
+Say ("double-press: " + $(if ($gone -ge 0 -and $after -gt $before -and "$img" -match 'x') { 'ok' } else { 'FAIL' }) + " (closed=$($gone -ge 0), files $before->$after, clipboard=$img)")
+if (Fullscreen $app) { Key 0x1B; Start-Sleep -Milliseconds 800 }
+
 # 2. Команды из командной строки (как у ярлыков и второго запуска).
 & $exe --full; $t = WaitFor { Fullscreen $app } 8
 Say ("cmd-full: " + $(if ($t -ge 0) { 'ok' } else { 'FAIL' })); Start-Sleep -Milliseconds 800; Shot 'e2e-full'; Key 0x1B; Start-Sleep -Milliseconds 800

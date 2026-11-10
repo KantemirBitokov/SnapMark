@@ -4,6 +4,9 @@ public enum ImageFileFormat { Png, Jpg, WebP, Bmp }
 
 public enum VideoFileFormat { Mp4, Mkv, WebM, Gif }
 
+/// <summary>Что делает двойное нажатие клавиши «Скриншот области» (обычно PrtSc): снимок всего экрана без редактора.</summary>
+public enum DoublePressAction { CopyAndSave, Copy, Save, Off }
+
 /// <summary>Качество видео: чем выше, тем чётче мелкий текст и тем больше файл.</summary>
 public enum VideoQuality { Low, Standard, High, Best }
 
@@ -89,6 +92,12 @@ public sealed class AppSettings
     public string SaveFolder { get; set; } = DefaultFolders.Pictures;
     public string FileNameTemplate { get; set; } = "Screenshot_{date}_{time}";
     public bool AutoSaveCopy { get; set; }
+    /// <summary>Двойное нажатие клавиши скриншота области — сразу весь экран: в буфер, в папку или туда и туда.</summary>
+    public DoublePressAction DoublePress { get; set; } = DoublePressAction.CopyAndSave;
+    /// <summary>Папка для снимков по двойному нажатию; пусто — общая папка скриншотов (SaveFolder).</summary>
+    public string DoublePressFolder { get; set; } = "";
+    public string DoublePressFolderOrDefault() =>
+        string.IsNullOrWhiteSpace(DoublePressFolder) ? SaveFolder : DoublePressFolder;
     public ImageSearchMethod ImageSearch { get; set; } = ImageSearchMethod.LensUpload;
     /// <summary>Цвет рамки выделения.</summary>
     public string SelectionColor { get; set; } = "#0A84FF";

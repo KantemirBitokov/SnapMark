@@ -526,3 +526,18 @@ GIF сохранён	GIF saved	GIF gespeichert	GIF enregistré	GIF salvata	GIF g
 Прокручиваю сам · двинь мышь — пауза · Esc — закончить	Scrolling automatically · move the mouse to pause · Esc to finish	Scrolle automatisch · Maus bewegen pausiert · Esc beendet	Défilement automatique · bouge la souris pour mettre en pause · Échap pour terminer	Scorro da solo · muovi il mouse per mettere in pausa · Esc per finire	Desplazando solo · mueve el ratón para pausar · Esc para terminar
 Стекло	Glass	Glas	Verre	Vetro	Cristal
 Эффект стекла: градиент, блик и цветная тень	Glass effect: gradient, highlight and coloured shadow	Glaseffekt: Verlauf, Glanzlicht und farbiger Schatten	Effet verre : dégradé, reflet et ombre colorée	Effetto vetro: sfumatura, riflesso e ombra colorata	Efecto cristal: degradado, brillo y sombra de color
+Двойное нажатие	Double press	Doppelt drücken	Double appui	Doppia pressione	Doble pulsación
+Весь экран без редактора	Whole screen, no editor	Ganzer Bildschirm ohne Editor	Tout l’écran, sans éditeur	Tutto lo schermo, senza editor	Pantalla completa, sin editor
+Копировать и сохранить	Copy and save	Kopieren und speichern	Copier et enregistrer	Copia e salva	Copiar y guardar
+Только копировать	Copy only	Nur kopieren	Copier uniquement	Solo copia	Solo copiar
+Только сохранить	Save only	Nur speichern	Enregistrer uniquement	Solo salva	Solo guardar
+Ничего не делать	Do nothing	Nichts tun	Ne rien faire	Non fare nulla	No hacer nada
+По умолчанию	Default	Standard	Par défaut	Predefinita	Predeterminada
+Сохранять в общую папку скриншотов (Скриншоты → Папка)	Save to the main screenshots folder (Screenshots → Folder)	Im allgemeinen Screenshot-Ordner speichern (Screenshots → Ordner)	Enregistrer dans le dossier des captures (Captures → Dossier)	Salva nella cartella degli screenshot (Screenshot → Cartella)	Guardar en la carpeta de capturas (Capturas → Carpeta)
+Папка для снимков по двойному нажатию	Folder for double-press shots	Ordner für Doppeldruck-Aufnahmen	Dossier des captures par double appui	Cartella per gli scatti con doppia pressione	Carpeta para capturas con doble pulsación
+Задай клавишу «Скриншот области» выше — двойное нажатие на неё снимет весь экран.	Set the “Region screenshot” key above — pressing it twice captures the whole screen.	Lege oben die Taste „Bereich aufnehmen“ fest – zweimal drücken nimmt den ganzen Bildschirm auf.	Définis la touche « Capture de zone » ci-dessus — un double appui capture tout l’écran.	Imposta sopra il tasto «Screenshot di un’area»: premendolo due volte catturi tutto lo schermo.	Define arriba la tecla «Captura de área»: pulsarla dos veces captura toda la pantalla.
+{0} два раза подряд — снимок всего экрана сразу, без редактора.	Press {0} twice — the whole screen is captured at once, without the editor.	{0} zweimal drücken – sofort ein Bild des ganzen Bildschirms, ohne Editor.	{0} deux fois de suite — tout l’écran est capturé aussitôt, sans éditeur.	{0} due volte di fila: tutto lo schermo subito, senza editor.	{0} dos veces seguidas: toda la pantalla al instante, sin editor.
+По умолчанию — как у скриншотов: {0}	Default — same as screenshots: {0}	Standard – wie bei Screenshots: {0}	Par défaut — comme les captures : {0}	Predefinita, come per gli screenshot: {0}	Predeterminada, como las capturas: {0}
+Весь экран: скопирован и сохранён	Whole screen copied and saved	Ganzer Bildschirm kopiert und gespeichert	Tout l’écran copié et enregistré	Schermo intero copiato e salvato	Pantalla completa copiada y guardada
+Весь экран скопирован	Whole screen copied	Ganzer Bildschirm kopiert	Tout l’écran copié	Schermo intero copiato	Pantalla completa copiada
+Весь экран сохранён	Whole screen saved	Ganzer Bildschirm gespeichert	Tout l’écran enregistré	Schermo intero salvato	Pantalla completa guardada

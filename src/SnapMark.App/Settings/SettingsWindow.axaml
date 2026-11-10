@@ -185,6 +185,39 @@
                          Text="{l:Tr 'Нажми на поле и введи сочетание. Esc — отмена, Backspace — очистить.'}"/>
             </StackPanel>
 
+            <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Двойное нажатие'}"/>
+              <Border Classes="card">
+                <StackPanel>
+                  <Grid Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Весь экран без редактора'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock x:Name="DoublePressCaption" Classes="caption" TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <ComboBox x:Name="DoublePressCombo" Grid.Column="1" Width="250" VerticalAlignment="Center">
+                      <ComboBoxItem Content="{l:Tr 'Копировать и сохранить'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Только копировать'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Только сохранить'}"/>
+                      <ComboBoxItem Content="{l:Tr 'Ничего не делать'}"/>
+                    </ComboBox>
+                  </Grid>
+                  <Border Classes="hsep"/>
+                  <Grid x:Name="DoublePressFolderRow" Classes="row" ColumnDefinitions="*,Auto">
+                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                      <TextBlock Text="{l:Tr 'Папка'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                      <TextBlock x:Name="DoublePressFolderText" Classes="caption" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                      <Button x:Name="DoublePressOpenButton" Classes="soft" Content="{l:Tr 'Открыть'}"/>
+                      <Button x:Name="DoublePressChooseButton" Classes="soft" Content="{l:Tr 'Выбрать…'}"/>
+                      <Button x:Name="DoublePressDefaultButton" Classes="soft" Content="{l:Tr 'По умолчанию'}"
+                              ToolTip.Tip="{l:Tr 'Сохранять в общую папку скриншотов (Скриншоты → Папка)'}"/>
+                    </StackPanel>
+                  </Grid>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+
             <Border x:Name="PrtScCard" Classes="card" IsVisible="False">
               <StackPanel Margin="16,14" Spacing="10">
                 <StackPanel Orientation="Horizontal" Spacing="10">

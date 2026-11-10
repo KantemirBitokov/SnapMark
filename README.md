@@ -126,6 +126,7 @@ SnapMark is free and not (yet) signed with a paid certificate, so the system ask
 |---|---|---|
 | Region screenshot | <kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>1</kbd> |
 | Full screen | <kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>2</kbd> |
+| Whole screen straight to clipboard / folder, no editor | <kbd>PrtSc</kbd> twice | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>1</kbd> twice |
 | Record video (start/stop) | <kbd>Ctrl</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>9</kbd> |
 | Step-by-step guide (start/done) | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>PrtSc</kbd> | <kbd>⌘</kbd><kbd>⇧</kbd><kbd>8</kbd> |
 

@@ -65,6 +65,19 @@ public partial class OverlayWindow
 
         double W = Layer.Bounds.Width, H = Layer.Bounds.Height;
         var r = Surface.ToView(a.Bounds);
+        // У метки с комментарием на картинке рядом рисуется подпись — панель не должна её закрывать,
+        // иначе не видно, что печатаешь. Считаем подпись частью объекта.
+        if (a is MarkerAnnotation marker && Surface.Selection is PixelRect area &&
+            CommentLabels.Layout(Surface.Document, Surface.CommentStyle, new Rect(area.X, area.Y, area.Width, area.Height))
+                .TryGetValue(marker, out var label))
+            r = r.Union(Surface.ToView(label));
+        // Пока печатаем текст, поле ввода растёт вместе с текстом — панель не должна его закрывать.
+        if (_editor is { IsVisible: true } ed && ReferenceEquals(a, _editing))
+        {
+            double el = Canvas.GetLeft(ed), et = Canvas.GetTop(ed);
+            if (!double.IsNaN(el) && !double.IsNaN(et) && ed.Bounds.Width > 0)
+                r = r.Union(new Rect(el, et, ed.Bounds.Width, ed.Bounds.Height));
+        }
         // В первый момент выпадающие списки ещё без шаблона и панель «кажется» ниже, чем есть.
         // Берём реальный размер после раскладки, а при его изменении панель переставится сама (см. OnObjectBarBounds).
         var measured = MeasureOf(ObjectBar);
