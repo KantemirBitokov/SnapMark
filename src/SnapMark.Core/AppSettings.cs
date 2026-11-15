@@ -193,6 +193,8 @@ public sealed class AppSettings
     /// <summary>"" — цвет метки.</summary>
     public string CommentBorderColor { get; set; } = "";
     public string LastShape { get; set; } = "Arrow";
+    /// <summary>Недавние эмодзи (последние сверху).</summary>
+    public List<string> RecentEmoji { get; set; } = new();
 }
 
 public static class DefaultFolders

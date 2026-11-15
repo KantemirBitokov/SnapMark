@@ -64,7 +64,7 @@ public partial class OverlayWindow
         if (!show || a is null) return;
 
         double W = Layer.Bounds.Width, H = Layer.Bounds.Height;
-        var r = Surface.ToView(a.Bounds);
+        var r = Surface.ToView(a.VisualBounds);
         // У метки с комментарием на картинке рядом рисуется подпись — панель не должна её закрывать,
         // иначе не видно, что печатаешь. Считаем подпись частью объекта.
         if (a is MarkerAnnotation marker && Surface.Selection is PixelRect area &&

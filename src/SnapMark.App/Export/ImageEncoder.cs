@@ -24,7 +24,7 @@ public static class ImageRenderer
 
             using (ctx.PushTransform(Matrix.CreateTranslation(-selection.X, -selection.Y)))
             {
-                foreach (var a in annotations) a.Render(ctx);
+                foreach (var a in annotations) a.Draw(ctx);
                 overlay?.Invoke(ctx);
             }
         }

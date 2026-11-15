@@ -16,6 +16,7 @@ public enum RedactMode { Blur, Pixelate }
 /// </summary>
 public sealed class RedactAnnotation : BoxAnnotation
 {
+    public override bool CanRotate => false;
     public RedactMode Mode { get; set; } = RedactMode.Blur;
     /// <summary>Сила 1…10.</summary>
     public double Strength { get; set; } = 7;
