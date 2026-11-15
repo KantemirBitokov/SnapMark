@@ -1,0 +1,7 @@
+[Glass] render: gpu=False, edge shader=False
+rendered t50-f0
+rendered t50-f45
+rendered t50-f100
+rendered t90-f45
+rendered t10-f45
+rendered clear-f20
