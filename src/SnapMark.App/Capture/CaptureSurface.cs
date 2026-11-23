@@ -347,19 +347,38 @@ public sealed class CaptureSurface : Control
             DrawAngleLabel(ctx, ra.Rotation, ToView(knobImg));
     }
 
-    /// <summary>Ручка поворота выделенного объекта (в пикселях снимка): середина верхней стороны рамки и кружок над ней.</summary>
-    (Point Top, Point Knob)? RotateHandle()
+    /// <summary>
+    /// Ручка поворота выделенного объекта: середина нижней стороны рамки и кружок под ней.
+    /// </summary>
+    (Point Bottom, Point Knob)? RotateHandle()
     {
-        if (SelectedAnnotation is not { CanRotate: true } a || Mode == CaptureMode.VideoRegion || EditingText is not null)
+        if (SelectedAnnotation is not { CanRotate: true } a ||
+            Mode == CaptureMode.VideoRegion ||
+            EditingText is not null)
             return null;
-        if (_drag is Drag.Drawing or Drag.MovingAnnotation or Drag.Erasing) return null;
+
+        if (_drag is Drag.Drawing or Drag.MovingAnnotation or Drag.Erasing)
+            return null;
+
         var s = Scale;
         var c = a.Corners(5 * s);
-        var top = new Point((c[0].X + c[1].X) / 2, (c[0].Y + c[1].Y) / 2);
-        double ux = c[0].X - c[3].X, uy = c[0].Y - c[3].Y, len = Math.Sqrt(ux * ux + uy * uy);
-        if (len < 1e-6) return null;
-        var knob = new Point(top.X + ux / len * RotateHandleGap * s, top.Y + uy / len * RotateHandleGap * s);
-        return (top, knob);
+
+        var bottom = new Point(
+            (c[2].X + c[3].X) / 2,
+            (c[2].Y + c[3].Y) / 2);
+
+        double ux = c[2].X - c[1].X;
+        double uy = c[2].Y - c[1].Y;
+        double len = Math.Sqrt(ux * ux + uy * uy);
+
+        if (len < 1e-6)
+            return null;
+
+        var knob = new Point(
+            bottom.X + ux / len * RotateHandleGap * s,
+            bottom.Y + uy / len * RotateHandleGap * s);
+
+        return (bottom, knob);
     }
 
     bool HitRotateHandle(Point img) =>
