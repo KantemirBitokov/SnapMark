@@ -59,6 +59,7 @@ async Task RunAll()
     await Scene("markers-grid", () => MarkersGrid());
     await Scene("pin", () => PinScene(page));
     if (Environment.GetEnvironmentVariable("SNAPMARK_SHOTS_ONLY") == "markers") return;
+    await Scene("rotate-emoji", () => RotateEmojiScene(Page(), screen));
     await Scene("editor", () => EditorScene(Page(), screen));
     await Scene("record", () => RecordScene(Page(), screen));
     await Scene("ocr", () => OcrScene(page));
@@ -259,6 +260,94 @@ async Task EditorScene(Bitmap page, Screen screen)
     await ClickAt(ov, marks[0].Center);
     await Pump(400);
     await Save(ov, "editor-style");
+    ov.Close();
+}
+
+// Поворот (ручкой над рамкой, Shift — шаг 15°) и эмодзи: библиотека, стикер на картинке, эмодзи внутри текста.
+async Task RotateEmojiScene(Bitmap page, Screen screen)
+{
+    var ov = new OverlayWindow(screen, page, CaptureMode.Region) { Width = 1920, Height = 1080 };
+    ov.Show();
+    await Pump(400);
+    ov.Surface.SetSelection(new PixelRect(404, 82, 1396, 838));
+    await Pump(300);
+    var log = new List<string>();
+
+    // 1. Текст с эмодзи, набранный с клавиатуры.
+    ov.Surface.DrawStyle.Color = Color.Parse("#FF3B30");
+    Click(ToolButton(ov, "Text"));
+    await Pump(80);
+    await ClickAt(ov, new Point(1000, 300));
+    await Pump(200);
+    ov.KeyTextInput("Ready to ship 🚀");
+    await Pump(150);
+    // 2. Эмодзи из библиотеки — в позицию курсора (в конец).
+    Click(ov.FindControl<Button>("EmojiButton")!);
+    await Pump(300);
+    await Save(ov, "emoji-picker");
+    var picker = ov.FindControl<EmojiPicker>("EmojiPickerControl")!;
+    var firstEmoji = picker.GetVisualDescendants().OfType<Button>().First(b => b.Classes.Contains("emoji"));
+    Click(firstEmoji);
+    await Pump(300);
+    var text = ov.Surface.Document.Items.OfType<TextAnnotation>().FirstOrDefault();
+    log.Add($"text: '{text?.Text}'");
+
+    // 3. Повернуть текст ручкой с Shift: тянем к ~37° — должно встать ровно на 30° или 45°.
+    ov.KeyPress(Key.Escape, RawInputModifiers.None, PhysicalKey.Escape, null);
+    await Pump(150);
+    Click(ToolButton(ov, "Select"));
+    await Pump(80);
+    if (text is not null)
+    {
+        await ClickAt(ov, text.Bounds.Center);
+        await Pump(200);
+        var c = text.Corners(5);
+        var top = new Point((c[0].X + c[1].X) / 2, (c[0].Y + c[1].Y) / 2 - 24);
+        var pivot = text.Pivot;
+        double r = 140, a = 37 * Math.PI / 180;
+        var target = new Point(pivot.X + Math.Sin(a) * r, pivot.Y - Math.Cos(a) * r);
+        ov.MouseMove(top);
+        ov.MouseDown(top, MouseButton.Left, RawInputModifiers.Shift);
+        for (int i = 1; i <= 10; i++)
+        {
+            ov.MouseMove(new Point(top.X + (target.X - top.X) * i / 10, top.Y + (target.Y - top.Y) * i / 10), RawInputModifiers.Shift);
+            await Pump(16);
+        }
+        await Save(ov, "rotate-dragging");
+        ov.MouseUp(target, MouseButton.Left, RawInputModifiers.Shift);
+        await Pump(200);
+        log.Add($"rotation with Shift: {text.Rotation}");
+    }
+
+    // 4. Повёрнутые фигуры и стикеры.
+    ov.Surface.AddAnnotation(new RectAnnotation { Start = new Point(560, 520), End = new Point(820, 640), Color = Color.Parse("#0A84FF"), Thickness = 5, Rotation = -12 });
+    ov.Surface.AddAnnotation(new LineAnnotation { Start = new Point(1250, 560), End = new Point(1450, 560), ArrowEnd = true, Color = Color.Parse("#34C759"), Thickness = 6, Rotation = 30 });
+    ov.Surface.ClearSelectedAnnotation();
+    Click(ov.FindControl<Button>("EmojiButton")!); // закрыть
+    await Pump(100);
+    Click(ov.FindControl<Button>("EmojiButton")!); // открыть заново: теперь сверху «Недавние»
+    await Pump(200);
+    var recent = picker.GetVisualDescendants().OfType<Button>().Where(b => b.Classes.Contains("emoji")).Select(b => b.Tag as string).ToList();
+    log.Add($"recent: {string.Join(" ", recent)}");
+    // Поиск по-русски.
+    var search = picker.GetVisualDescendants().OfType<TextBox>().First();
+    search.Text = "огонь";
+    await Pump(200);
+    var found = picker.GetVisualDescendants().OfType<Button>().Where(b => b.Classes.Contains("emoji")).Select(b => b.Tag as string).ToList();
+    log.Add($"search 'огонь': {string.Join(" ", found)}");
+    if (found.Count > 0) Click(picker.GetVisualDescendants().OfType<Button>().First(b => b.Classes.Contains("emoji")));
+    await Pump(200);
+    var sticker = ov.Surface.SelectedAnnotation as TextAnnotation;
+    log.Add($"sticker: '{sticker?.Text}' size {sticker?.FontSize}");
+    if (sticker is not null) sticker.Rotation = -15;
+    await Pump(200);
+    await Save(ov, "rotate-emoji");
+
+    // Экспорт: повороты и цветные эмодзи должны попасть в картинку.
+    var sel = ov.Surface.Selection!.Value;
+    using var rendered = ImageRenderer.Render(page, sel, ov.Surface.Document.Items);
+    File.WriteAllBytes(Path.Combine(outDir, "rotate-emoji-export.png"), ImageEncoder.ToPng(rendered));
+    foreach (var l in log) Console.WriteLine("rotate-emoji: " + l);
     ov.Close();
 }
 

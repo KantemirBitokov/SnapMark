@@ -163,6 +163,69 @@ public abstract class Annotation
 
     public virtual bool HitTest(Point p, double tolerance) => Bounds.Inflate(tolerance).Contains(p);
 
+    // ── Поворот ───────────────────────────────────────────────────────
+    /// <summary>Угол поворота в градусах (по часовой стрелке) вокруг центра <see cref="Bounds"/>.</summary>
+    public double Rotation { get; set; }
+
+    /// <summary>Можно ли поворачивать (размытие/пиксели и метки — нет: подпись и выноски должны стоять прямо).</summary>
+    public virtual bool CanRotate => true;
+
+    public Point Pivot => Bounds.Center;
+
+    Matrix RotationMatrix(double degrees)
+    {
+        var c = Pivot;
+        return Matrix.CreateTranslation(-c.X, -c.Y) * Matrix.CreateRotation(degrees * Math.PI / 180) * Matrix.CreateTranslation(c.X, c.Y);
+    }
+
+    /// <summary>Рисует с учётом поворота. Везде вместо Render вызывать Draw.</summary>
+    public void Draw(DrawingContext ctx)
+    {
+        if (Rotation == 0 || !CanRotate)
+        {
+            Render(ctx);
+            return;
+        }
+        using (ctx.PushTransform(RotationMatrix(Rotation)))
+            Render(ctx);
+    }
+
+    /// <summary>Попадание с учётом поворота: точку поворачиваем обратно и проверяем как обычно.</summary>
+    public bool Hit(Point p, double tolerance) =>
+        HitTest(Rotation == 0 || !CanRotate ? p : p.Transform(RotationMatrix(-Rotation)), tolerance);
+
+    /// <summary>Углы рамки объекта с учётом поворота (для рамки выделения и ручки поворота).</summary>
+    public Point[] Corners(double inflate = 0)
+    {
+        var b = Bounds.Inflate(inflate);
+        var pts = new[] { b.TopLeft, b.TopRight, b.BottomRight, b.BottomLeft };
+        if (Rotation == 0 || !CanRotate) return pts;
+        var m = RotationMatrix(Rotation);
+        return pts.Select(q => q.Transform(m)).ToArray();
+    }
+
+    /// <summary>Описанный прямоугольник с учётом поворота — чтобы панели и подписи не наезжали на объект.</summary>
+    public Rect VisualBounds
+    {
+        get
+        {
+            if (Rotation == 0 || !CanRotate) return Bounds;
+            var c = Corners();
+            double l = c.Min(q => q.X), t = c.Min(q => q.Y), r = c.Max(q => q.X), b = c.Max(q => q.Y);
+            return new Rect(l, t, r - l, b - t);
+        }
+    }
+
+    /// <summary>Угол к −180…180, с Shift — к шагу 15° (0, 15, 30, 45, 60, 75, 90…).</summary>
+    public static double NormalizeAngle(double deg, bool snap)
+    {
+        if (snap) deg = Math.Round(deg / 15) * 15;
+        deg %= 360;
+        if (deg > 180) deg -= 360;
+        if (deg <= -180) deg += 360;
+        return Math.Abs(deg) < 1e-6 ? 0 : deg;
+    }
+
     public virtual void ApplyStyle(AnnotationStyle s)
     {
         Color = WithOpacity(s.Color, s.Opacity);
@@ -187,6 +250,7 @@ public abstract class Annotation
         target.Color = Color;
         target.Thickness = Thickness;
         target.Dashed = Dashed;
+        target.Rotation = Rotation;
         return target;
     }
 
@@ -629,6 +693,7 @@ public sealed class TextAnnotation : Annotation
 // ═════════════════════════════ Метка A, B, C… / 1, 2, 3… (с хвостом-стрелкой или без) ═════════════════════════════
 public sealed class MarkerAnnotation : Annotation
 {
+    public override bool CanRotate => false;
     /// <summary>Постоянный идентификатор: к нему привязан комментарий, буква может меняться при перенумерации.</summary>
     public Guid Id { get; set; } = Guid.NewGuid();
     /// <summary>Порядок создания — по нему раздаются обозначения.</summary>

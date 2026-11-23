@@ -21,7 +21,7 @@ public enum CaptureMode { Region, FullScreen, VideoRegion }
 /// </summary>
 public sealed class CaptureSurface : Control
 {
-    enum Drag { None, Selecting, MovingSelection, Resizing, Drawing, MovingAnnotation, Erasing }
+    enum Drag { None, Selecting, MovingSelection, Resizing, Drawing, MovingAnnotation, Erasing, Rotating }
 
     static readonly IBrush DimBrush = new SolidColorBrush(Color.FromArgb(120, 0, 0, 0));
     static readonly IBrush LabelBg = new SolidColorBrush(Color.FromArgb(200, 22, 22, 24));
@@ -65,6 +65,10 @@ public sealed class CaptureSurface : Control
     public CommentLabelStyle CommentStyle { get; } = new();
     public PixelRect? Selection { get; private set; }
     public Annotation? SelectedAnnotation { get; private set; }
+
+    // Поворот выделенного объекта: ручка над рамкой, Shift — шаг 15°.
+    double _rotateStart, _rotatePressAngle;
+    const double RotateHandleGap = 24, RotateHandleRadius = 6.5;
     /// <summary>Текст, который сейчас редактируется в TextBox поверх — его не рисуем, чтобы не двоилось.</summary>
     public TextAnnotation? EditingText { get; set; }
 
@@ -177,6 +181,28 @@ public sealed class CaptureSurface : Control
     }
 
     /// <summary>Дублировать выделенный объект (копия со сдвигом). Метка получает следующую букву.</summary>
+    /// <summary>Добавить готовый объект (например, эмодзи-стикер) с отменой и выделить его.</summary>
+    public void AddAnnotation(Annotation a)
+    {
+        var snap = Document.Snapshot();
+        Document.Items.Add(a);
+        Document.PushUndo(snap);
+        SetSelected(a);
+        AnnotationsChanged?.Invoke();
+        InvalidateVisual();
+    }
+
+    /// <summary>Поменять текст надписи с отменой.</summary>
+    public void SetText(TextAnnotation ta, string text)
+    {
+        if (ta.Text == text) return;
+        var snap = Document.Snapshot();
+        ta.Text = text;
+        Document.PushUndo(snap);
+        AnnotationsChanged?.Invoke();
+        InvalidateVisual();
+    }
+
     public void DuplicateSelected()
     {
         if (SelectedAnnotation is not { } a) return;
@@ -279,14 +305,31 @@ public sealed class CaptureSurface : Control
         using (ctx.PushTransform(Matrix.CreateScale(1 / s, 1 / s)))
         {
             foreach (var a in Document.Items)
-                if (!ReferenceEquals(a, EditingText)) a.Render(ctx);
+                if (!ReferenceEquals(a, EditingText)) a.Draw(ctx);
             CommentLabels.Render(ctx, Document, CommentStyle, new Rect(sel.X, sel.Y, sel.Width, sel.Height));
 
-            if (SelectedAnnotation is not null)
+            if (SelectedAnnotation is { } selA)
             {
-                var b = SelectedAnnotation.Bounds.Inflate(5 * s);
                 var pen = new Pen(_frameBrush, 1.25 * s, new DashStyle(new double[] { 3, 2.5 }, 0));
-                ctx.DrawRectangle(null, pen, b, 5 * s, 5 * s);
+                if (selA.Rotation == 0 || !selA.CanRotate)
+                    ctx.DrawRectangle(null, pen, selA.Bounds.Inflate(5 * s), 5 * s, 5 * s);
+                else
+                {
+                    var c = selA.Corners(5 * s);
+                    var geo = new StreamGeometry();
+                    using (var g = geo.Open())
+                    {
+                        g.BeginFigure(c[0], false);
+                        for (int i = 1; i < 4; i++) g.LineTo(c[i]);
+                        g.EndFigure(true);
+                    }
+                    ctx.DrawGeometry(null, pen, geo);
+                }
+                if (RotateHandle() is (Point top, Point knob))
+                {
+                    ctx.DrawLine(new Pen(_frameBrush, 1.25 * s), top, knob);
+                    ctx.DrawEllipse(Brushes.White, new Pen(_frameBrush, 1.75 * s), knob, RotateHandleRadius * s, RotateHandleRadius * s);
+                }
             }
         }
 
@@ -300,6 +343,44 @@ public sealed class CaptureSurface : Control
         ctx.DrawRectangle(null, new Pen(_frameBrush, 1.5), frame);
 
         if (IsAdjustingSelection) DrawSizeLabel(ctx, sel, v);
+        if (_drag == Drag.Rotating && SelectedAnnotation is { } ra && RotateHandle() is (_, Point knobImg))
+            DrawAngleLabel(ctx, ra.Rotation, ToView(knobImg));
+    }
+
+    /// <summary>Ручка поворота выделенного объекта (в пикселях снимка): середина верхней стороны рамки и кружок над ней.</summary>
+    (Point Top, Point Knob)? RotateHandle()
+    {
+        if (SelectedAnnotation is not { CanRotate: true } a || Mode == CaptureMode.VideoRegion || EditingText is not null)
+            return null;
+        if (_drag is Drag.Drawing or Drag.MovingAnnotation or Drag.Erasing) return null;
+        var s = Scale;
+        var c = a.Corners(5 * s);
+        var top = new Point((c[0].X + c[1].X) / 2, (c[0].Y + c[1].Y) / 2);
+        double ux = c[0].X - c[3].X, uy = c[0].Y - c[3].Y, len = Math.Sqrt(ux * ux + uy * uy);
+        if (len < 1e-6) return null;
+        var knob = new Point(top.X + ux / len * RotateHandleGap * s, top.Y + uy / len * RotateHandleGap * s);
+        return (top, knob);
+    }
+
+    bool HitRotateHandle(Point img) =>
+        RotateHandle() is (_, Point knob) && Annotation.Distance(img, knob) <= (RotateHandleRadius + 5) * Scale;
+
+    double AngleTo(Point img)
+    {
+        var c = SelectedAnnotation!.Pivot;
+        return Math.Atan2(img.Y - c.Y, img.X - c.X) * 180 / Math.PI;
+    }
+
+    void DrawAngleLabel(DrawingContext ctx, double angle, Point at)
+    {
+        var ft = new FormattedText($"{angle:0}°", CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
+            new Typeface(UiFonts.Small, FontStyle.Normal, FontWeight.SemiBold), SnapMark.UI.UiType.Scaled(SnapMark.UI.UiType.Caption), Brushes.White);
+        var box = new Rect(0, 0, ft.Width + 14, ft.Height + 6);
+        double x = Math.Clamp(at.X + 14, 4, Math.Max(4, Bounds.Width - box.Width - 4));
+        double y = Math.Clamp(at.Y - box.Height - 10, 4, Math.Max(4, Bounds.Height - box.Height - 4));
+        box = box.WithX(x).WithY(y);
+        ctx.DrawRectangle(LabelBg, null, box, 6, 6);
+        ctx.DrawText(ft, new Point(box.X + 7, box.Y + 3));
     }
 
     void DrawSizeLabel(DrawingContext ctx, PixelRect sel, Rect v)
@@ -343,7 +424,7 @@ public sealed class CaptureSurface : Control
     {
         var tol = tolerancePx * Scale;
         for (int i = Document.Items.Count - 1; i >= 0; i--)
-            if (Document.Items[i].HitTest(img, tol)) return Document.Items[i];
+            if (Document.Items[i].Hit(img, tol)) return Document.Items[i];
         return null;
     }
 
@@ -384,6 +465,30 @@ public sealed class CaptureSurface : Control
         _pressImg = _lastImg = _snapAnchor = img;
         _moved = false;
         _lastTimestamp = e.Timestamp;
+
+        // Ручка поворота: тянуть — повернуть (Shift — шаг 15°), двойной щелчок — вернуть прямо.
+        if (HitRotateHandle(img) && SelectedAnnotation is { } rot)
+        {
+            if (e.ClickCount >= 2)
+            {
+                if (rot.Rotation != 0)
+                {
+                    var snap = Document.Snapshot();
+                    rot.Rotation = 0;
+                    Document.PushUndo(snap);
+                    AnnotationsChanged?.Invoke();
+                }
+                InvalidateVisual();
+                return;
+            }
+            e.Pointer.Capture(this);
+            _snapshot = Document.Snapshot();
+            _rotateStart = rot.Rotation;
+            _rotatePressAngle = AngleTo(img);
+            SetDrag(Drag.Rotating);
+            InvalidateVisual();
+            return;
+        }
 
         if (e.ClickCount >= 2 && HandleDoubleClick(img)) return;
 
@@ -587,6 +692,11 @@ public sealed class CaptureSurface : Control
                 SelectedAnnotation?.Offset(img.X - _lastImg.X, img.Y - _lastImg.Y);
                 break;
 
+            case Drag.Rotating:
+                if (SelectedAnnotation is { } ra)
+                    ra.Rotation = Annotation.NormalizeAngle(_rotateStart + AngleTo(img) - _rotatePressAngle, shift);
+                break;
+
             case Drag.Erasing:
                 EraseAt(img);
                 break;
@@ -705,6 +815,14 @@ public sealed class CaptureSurface : Control
             case Drag.Erasing:
                 if (_erasedAny && _snapshot is not null) Document.PushUndo(_snapshot);
                 break;
+
+            case Drag.Rotating:
+                if (_snapshot is not null && SelectedAnnotation is { } ra && ra.Rotation != _rotateStart)
+                {
+                    Document.PushUndo(_snapshot);
+                    AnnotationsChanged?.Invoke();
+                }
+                break;
         }
         _snapshot = null;
         InteractionChanged?.Invoke();
@@ -806,6 +924,12 @@ public sealed class CaptureSurface : Control
         if (Selection is not PixelRect sel)
         {
             Cursor = _cross;
+            return;
+        }
+
+        if (HitRotateHandle(ToImage(view)))
+        {
+            Cursor = _hand;
             return;
         }
 

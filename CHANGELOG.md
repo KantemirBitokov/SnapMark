@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.23
+- **Emoji:** An emoji library with categories, search, and recently used emojis. Insert an emoji into text you’re editing or add it to the image as a sticker.
+- **Rotate:** Rotate annotations using the handle on the selection frame. Hold Shift to snap to 15° increments; double-click the handle to reset the rotation.
+
 ## 1.9.22
 - Text recognition: a small selection (narrower than the button bar), especially near the right edge of the screen, no longer shifts the picture and shows a black area next to it. The picture stays exactly where the fragment was, and the button bar moves to fit on the screen.
 

@@ -62,6 +62,9 @@
             <Button Classes="tool seg" Tag="Text" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Текст (T)'}">
               <Path Data="{StaticResource Icon.Text}"/>
             </Button>
+            <Button x:Name="EmojiButton" Classes="tool seg" Click="OnEmojiClick" ToolTip.Tip="{l:Tr 'Эмодзи: вставить в текст или поставить на картинку'}">
+              <Path Data="{StaticResource Icon.Emoji}"/>
+            </Button>
             <Button Classes="tool seg" Tag="Marker" Click="OnToolClick" ToolTip.Tip="{l:Tr 'Метка A, B, C… с комментарием (M)'}">
               <Path Classes="solid" Data="{StaticResource Icon.MarkerBadge}"/>
             </Button>
@@ -120,6 +123,11 @@
             <Path Data="{StaticResource Icon.Redo}"/>
           </Button>
         </StackPanel>
+      </ui:GlassPanel>
+
+      <!-- Библиотека эмодзи -->
+      <ui:GlassPanel x:Name="EmojiPanel" IsVisible="False" Padding="10" CornerRadius="16">
+        <ui:EmojiPicker x:Name="EmojiPickerControl"/>
       </ui:GlassPanel>
 
       <!-- Выбор фигуры -->

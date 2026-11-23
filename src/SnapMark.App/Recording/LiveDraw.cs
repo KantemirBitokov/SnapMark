@@ -164,9 +164,9 @@ public sealed class LiveDrawCanvas : Panel
         {
             var preview = (TextAnnotation)ta.Clone();
             preview.Text = (_input?.Text ?? "") + "|";
-            return preview.Bounds;
+            return preview.VisualBounds;
         }
-        return StyleTarget?.Bounds;
+        return StyleTarget?.VisualBounds;
     }
 
     /// <summary>
@@ -310,14 +310,14 @@ public sealed class LiveDrawCanvas : Panel
         using (ctx.PushTransform(Matrix.CreateScale(1 / s, 1 / s)))
         {
             foreach (var a in Document.Items)
-                if (!ReferenceEquals(a, _editText)) a.Render(ctx);
+                if (!ReferenceEquals(a, _editText)) a.Draw(ctx);
 
             if (_editText is not null)
             {
                 // Набираемый текст с «кареткой» в конце.
                 var preview = (TextAnnotation)_editText.Clone();
                 preview.Text = (_input?.Text ?? "") + "|";
-                preview.Render(ctx);
+                preview.Draw(ctx);
             }
 
             CommentLabels.Render(ctx, Document, _commentStyle, new Rect(0, 0, Bounds.Width * s, Bounds.Height * s));
@@ -584,7 +584,7 @@ public sealed class LiveDrawCanvas : Panel
     {
         var tol = tolerancePx * PixelScale;
         for (int i = Document.Items.Count - 1; i >= 0; i--)
-            if (Document.Items[i].HitTest(img, tol)) return Document.Items[i];
+            if (Document.Items[i].Hit(img, tol)) return Document.Items[i];
         return null;
     }
 

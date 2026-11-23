@@ -277,6 +277,7 @@ public partial class OverlayWindow : Window
         // Всплывающие панели — рядом с тулбаром, со стороны от выделения.
         PlacePopover(StylePanel, StyleButton, tx, ty, tb, below, W, H);
         PlacePopover(ShapesPanel, ShapeButton, tx, ty, tb, below, W, H);
+        PlacePopover(EmojiPanel, EmojiButton, tx, ty, tb, below, W, H);
 
         if (CommentsPanel.IsVisible)
         {
@@ -286,7 +287,7 @@ public partial class OverlayWindow : Window
             var cp = MeasureOf(CommentsPanel);
             var actionsRect = new Rect(ax, ay, ab.Width, ab.Height).Inflate(8);
             var toolsRect = new Rect(tx, ty, tb.Width, tb.Height).Inflate(8);
-            var popovers = new[] { StylePanel, ShapesPanel }.Where(p => p.IsVisible)
+            var popovers = new[] { StylePanel, ShapesPanel, EmojiPanel }.Where(p => p.IsVisible)
                 .Select(p => new Rect(Canvas.GetLeft(p), Canvas.GetTop(p), MeasureOf(p).Width, MeasureOf(p).Height).Inflate(8)).ToList();
             double topCy = Clamp(v.Top, 8, H - cp.Height - 8);
             var spots = new (double X, double Y)[]
@@ -333,6 +334,7 @@ public partial class OverlayWindow : Window
     {
         ToolsBar.IsVisible = ActionsBar.IsVisible = VideoBar.IsVisible = VideoOptionsPanel.IsVisible = false;
         StylePanel.IsVisible = ShapesPanel.IsVisible = CommentsPanel.IsVisible = ObjectBar.IsVisible = false;
+        EmojiPanel.IsVisible = false;
     }
 
     static Size MeasureOf(Control c)
@@ -378,7 +380,7 @@ public partial class OverlayWindow : Window
     void OnShapesMenuClick(object? sender, RoutedEventArgs e)
     {
         ShapesPanel.IsVisible = !ShapesPanel.IsVisible;
-        StylePanel.IsVisible = false;
+        StylePanel.IsVisible = EmojiPanel.IsVisible = false;
         LayoutBars();
     }
 
@@ -859,6 +861,111 @@ public partial class OverlayWindow : Window
     void OnDuplicateClick(object? sender, RoutedEventArgs e) => Surface.DuplicateSelected();
     void OnDeleteObjectClick(object? sender, RoutedEventArgs e) => Surface.DeleteSelected();
 
+    // ═══════════════════════════ Эмодзи ═══════════════════════════
+    sealed record LastEdit(TextAnnotation Text, bool WasNew, int SelStart, int SelEnd, string Typed, DateTime Time);
+    LastEdit? _lastEdit;
+    bool _emojiWired;
+
+    void OnEmojiClick(object? sender, RoutedEventArgs e)
+    {
+        if (!_emojiWired)
+        {
+            EmojiPickerControl.Picked += InsertEmoji;
+            _emojiWired = true;
+        }
+        bool show = !EmojiPanel.IsVisible;
+        if (show) EmojiPickerControl.Reset();
+        EmojiPanel.IsVisible = show;
+        StylePanel.IsVisible = ShapesPanel.IsVisible = false;
+        LayoutBars();
+        // Курсор был в тексте — после открытия возвращаемся к нему, чтобы можно было печатать дальше.
+        if (show && RecentEdit() is { } le && Surface.Document.Items.Contains(le.Text))
+            ResumeEdit(le.Text, le.SelStart, le.SelEnd);
+    }
+
+    /// <summary>Текст, который только что редактировали (и он всё ещё выделен) — эмодзи пойдёт в него.</summary>
+    LastEdit? RecentEdit()
+    {
+        if (_lastEdit is not { } le || (DateTime.UtcNow - le.Time).TotalMinutes > 2) return null;
+        bool inDoc = Surface.Document.Items.Contains(le.Text);
+        if (inDoc && ReferenceEquals(Surface.SelectedAnnotation, le.Text)) return le;
+        if (!inDoc && le.WasNew && (DateTime.UtcNow - le.Time).TotalSeconds < 15) return le; // новый, ещё пустой текст
+        return null;
+    }
+
+    void ResumeEdit(TextAnnotation ta, int selStart, int selEnd)
+    {
+        BeginTextEdit(ta, isNew: false);
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (_editor is not { } tb) return;
+            int len = tb.Text?.Length ?? 0;
+            tb.SelectionStart = Math.Clamp(selStart, 0, len);
+            tb.SelectionEnd = Math.Clamp(selEnd, 0, len);
+            tb.CaretIndex = Math.Clamp(selEnd, 0, len);
+        });
+    }
+
+    void InsertEmoji(string emoji)
+    {
+        // Если сейчас идёт ввод — сначала фиксируем его (курсор запомнится в LostFocus/здесь).
+        if (_editor is { } open && _editing is { } edited)
+            _lastEdit = new LastEdit(edited, _editingIsNew, Math.Min(open.SelectionStart, open.SelectionEnd),
+                Math.Max(open.SelectionStart, open.SelectionEnd), open.Text ?? "", DateTime.UtcNow);
+        CommitTextEdit();
+
+        if (RecentEdit() is { } le)
+        {
+            var ta = le.Text;
+            int caret;
+            if (!Surface.Document.Items.Contains(ta))
+            {
+                // Новый текст, в котором ещё ничего не напечатали, — начинаем его с эмодзи.
+                ta.Text = le.Typed + emoji;
+                caret = ta.Text.Length;
+                Surface.AddAnnotation(ta);
+            }
+            else
+            {
+                var t = ta.Text;
+                int a = Math.Clamp(le.SelStart, 0, t.Length), b = Math.Clamp(le.SelEnd, a, t.Length);
+                Surface.SetText(ta, t[..a] + emoji + t[b..]);
+                caret = a + emoji.Length;
+            }
+            Surface.Select(ta);
+            ResumeEdit(ta, caret, caret);
+            return;
+        }
+
+        // Текста под рукой нет — ставим эмодзи на картинку стикером в центре выделения.
+        var sticker = new TextAnnotation();
+        sticker.ApplyStyle(Surface.DrawStyle);
+        sticker.Text = emoji;
+        sticker.FontSize = Math.Max(56, Surface.DrawStyle.FontSize * 2) ;
+        sticker.Position = new Point(0, 0);
+        var center = Surface.Selection is PixelRect sel ? new Point(sel.X + sel.Width / 2.0, sel.Y + sel.Height / 2.0) : new Point(200, 200);
+        // Несколько стикеров подряд не ложатся друг на друга.
+        int already = Surface.Document.Items.OfType<TextAnnotation>().Count(x => x.Text == emoji);
+        center = new Point(center.X + already * 24 * Surface.Scale, center.Y + already * 24 * Surface.Scale);
+        var b0 = sticker.Bounds;
+        sticker.Offset(center.X - b0.Center.X, center.Y - b0.Center.Y);
+        Surface.AddAnnotation(sticker);
+        SetToolKeepSelection();
+    }
+
+    /// <summary>Стикер сразу можно двигать и поворачивать: инструмент «Выбор», выделение остаётся.</summary>
+    void SetToolKeepSelection()
+    {
+        var selected = Surface.SelectedAnnotation;
+        if (Surface.Tool != ToolKind.Select)
+        {
+            Surface.Tool = ToolKind.Select;
+            UpdateToolButtons();
+        }
+        Surface.Select(selected);
+        LayoutBars();
+    }
+
     // ═══════════════════════════ Текст ═══════════════════════════
     void BeginTextEdit(TextAnnotation ta, bool isNew)
     {
@@ -872,6 +979,7 @@ public partial class OverlayWindow : Window
             AcceptsReturn = true,
             MinWidth = 80,
             TextWrapping = TextWrapping.NoWrap,
+            ClearSelectionOnLostFocus = false, // выделенный кусок заменится эмодзи из библиотеки
         };
         tb.Classes.Add("inline");
         StyleEditor(tb, ta);
@@ -886,7 +994,14 @@ public partial class OverlayWindow : Window
                 e.Handled = true;
             }
         };
-        tb.LostFocus += (_, _) => CommitTextEdit();
+        tb.LostFocus += (_, _) =>
+        {
+            // Запоминаем, где стоял курсор: эмодзи из библиотеки вставится именно сюда.
+            if (ReferenceEquals(_editor, tb) && _editing is { } edited)
+                _lastEdit = new LastEdit(edited, _editingIsNew, Math.Min(tb.SelectionStart, tb.SelectionEnd),
+                    Math.Max(tb.SelectionStart, tb.SelectionEnd), tb.Text ?? "", DateTime.UtcNow);
+            CommitTextEdit();
+        };
         // Поле выросло (новая строка, длинная фраза) — переставляем панель, чтобы она не закрыла текст.
         tb.PropertyChanged += (_, e) =>
         {
@@ -916,6 +1031,8 @@ public partial class OverlayWindow : Window
         tb.CaretBrush = brush;
         Canvas.SetLeft(tb, ta.Position.X / s - 3);
         Canvas.SetTop(tb, ta.Position.Y / s - 1);
+        // Повёрнутый текст и редактируется повёрнутым — под тем же углом, что на картинке.
+        tb.RenderTransform = ta.Rotation != 0 ? new RotateTransform(ta.Rotation) : null;
     }
 
     void CommitTextEdit()
@@ -1086,9 +1203,9 @@ public partial class OverlayWindow : Window
         {
             case Key.Escape:
                 e.Handled = true;
-                if (StylePanel.IsVisible || ShapesPanel.IsVisible || VideoOptionsPanel.IsVisible)
+                if (StylePanel.IsVisible || ShapesPanel.IsVisible || VideoOptionsPanel.IsVisible || EmojiPanel.IsVisible)
                 {
-                    StylePanel.IsVisible = ShapesPanel.IsVisible = VideoOptionsPanel.IsVisible = false;
+                    StylePanel.IsVisible = ShapesPanel.IsVisible = VideoOptionsPanel.IsVisible = EmojiPanel.IsVisible = false;
                     LayoutBars();
                 }
                 else if (Surface.SelectedAnnotation is not null) Surface.ClearSelectedAnnotation();
