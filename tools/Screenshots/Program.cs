@@ -299,23 +299,61 @@ async Task RotateEmojiScene(Bitmap page, Screen screen)
     await Pump(80);
     if (text is not null)
     {
-        await ClickAt(ov, text.Bounds.Center);
+        await ClickAt(ov, ov.Surface.ToView(text.Bounds.Center));
         await Pump(200);
-        var c = text.Corners(5);
-        var top = new Point((c[0].X + c[1].X) / 2, (c[0].Y + c[1].Y) / 2 - 24);
+
+        var scale = ov.Surface.Scale;
+        var c = text.Corners(5 * scale);
+
+        var bottom = new Point(
+            (c[2].X + c[3].X) / 2,
+            (c[2].Y + c[3].Y) / 2);
+
+        double ux = c[2].X - c[1].X;
+        double uy = c[2].Y - c[1].Y;
+        double len = Math.Sqrt(ux * ux + uy * uy);
+
+        if (len < 1e-6)
+            throw new InvalidOperationException("Rotation handle edge has zero length.");
+
+        var knobImg = new Point(
+            bottom.X + ux / len * 24 * scale,
+            bottom.Y + uy / len * 24 * scale);
+
+        var handle = ov.Surface.ToView(knobImg);
         var pivot = text.Pivot;
-        double r = 140, a = 37 * Math.PI / 180;
-        var target = new Point(pivot.X + Math.Sin(a) * r, pivot.Y - Math.Cos(a) * r);
-        ov.MouseMove(top);
-        ov.MouseDown(top, MouseButton.Left, RawInputModifiers.Shift);
+
+        double startAngle = Math.Atan2(
+            knobImg.Y - pivot.Y,
+            knobImg.X - pivot.X);
+
+        double targetAngle = startAngle + 37 * Math.PI / 180;
+        double radius = 140 * scale;
+
+        var targetImg = new Point(
+            pivot.X + Math.Cos(targetAngle) * radius,
+            pivot.Y + Math.Sin(targetAngle) * radius);
+
+        var target = ov.Surface.ToView(targetImg);
+
+        ov.MouseMove(handle);
+        ov.MouseDown(handle, MouseButton.Left, RawInputModifiers.Shift);
+
         for (int i = 1; i <= 10; i++)
         {
-            ov.MouseMove(new Point(top.X + (target.X - top.X) * i / 10, top.Y + (target.Y - top.Y) * i / 10), RawInputModifiers.Shift);
+            ov.MouseMove(
+                new Point(
+                    handle.X + (target.X - handle.X) * i / 10,
+                    handle.Y + (target.Y - handle.Y) * i / 10),
+                RawInputModifiers.Shift);
+
             await Pump(16);
         }
+
         await Save(ov, "rotate-dragging");
         ov.MouseUp(target, MouseButton.Left, RawInputModifiers.Shift);
         await Pump(200);
+
         log.Add($"rotation with Shift: {text.Rotation}");
     }
 
