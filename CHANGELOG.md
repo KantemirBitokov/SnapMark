@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.24
+- **Rotate:** The rotation handle is now below the selected object, keeping it clear of the object's settings panel.
+- **Emoji:** Add emojis to text or place them on the image as stickers using the emoji picker.
+- 
 ## 1.9.23
 - **Emoji:** An emoji library with categories, search, and recently used emojis. Insert an emoji into text you’re editing or add it to the image as a sticker.
 - **Rotate:** Rotate annotations using the handle on the selection frame. Hold Shift to snap to 15° increments; double-click the handle to reset the rotation.
