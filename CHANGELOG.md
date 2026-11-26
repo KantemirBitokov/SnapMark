@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.27
+- **Emoji size in the object panel.** An Apple emoji sticker is now resized with the same numeric stepper as text instead of a drag handle, and the size is capped at 320 px so the picture stays sharp.
+- **Smaller rotate cursor.** The arc with the arrow is now the size of a normal cursor instead of a huge badge.
+- **The emoji library closes when you click anywhere outside it**, not only when you press its button again.
+
 ## 1.9.26
 - **Rotate cursor.** The rotation cursor is drawn by SnapMark itself now: a crisp arc with an arrow, macOS style, instead of a pixelated bitmap with a dark square around it. It stays sharp at any display scale.
 - **Emoji quality and size.** Apple emoji are taken at 160×160 instead of 64×64, so stickers no longer look blurry. An emoji sticker can also be resized: select it and drag the round handle in its corner.
