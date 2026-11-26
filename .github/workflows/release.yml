@@ -94,3 +94,38 @@ jobs:
           target_commitish: ${{ github.sha }}
           files: dist/*
           body_path: release-notes.md
+
+  # Манифесты winget / Homebrew / AUR для новой версии. Файлы релиза уже опубликованы,
+  # поэтому SHA-256 берутся через GitHub API, а результат коммитится в main.
+  manifests:
+    needs: [release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+      - name: Version
+        id: ver
+        run: echo "v=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' src/SnapMark.App/SnapMark.App.csproj | head -1)" >> $GITHUB_OUTPUT
+      - name: Manifests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 packaging/make-manifests.py ${{ steps.ver.outputs.v }}
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packaging
+          if git diff --cached --quiet; then
+            echo "Manifests already up to date"
+            exit 0
+          fi
+          git commit -m "Manifests for ${{ steps.ver.outputs.v }}"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep 5
+          done
+          echo "Не удалось запушить манифесты" >&2
+          exit 1

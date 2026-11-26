@@ -29,9 +29,17 @@ def sha(path: pathlib.Path) -> str:
 
 
 def github_digests(ver: str, names) -> dict:
-    import json, urllib.request
+    import json, os, urllib.request
     api = REPO.replace("https://github.com/", "https://api.github.com/repos/")
-    with urllib.request.urlopen(f"{api}/releases/tags/v{ver}") as r:
+    req = urllib.request.Request(
+        f"{api}/releases/tags/v{ver}",
+        headers={"Accept": "application/vnd.github+json"},
+    )
+    # В CI передаём токен: у анонимных запросов с общих IP раннеров лимит 60/час.
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token:
+        req.add_header("Authorization", f"Bearer {token}")
+    with urllib.request.urlopen(req) as r:
         assets = {a["name"]: a.get("digest") or "" for a in json.load(r)["assets"]}
     out = {}
     for n in names:
