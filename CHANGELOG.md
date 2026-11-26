@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.26
+- **Rotate cursor.** The rotation cursor is drawn by SnapMark itself now: a crisp arc with an arrow, macOS style, instead of a pixelated bitmap with a dark square around it. It stays sharp at any display scale.
+- **Emoji quality and size.** Apple emoji are taken at 160×160 instead of 64×64, so stickers no longer look blurry. An emoji sticker can also be resized: select it and drag the round handle in its corner.
+
 ## 1.9.25
 - **Rotate without the handle.** The rotate knob under the selection frame is gone. Move the pointer just outside the object — the cursor turns into a circular arrow — and drag to rotate around the object's centre. It works at any angle, so the handle can no longer hide under the style panel. Hold Shift for 15° steps, double-click outside the object to reset the rotation.
 - **Apple emoji.** Settings → Screenshots → “Emoji set”: “Apple — like iOS” draws the emoji library and stickers with Apple artwork instead of the system font. Pictures are downloaded once and cached, so emoji look the same on Windows, macOS and Linux; without a network the system font is used.
