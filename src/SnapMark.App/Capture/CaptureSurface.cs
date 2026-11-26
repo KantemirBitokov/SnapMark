@@ -42,7 +42,7 @@ public sealed class CaptureSurface : Control
     readonly DispatcherTimer _snapTimer;
     IBrush _frameBrush = new SolidColorBrush(Color.Parse("#0A84FF"));
 
-    Cursor? _cross, _arrow, _hand, _sizeAll, _ibeam, _eraser;
+    Cursor? _cross, _arrow, _hand, _sizeAll, _ibeam, _eraser, _rotate;
     readonly Cursor?[] _handleCursors = new Cursor?[8];
 
     public CaptureSurface()
@@ -66,9 +66,10 @@ public sealed class CaptureSurface : Control
     public PixelRect? Selection { get; private set; }
     public Annotation? SelectedAnnotation { get; private set; }
 
-    // Поворот выделенного объекта: ручка над рамкой, Shift — шаг 15°.
+    // Поворот выделенного объекта: тянем за пределами рамки объекта (как в Photoshop), Shift — шаг 15°.
     double _rotateStart, _rotatePressAngle;
-    const double RotateHandleGap = 24, RotateHandleRadius = 6.5;
+    /// <summary>Кольцо вокруг объекта, где курсор переключается в режим поворота (в точках окна).</summary>
+    const double RotateZone = 26;
     /// <summary>Текст, который сейчас редактируется в TextBox поверх — его не рисуем, чтобы не двоилось.</summary>
     public TextAnnotation? EditingText { get; set; }
 
@@ -325,11 +326,6 @@ public sealed class CaptureSurface : Control
                     }
                     ctx.DrawGeometry(null, pen, geo);
                 }
-                if (RotateHandle() is (Point top, Point knob))
-                {
-                    ctx.DrawLine(new Pen(_frameBrush, 1.25 * s), top, knob);
-                    ctx.DrawEllipse(Brushes.White, new Pen(_frameBrush, 1.75 * s), knob, RotateHandleRadius * s, RotateHandleRadius * s);
-                }
             }
         }
 
@@ -343,46 +339,27 @@ public sealed class CaptureSurface : Control
         ctx.DrawRectangle(null, new Pen(_frameBrush, 1.5), frame);
 
         if (IsAdjustingSelection) DrawSizeLabel(ctx, sel, v);
-        if (_drag == Drag.Rotating && SelectedAnnotation is { } ra && RotateHandle() is (_, Point knobImg))
-            DrawAngleLabel(ctx, ra.Rotation, ToView(knobImg));
+        if (_drag == Drag.Rotating && SelectedAnnotation is { } rotating)
+            DrawAngleLabel(ctx, rotating.Rotation, ToView(_lastImg));
     }
 
     /// <summary>
-    /// Ручка поворота выделенного объекта: середина нижней стороны рамки и кружок под ней.
+    /// Курсор в кольце вокруг выделенного объекта — значит, зажав ЛКМ, его можно повернуть.
+    /// Внутри объекта работает перетаскивание, на краю выделения — изменение размера.
     /// </summary>
-    (Point Bottom, Point Knob)? RotateHandle()
+    bool InRotateZone(Point img)
     {
         if (SelectedAnnotation is not { CanRotate: true } a ||
             Mode == CaptureMode.VideoRegion ||
             EditingText is not null)
-            return null;
+            return false;
 
         if (_drag is Drag.Drawing or Drag.MovingAnnotation or Drag.Erasing)
-            return null;
+            return false;
 
-        var s = Scale;
-        var c = a.Corners(5 * s);
-
-        var bottom = new Point(
-            (c[2].X + c[3].X) / 2,
-            (c[2].Y + c[3].Y) / 2);
-
-        double ux = c[2].X - c[1].X;
-        double uy = c[2].Y - c[1].Y;
-        double len = Math.Sqrt(ux * ux + uy * uy);
-
-        if (len < 1e-6)
-            return null;
-
-        var knob = new Point(
-            bottom.X + ux / len * RotateHandleGap * s,
-            bottom.Y + uy / len * RotateHandleGap * s);
-
-        return (bottom, knob);
+        double outside = a.DistanceOutside(img);
+        return outside > 0 && outside <= RotateZone * Scale;
     }
-
-    bool HitRotateHandle(Point img) =>
-        RotateHandle() is (_, Point knob) && Annotation.Distance(img, knob) <= (RotateHandleRadius + 5) * Scale;
 
     double AngleTo(Point img)
     {
@@ -485,8 +462,9 @@ public sealed class CaptureSurface : Control
         _moved = false;
         _lastTimestamp = e.Timestamp;
 
-        // Ручка поворота: тянуть — повернуть (Shift — шаг 15°), двойной щелчок — вернуть прямо.
-        if (HitRotateHandle(img) && SelectedAnnotation is { } rot)
+        // Поворот: ЛКМ за пределами объекта (как в Photoshop), Shift — шаг 15°, двойной щелчок — вернуть прямо.
+        _handle = HitHandle(pt.Position);
+        if (_handle < 0 && InRotateZone(img) && SelectedAnnotation is { } rot)
         {
             if (e.ClickCount >= 2)
             {
@@ -946,12 +924,6 @@ public sealed class CaptureSurface : Control
             return;
         }
 
-        if (HitRotateHandle(ToImage(view)))
-        {
-            Cursor = _hand;
-            return;
-        }
-
         int h = HitHandle(view);
         if (h >= 0)
         {
@@ -964,6 +936,12 @@ public sealed class CaptureSurface : Control
                 1 or 5 => StandardCursorType.SizeNorthSouth,
                 _ => StandardCursorType.SizeWestEast,
             });
+            return;
+        }
+
+        if (InRotateZone(ToImage(view)))
+        {
+            Cursor = _rotate ??= RotateCursor.Create();
             return;
         }
 

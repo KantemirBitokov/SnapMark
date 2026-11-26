@@ -938,19 +938,50 @@ public partial class OverlayWindow : Window
         }
 
         // Текста под рукой нет — ставим эмодзи на картинку стикером в центре выделения.
-        var sticker = new TextAnnotation();
-        sticker.ApplyStyle(Surface.DrawStyle);
-        sticker.Text = emoji;
-        sticker.FontSize = Math.Max(56, Surface.DrawStyle.FontSize * 2) ;
-        sticker.Position = new Point(0, 0);
         var center = Surface.Selection is PixelRect sel ? new Point(sel.X + sel.Width / 2.0, sel.Y + sel.Height / 2.0) : new Point(200, 200);
         // Несколько стикеров подряд не ложатся друг на друга.
-        int already = Surface.Document.Items.OfType<TextAnnotation>().Count(x => x.Text == emoji);
+        int already = Surface.Document.Items.Count(x =>
+            (x is TextAnnotation t && t.Text == emoji) || (x is EmojiStickerAnnotation e && e.Text == emoji));
         center = new Point(center.X + already * 24 * Surface.Scale, center.Y + already * 24 * Surface.Scale);
-        var b0 = sticker.Bounds;
-        sticker.Offset(center.X - b0.Center.X, center.Y - b0.Center.Y);
-        Surface.AddAnnotation(sticker);
+
+        if (EmojiImages.Enabled)
+        {
+            // Набор Apple: стикер — картинка, поэтому вид одинаковый на всех системах.
+            var picture = new EmojiStickerAnnotation
+            {
+                Text = emoji,
+                Size = Math.Max(56, Surface.DrawStyle.FontSize * 2) * 1.7,
+            };
+            picture.Position = new Point(center.X - picture.Size / 2, center.Y - picture.Size / 2);
+            Surface.AddAnnotation(picture);
+            _ = LoadEmojiSticker(picture);
+        }
+        else
+        {
+            var sticker = new TextAnnotation();
+            sticker.ApplyStyle(Surface.DrawStyle);
+            sticker.Text = emoji;
+            sticker.FontSize = Math.Max(56, Surface.DrawStyle.FontSize * 2);
+            sticker.Position = new Point(0, 0);
+            var b0 = sticker.Bounds;
+            sticker.Offset(center.X - b0.Center.X, center.Y - b0.Center.Y);
+            Surface.AddAnnotation(sticker);
+        }
+
         SetToolKeepSelection();
+    }
+
+    /// <summary>Догружает картинку для эмодзи-стикера и перерисовывает холст, когда она пришла.</summary>
+    async Task LoadEmojiSticker(EmojiStickerAnnotation sticker)
+    {
+        var bitmap = await EmojiImages.Get(sticker.Text);
+        if (bitmap is null) return;
+
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            sticker.Image = bitmap;
+            Surface.InvalidateVisual();
+        });
     }
 
     /// <summary>Стикер сразу можно двигать и поворачивать: инструмент «Выбор», выделение остаётся.</summary>

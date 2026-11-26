@@ -4,6 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using SnapMark.Core;
 using SnapMark.Localization;
 using SnapMark.Services;
@@ -136,13 +137,17 @@ public sealed class EmojiPicker : UserControl
 
     Button Item(string text)
     {
+        var glyph = new TextBlock
+        {
+            Text = text, FontFamily = EmojiFont, FontSize = 24,
+            HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
+        };
+        var picture = new Image { Width = 26, Height = 26, IsVisible = false };
+        var content = new Panel { Width = 30, Height = 30, Children = { glyph, picture } };
+
         var b = new Button
         {
-            Content = new TextBlock
-            {
-                Text = text, FontFamily = EmojiFont, FontSize = 24,
-                HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
-            },
+            Content = content,
             Tag = text,
             Width = Cell, Height = Cell,
             Padding = new Thickness(0),
@@ -153,7 +158,34 @@ public sealed class EmojiPicker : UserControl
         };
         b.Classes.Add("emoji");
         b.Click += (_, _) => Pick(text);
+
+        if (EmojiImages.Enabled) ShowPicture(text, glyph, picture);
         return b;
+    }
+
+    /// <summary>Эмодзи картинкой (набор Apple): из кэша сразу, иначе подгружаем и подменяем символ.</summary>
+    static void ShowPicture(string text, TextBlock glyph, Image picture)
+    {
+        if (EmojiImages.Cached(text) is { } cached)
+        {
+            picture.Source = cached;
+            picture.IsVisible = true;
+            glyph.IsVisible = false;
+            return;
+        }
+
+        _ = Task.Run(async () =>
+        {
+            var bitmap = await EmojiImages.Get(text);
+            if (bitmap is null) return;
+
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                picture.Source = bitmap;
+                picture.IsVisible = true;
+                glyph.IsVisible = false;
+            });
+        });
     }
 
     void Pick(string text)

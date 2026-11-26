@@ -194,7 +194,7 @@ public abstract class Annotation
     public bool Hit(Point p, double tolerance) =>
         HitTest(Rotation == 0 || !CanRotate ? p : p.Transform(RotationMatrix(-Rotation)), tolerance);
 
-    /// <summary>Углы рамки объекта с учётом поворота (для рамки выделения и ручки поворота).</summary>
+    /// <summary>Углы рамки объекта с учётом поворота (для рамки выделения).</summary>
     public Point[] Corners(double inflate = 0)
     {
         var b = Bounds.Inflate(inflate);
@@ -202,6 +202,19 @@ public abstract class Annotation
         if (Rotation == 0 || !CanRotate) return pts;
         var m = RotationMatrix(Rotation);
         return pts.Select(q => q.Transform(m)).ToArray();
+    }
+
+    /// <summary>
+    /// Расстояние от точки до рамки объекта с учётом поворота; 0 — точка внутри.
+    /// По нему видно, попал ли курсор в кольцо поворота вокруг объекта.
+    /// </summary>
+    public double DistanceOutside(Point p)
+    {
+        var q = Rotation == 0 || !CanRotate ? p : p.Transform(RotationMatrix(-Rotation));
+        var b = Bounds;
+        double dx = Math.Max(Math.Max(b.X - q.X, q.X - b.Right), 0);
+        double dy = Math.Max(Math.Max(b.Y - q.Y, q.Y - b.Bottom), 0);
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 
     /// <summary>Описанный прямоугольник с учётом поворота — чтобы панели и подписи не наезжали на объект.</summary>

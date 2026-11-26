@@ -25,6 +25,9 @@ public enum SeriesClipboardMode
 
 public enum ThemeMode { System, Light, Dark }
 
+/// <summary>Набор эмодзи в библиотеке: системный шрифт или картинки Apple (вид как в iOS).</summary>
+public enum EmojiSet { System, Apple }
+
 /// <summary>Форма метки.</summary>
 public enum MarkerShape { Circle, RoundedSquare, Diamond, Pin }
 
@@ -195,6 +198,8 @@ public sealed class AppSettings
     public string LastShape { get; set; } = "Arrow";
     /// <summary>Недавние эмодзи (последние сверху).</summary>
     public List<string> RecentEmoji { get; set; } = new();
+    /// <summary>Набор эмодзи: системные шрифты или картинки Apple (как в iOS).</summary>
+    public EmojiSet EmojiSet { get; set; } = EmojiSet.System;
 }
 
 public static class DefaultFolders

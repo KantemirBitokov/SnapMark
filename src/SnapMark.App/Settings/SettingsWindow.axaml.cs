@@ -134,6 +134,7 @@ public partial class SettingsWindow : Window
         UpdateDoublePress();
 
         FormatCombo.SelectedIndex = (int)S.ImageFormat;
+        EmojiSetCombo.SelectedIndex = (int)S.EmojiSet;
         QualitySlider.Value = S.ImageQuality;
         QualityValue.Text = S.ImageQuality.ToString();
         UpdateQualityRow();
@@ -284,6 +285,8 @@ public partial class SettingsWindow : Window
             S.ImageFormat = (ImageFileFormat)Math.Max(0, FormatCombo.SelectedIndex);
             UpdateQualityRow();
         });
+        EmojiSetCombo.SelectionChanged += (_, _) => Change(() =>
+            S.EmojiSet = (EmojiSet)Math.Max(0, EmojiSetCombo.SelectedIndex));
         QualitySlider.PropertyChanged += (_, e) =>
         {
             if (e.Property != RangeBase.ValueProperty) return;

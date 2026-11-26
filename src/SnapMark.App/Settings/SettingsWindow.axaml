@@ -280,6 +280,22 @@
             </StackPanel>
 
             <StackPanel>
+              <TextBlock Classes="section" Text="{l:Tr 'Эмодзи'}"/>
+              <Border Classes="card">
+                <Grid Classes="row" ColumnDefinitions="*,Auto">
+                  <StackPanel VerticalAlignment="Center" Spacing="1">
+                    <TextBlock Text="{l:Tr 'Набор эмодзи'}" Foreground="{DynamicResource Sm.TextPrimary}"/>
+                    <TextBlock Classes="caption" Text="{l:Tr 'Apple — картинки скачиваются один раз'}"/>
+                  </StackPanel>
+                  <ComboBox x:Name="EmojiSetCombo" Grid.Column="1" Width="210">
+                    <ComboBoxItem Content="{l:Tr 'Системные'}"/>
+                    <ComboBoxItem Content="{l:Tr 'Apple — как в iOS'}"/>
+                  </ComboBox>
+                </Grid>
+              </Border>
+            </StackPanel>
+
+            <StackPanel>
               <TextBlock Classes="section" Text="{l:Tr 'Сохранение'}"/>
               <Border Classes="card">
                 <StackPanel>
