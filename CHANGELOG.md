@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.33
+- **Emoji category tabs are centred.** The tabs in the emoji library now use the chip style, so the category icons sit in the middle of their cells and the selected category is highlighted instead of showing a focus ring.
+- **Rounded corners for rectangles.** A selected rectangle gets a “Corner radius” stepper (0–64) in its style panel; 0 keeps the previous soft corners that scale with the line thickness.
+
 ## 1.9.32
 - **The timer no longer rolls back a second after resuming.** Resuming started the stopwatch right away and then restarted it again when ffmpeg actually began writing, so the startup interval was counted and then dropped. The clock now starts only at the moment recording really resumes, so the timer stands still while the recorder spins up.
 
