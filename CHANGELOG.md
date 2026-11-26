@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.32
+- **The timer no longer rolls back a second after resuming.** Resuming started the stopwatch right away and then restarted it again when ffmpeg actually began writing, so the startup interval was counted and then dropped. The clock now starts only at the moment recording really resumes, so the timer stands still while the recorder spins up.
+
 ## 1.9.31
 - **Fixed: the timer jumped when pausing.** Pause added the elapsed time to the total but left the stopwatch value in the sum, so the counter doubled and then dropped back on resume. The stopwatch is reset when pausing now.
 - **The recording panel opens at the bottom centre of the screen** by default (a position you drag it to is still remembered for the next recording).
