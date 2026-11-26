@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.31
+- **Fixed: the timer jumped when pausing.** Pause added the elapsed time to the total but left the stopwatch value in the sum, so the counter doubled and then dropped back on resume. The stopwatch is reset when pausing now.
+- **The recording panel opens at the bottom centre of the screen** by default (a position you drag it to is still remembered for the next recording).
+
 ## 1.9.30
 - **Fixed: a recording that used pause was not saved.** The first stretch was written under the final file name and then used as an input for joining, so ffmpeg could not produce a result. Each stretch now goes to its own file next to the final one; if joining ever fails, the parts stay next to the video instead of being deleted.
 - **The pause button now matches the other icons.** It uses the same stroked icon set and colour as the rest of the recording bar instead of a filled white glyph.
