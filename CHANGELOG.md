@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.28
+- **Rotate cursor redesigned.** The circular arrow now sits on the tangent at the top of the circle and continues the arc, instead of hanging in the gap at an odd angle. Same size as before.
+
 ## 1.9.27
 - **Emoji size in the object panel.** An Apple emoji sticker is now resized with the same numeric stepper as text instead of a drag handle, and the size is capped at 320 px so the picture stays sharp.
 - **Smaller rotate cursor.** The arc with the arrow is now the size of a normal cursor instead of a huge badge.
