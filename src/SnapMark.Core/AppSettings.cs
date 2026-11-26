@@ -87,6 +87,8 @@ public sealed class AppSettings
     public bool CheckForUpdates { get; set; } = true;
     /// <summary>Куда пользователь перетащил панель серии («x,y» в пикселях экрана; пусто — внизу по центру).</summary>
     public string SeriesHudPosition { get; set; } = "";
+    /// <summary>Куда пользователь перетащил панель записи («x,y»; пусто — под областью записи).</summary>
+    public string VideoHudPosition { get; set; } = "";
     public DateTime LastUpdateCheckUtc { get; set; }
 
     // ── Скриншоты ────────────────────────────────────────────────────

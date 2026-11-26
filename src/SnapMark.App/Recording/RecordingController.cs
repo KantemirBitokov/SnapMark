@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -21,6 +23,11 @@ public static class RecordingController
     static readonly List<Window> Frame = new();
 
     static bool _starting;
+
+    // Пауза: каждый отрезок пишется в свой файл, в конце склеиваем.
+    static readonly List<string> _parts = new();
+    static string? _output;
+    static bool _paused, _withMic, _withSystem;
 
     // Рисование поверх записи: окно-холст создаётся при первом выборе инструмента.
     static LiveDrawWindow? _draw;
@@ -94,7 +101,7 @@ public static class RecordingController
         st.Position = new PixelPoint(x, y);
     }
 
-    public static bool IsRecording => _recorder is not null;
+    public static bool IsRecording => _recorder is not null || _paused;
 
     /// <summary>Текущий инструмент рисования на видео; null — курсор (мышь уходит программам под областью).</summary>
     public static ToolKind? DrawTool { get; private set; }
@@ -288,19 +295,16 @@ public static class RecordingController
         var output = FileNaming.EnsureUnique(Path.Combine(folder,
             FileNaming.Sanitize($"Video_{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.{ext}")));
 
-        var recorder = new FfmpegRecorder();
-        // ffmpeg оборвался посреди записи (кончилось место, отключили монитор…) — сохраняем то, что успели.
-        recorder.UnexpectedExit += () => Dispatcher.UIThread.Post(() =>
-        {
-            if (!ReferenceEquals(_recorder, recorder) || _starting) return;
-            Toast.Show(L.T("Запись прервалась"), L.T("ffmpeg неожиданно завершился. Сохраняю то, что успело записаться."));
-            _ = StopAsync();
-        });
-        _recorder = recorder;
-        _starting = true;
+        _output = output;
+        _parts.Clear();
+        _paused = false;
+        _withMic = withMic;
+        _withSystem = withSystem;
+
         _rect = rect;
         _scaling = scaling > 0 ? scaling : 1;
         DrawTool = null;
+        _starting = true; // пока панель и ffmpeg поднимаются, второй запуск не нужен
 
         // Панель появляется сразу («Запуск…») — видно, что нажатие сработало.
         bool audioAllowed = s.VideoFormat != VideoFileFormat.Gif;
@@ -312,16 +316,15 @@ public static class RecordingController
             if (s.ShowRecordingFrame) ShowFrame(rect, scaling);
             // Камера — заранее: ей нужна секунда на запуск, а в первый кадр она попадёт уже живой.
             if (s.VideoCamera) CameraBubble.Start(rect, scaling);
-            await recorder.StartAsync(ffmpeg, rect, s, withMic, withSystem, output);
-            _hud?.SetRecording();
-            ShowEffects(rect, scaling);
-            if (recorder.SystemAudioProblem == "blackhole")
+            await StartRecorderAsync(output, first: true);
+
+            if (_recorder?.SystemAudioProblem == "blackhole")
                 Toast.Show(L.T("Звук компьютера: нужен BlackHole"),
                     L.T("На macOS 12 и старше звук компьютера записывается через бесплатный драйвер BlackHole. Установи его и выбери «BlackHole 2ch» как микрофон в настройках записи. Сейчас запись идёт без звука компьютера."),
                     L.T("Скачать"), () => ShellOpen.Open(Platform.Mac.MacSystemAudio.BlackHoleUrl));
-            else if (recorder.SystemAudioProblem is { } problem)
+            else if (_recorder?.SystemAudioProblem is { } problem)
                 Toast.Show(L.T("Запись без звука компьютера"), problem);
-            if (recorder.MicProblem is { } micProblem)
+            if (_recorder?.MicProblem is { } micProblem)
                 Toast.Show(L.T("Запись без микрофона"), micProblem);
         }
         catch (Exception ex)
@@ -341,11 +344,136 @@ public static class RecordingController
         }
     }
 
+    /// <summary>Запуск ffmpeg на очередной файл: первый отрезок записи или продолжение после паузы.</summary>
+    static async Task StartRecorderAsync(string path, bool first)
+    {
+        var s = AppServices.Settings;
+        var ffmpeg = FfmpegRecorder.Resolve(s.FfmpegPath)
+            ?? throw new InvalidOperationException(L.T("Для записи видео нужен ffmpeg"));
+
+        var recorder = new FfmpegRecorder();
+        // ffmpeg оборвался посреди записи (кончилось место, отключили монитор…) — сохраняем то, что успели.
+        recorder.UnexpectedExit += () => Dispatcher.UIThread.Post(() =>
+        {
+            if (!ReferenceEquals(_recorder, recorder) || _starting) return;
+            Toast.Show(L.T("Запись прервалась"), L.T("ffmpeg неожиданно завершился. Сохраняю то, что успело записаться."));
+            _ = StopAsync();
+        });
+
+        _recorder = recorder;
+        _starting = true;
+        try
+        {
+            await recorder.StartAsync(ffmpeg, _rect, s, _withMic, _withSystem, path);
+            _hud?.SetRecording(resume: !first);
+            if (first) ShowEffects(_rect, _scaling);
+        }
+        finally
+        {
+            _starting = false;
+        }
+    }
+
+    /// <summary>Пауза/продолжение записи (кнопка на панели).</summary>
+    public static async Task TogglePauseAsync()
+    {
+        if (_paused) await ResumeAsync();
+        else await PauseAsync();
+    }
+
+    static async Task PauseAsync()
+    {
+        var recorder = _recorder;
+        if (recorder is null || _starting) return;
+
+        _recorder = null;
+        _paused = true;
+        _hud?.SetPaused(true);
+
+        try
+        {
+            var part = await recorder.StopAsync();
+            if (File.Exists(part)) _parts.Add(part);
+        }
+        catch (Exception ex)
+        {
+            Toast.Show(L.T("Пауза не сработала"), ex.Message);
+        }
+    }
+
+    static async Task ResumeAsync()
+    {
+        _paused = false;
+        _hud?.SetPaused(false);
+        if (_parts.Count == 0) return;
+
+        var ext = AppServices.Settings.VideoFormat switch
+        {
+            VideoFileFormat.Mkv => "mkv",
+            VideoFileFormat.WebM => "webm",
+            _ => "mp4",
+        };
+        var part = Path.Combine(Path.GetTempPath(), $"snapmark_part_{Guid.NewGuid():N}.{ext}");
+
+        _starting = true;
+        try
+        {
+            await StartRecorderAsync(part, first: false);
+        }
+        catch (Exception ex)
+        {
+            _paused = true;
+            _hud?.SetPaused(true);
+            Toast.Show(L.T("Запись не возобновилась"), ex.Message);
+        }
+        finally
+        {
+            _starting = false;
+        }
+    }
+
+    /// <summary>Склейка отрезков после паузы — без перекодирования.</summary>
+    static async Task ConcatPartsAsync(List<string> parts, string output)
+    {
+        var ffmpeg = FfmpegRecorder.Resolve(AppServices.Settings.FfmpegPath)
+            ?? throw new InvalidOperationException("ffmpeg не найден");
+
+        var list = Path.Combine(Path.GetTempPath(), $"snapmark_concat_{Guid.NewGuid():N}.txt");
+        await File.WriteAllLinesAsync(list, parts.Select(p => $"file '{p.Replace("\\", "/")}'"));
+
+        try
+        {
+            var psi = new ProcessStartInfo(ffmpeg)
+            {
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+            };
+            foreach (var arg in new[] { "-hide_banner", "-y", "-f", "concat", "-safe", "0", "-i", list, "-c", "copy", output })
+                psi.ArgumentList.Add(arg);
+
+            using var process = Process.Start(psi) ?? throw new InvalidOperationException("ffmpeg не запустился");
+            var error = await process.StandardError.ReadToEndAsync();
+            await process.WaitForExitAsync();
+            if (process.ExitCode != 0)
+                throw new InvalidOperationException(error.Length > 400 ? error[^400..] : error);
+        }
+        finally
+        {
+            try { File.Delete(list); } catch { }
+            foreach (var part in parts) { try { File.Delete(part); } catch { } }
+        }
+    }
+
     public static async Task StopAsync()
     {
         var recorder = _recorder;
-        if (recorder is null || _starting) return; // ещё запускается — стоп примем после старта
+        if (_starting) return;
+        if (recorder is null && !_paused) return;
+
         _recorder = null;
+        _paused = false;
 
         _hud?.Close();
         _hud = null;
@@ -358,22 +486,50 @@ public static class RecordingController
             ? L.T("Собираю GIF…")
             : L.T("Сохраняю видео…"));
 
+        if (recorder is not null)
+        {
+            try
+            {
+                var part = await recorder.StopAsync();
+                if (File.Exists(part)) _parts.Add(part);
+            }
+            catch (Exception ex)
+            {
+                var saved = recorder.OutputPath;
+                if (File.Exists(saved)) _parts.Add(saved);
+                else Toast.Show(L.T("Ошибка при остановке записи"), ex.Message);
+            }
+        }
+
+        var output = _output;
+        _output = null;
+        if (output is null)
+        {
+            _parts.Clear();
+            return;
+        }
+
         try
         {
-            var path = await recorder.StopAsync();
-            if (File.Exists(path))
-                Toast.Show(L.T("Видео сохранено"), Path.GetFileName(path), L.T("Обрезать"), () => TrimWindow.Open(path),
-                    L.T("Показать"), () => ShellOpen.ShowInFolder(path));
-            else
-                Toast.Show(L.T("Видео не сохранилось"), recorder.LastLog());
+            if (_parts.Count == 0)
+            {
+                Toast.Show(L.T("Видео не сохранилось"), L.T("Запись не успела ничего записать."));
+                return;
+            }
+
+            if (_parts.Count == 1) File.Move(_parts[0], output, true);
+            else await ConcatPartsAsync(_parts.ToList(), output);
+
+            Toast.Show(L.T("Видео сохранено"), Path.GetFileName(output), L.T("Обрезать"), () => TrimWindow.Open(output),
+                L.T("Показать"), () => ShellOpen.ShowInFolder(output));
         }
         catch (Exception ex)
         {
-            var saved = recorder.OutputPath;
-            if (File.Exists(saved))
-                Toast.Show(L.T("Видео сохранено, но без звука"), ex.Message.Split('\n')[0], L.T("Показать"), () => ShellOpen.ShowInFolder(saved));
-            else
-                Toast.Show(L.T("Ошибка при остановке записи"), ex.Message);
+            Toast.Show(L.T("Ошибка при сохранении видео"), ex.Message);
+        }
+        finally
+        {
+            _parts.Clear();
         }
     }
 
@@ -453,7 +609,11 @@ public sealed class RecordingHud : Window
     readonly TextBlock _time = new TextBlock { Text = L.T("Запуск…"), VerticalAlignment = VerticalAlignment.Center }.Style("title3");
     readonly Border _dot;
     Button? _stop;
+    Button? _pause;
     bool _recording;
+    bool _paused;
+    bool _moved;
+    TimeSpan _accum;
 
     // Рисование на видео.
     readonly StackPanel _tools = new() { Orientation = Orientation.Horizontal, Spacing = 2, IsVisible = false };
@@ -501,6 +661,7 @@ public sealed class RecordingHud : Window
         stop.Click += (_, _) => _ = RecordingController.StopAsync();
 
         var stack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        stack.Children.Add(DragGrip());
         stack.Children.Add(_dot);
         stack.Children.Add(_time);
         foreach (var (on, key, tip) in new[] { (withMic, "Icon.Mic", L.T("Пишется микрофон")), (withSystem, "Icon.Speaker", L.T("Пишется звук компьютера")) })
@@ -518,6 +679,12 @@ public sealed class RecordingHud : Window
             stack.Children.Add(icon);
         }
         stack.Children.Add(stop);
+        if (AppServices.Settings.VideoFormat != VideoFileFormat.Gif)
+        {
+            var pause = PauseButton();
+            _pause = pause;
+            stack.Children.Add(pause);
+        }
 
         // ── Рисование на видео: всё, что рисуешь, сразу видно в записи ──
         stack.Children.Add(UiKit.VSep());
@@ -588,9 +755,9 @@ public sealed class RecordingHud : Window
                 _dot.Opacity = _dot.Opacity > 0.5 ? 0.3 : 0.8;
                 return;
             }
-            var e = _clock.Elapsed;
+            var e = _accum + _clock.Elapsed;
             _time.Text = e.TotalHours >= 1 ? e.ToString(@"h\:mm\:ss") : e.ToString(@"mm\:ss");
-            _dot.Opacity = _dot.Opacity > 0.5 ? 0.35 : 1;
+            if (!_paused) _dot.Opacity = _dot.Opacity > 0.5 ? 0.35 : 1;
         };
 
         Opened += (_, _) =>
@@ -602,9 +769,106 @@ public sealed class RecordingHud : Window
         };
     }
 
-    void ToggleTools()
+    /// <summary>Ручка слева: потяни — вся панель поедет за курсором, позиция запомнится.</summary>
+    Control DragGrip()
     {
-        _tools.IsVisible = !_tools.IsVisible;
+        var dots = new UniformGrid
+        {
+            Columns = 2, Rows = 3,
+            Width = 8, Height = 13,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        for (int i = 0; i < 6; i++)
+            dots.Children.Add(new Avalonia.Controls.Shapes.Ellipse
+            {
+                Width = 2.2, Height = 2.2,
+                Fill = new SolidColorBrush(Color.Parse("#8E8E93")),
+            });
+
+        var grip = new Border
+        {
+            Width = 14, Height = 22,
+            CornerRadius = new CornerRadius(6),
+            Background = new SolidColorBrush(Color.FromArgb(26, 128, 128, 128)),
+            VerticalAlignment = VerticalAlignment.Center,
+            Cursor = new Cursor(StandardCursorType.SizeAll),
+            Child = dots,
+        };
+        ToolTip.SetTip(grip, L.T("Потянуть — переставить панель"));
+
+        Point? grab = null;
+        grip.PointerPressed += (_, e) =>
+        {
+            grab = e.GetPosition(this);
+            e.Pointer.Capture(grip);
+            e.Handled = true;
+        };
+        grip.PointerMoved += (_, e) =>
+        {
+            if (grab is not Point start) return;
+            var delta = e.GetPosition(this) - start;
+            double dx = delta.X * _scaling, dy = delta.Y * _scaling;
+            if (Math.Abs(dx) < 0.5 && Math.Abs(dy) < 0.5) return;
+            _moved = true;
+            Position = new PixelPoint(Position.X + (int)Math.Round(dx), Position.Y + (int)Math.Round(dy));
+            e.Handled = true;
+        };
+        grip.PointerReleased += (_, e) =>
+        {
+            grab = null;
+            e.Pointer.Capture(null);
+        };
+
+        return grip;
+    }
+
+    StackPanel? _pauseBars;
+    Avalonia.Controls.Shapes.Path? _pausePlay;
+
+    Button PauseButton()
+    {
+        var bars = new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 2,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+        for (int i = 0; i < 2; i++)
+            bars.Children.Add(new Border { Width = 3, Height = 10, CornerRadius = new CornerRadius(1), Background = Brushes.White });
+
+        var play = new Avalonia.Controls.Shapes.Path
+        {
+            Data = Geometry.Parse("M 0 0 L 9 5.5 L 0 11 Z"),
+            Fill = Brushes.White,
+            IsVisible = false,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+        };
+
+        var button = new Button
+        {
+            Content = new Grid { Width = 14, Height = 12, Children = { bars, play } },
+            IsEnabled = false,
+        };
+        button.Classes.Add("tool");
+        ToolTip.SetTip(button, L.T("Пауза"));
+        button.Click += (_, _) => _ = RecordingController.TogglePauseAsync();
+
+        _pauseBars = bars;
+        _pausePlay = play;
+        return button;
+    }
+
+    void UpdatePauseVisual()
+    {
+        if (_pauseBars is not null) _pauseBars.IsVisible = !_paused;
+        if (_pausePlay is not null) _pausePlay.IsVisible = _paused;
+        if (_pause is not null) ToolTip.SetTip(_pause, _paused ? L.T("Продолжить запись") : L.T("Пауза"));
+    }
+
+    void ToggleTools()
+    {        _tools.IsVisible = !_tools.IsVisible;
         RecordingController.SetDrawTool(_tools.IsVisible ? RecordingController.LastDrawTool : null);
         // Панель стала шире/уже — снова по центру области.
         Dispatcher.UIThread.Post(Reposition, DispatcherPriority.Background);
@@ -624,15 +888,41 @@ public sealed class RecordingHud : Window
         _styleButton.Classes.Set("selected", RecordingController.StyleOpen);
     }
 
-    /// <summary>Запись реально началась: красная точка, таймер с нуля, кнопка «Стоп» активна.</summary>
-    public void SetRecording()
+    /// <summary>Запись реально началась: красная точка, таймер с нуля, кнопки «Стоп» и «Пауза» активны.</summary>
+    public void SetRecording(bool resume = false)
     {
         _recording = true;
+        if (!resume)
+        {
+            _accum = TimeSpan.Zero;
+            _time.Text = "00:00";
+        }
         _clock.Restart();
-        _time.Text = "00:00";
+        _paused = false;
+        UpdatePauseVisual();
         _dot.Background = new SolidColorBrush(Color.Parse("#FF3B30"));
         _dot.Opacity = 1;
         if (_stop is not null) _stop.IsEnabled = true;
+        if (_pause is not null) _pause.IsEnabled = true;
+    }
+
+    /// <summary>Пауза: таймер замирает, точка становится серой, кнопка превращается в «Продолжить».</summary>
+    public void SetPaused(bool paused)
+    {
+        _paused = paused;
+        if (paused)
+        {
+            _accum += _clock.Elapsed;
+            _clock.Stop();
+        }
+        else
+        {
+            _clock.Restart();
+        }
+
+        _dot.Background = new SolidColorBrush(Color.Parse(paused ? "#8E8E93" : "#FF3B30"));
+        _dot.Opacity = 1;
+        UpdatePauseVisual();
     }
 
     void Reposition()
@@ -642,6 +932,24 @@ public sealed class RecordingHud : Window
         var screen = Screens.ScreenFromPoint(_region.Center) ?? Screens.Primary;
         var area = screen?.WorkingArea ?? new PixelRect(0, 0, 1920, 1080);
 
+        // Панель уже переставляли вручную — держим её там, где её оставили.
+        if (_moved)
+        {
+            Position = new PixelPoint(
+                Math.Clamp(Position.X, area.X, Math.Max(area.X, area.Right - w)),
+                Math.Clamp(Position.Y, area.Y, Math.Max(area.Y, area.Bottom - h)));
+            return;
+        }
+
+        // Панель уже переставляли — возвращаем её туда же (в пределах рабочего стола).
+        if (SavedPosition() is PixelPoint saved)
+        {
+            Position = new PixelPoint(
+                Math.Clamp(saved.X, area.X, Math.Max(area.X, area.Right - w)),
+                Math.Clamp(saved.Y, area.Y, Math.Max(area.Y, area.Bottom - h)));
+            return;
+        }
+
         int x = _region.X + (_region.Width - w) / 2;
         int y = _region.Bottom + (int)(6 * _scaling);               // под областью
         if (y + h > area.Bottom) y = _region.Y - h - (int)(6 * _scaling); // над областью
@@ -650,9 +958,22 @@ public sealed class RecordingHud : Window
         Position = new PixelPoint(x, y);
     }
 
+    static PixelPoint? SavedPosition()
+    {
+        var text = AppServices.Settings.VideoHudPosition;
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        var parts = text.Split(',');
+        if (parts.Length != 2 || !int.TryParse(parts[0], out var x) || !int.TryParse(parts[1], out var y)) return null;
+        return new PixelPoint(x, y);
+    }
+
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
         _timer.Stop();
+
+        if (!_moved) return;
+        AppServices.Settings.VideoHudPosition = $"{Position.X},{Position.Y}";
+        AppServices.SaveSettings();
     }
 }
