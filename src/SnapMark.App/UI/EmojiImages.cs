@@ -14,8 +14,13 @@ namespace SnapMark.UI;
 /// </summary>
 public static class EmojiImages
 {
-    // Набор Apple из emoji-datasource: PNG 64×64 на каждый эмодзи.
-    const string BaseUrl = "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64/";
+    // Набор Apple: PNG 64×64 на каждый эмодзи. Сначала GitHub (он у проекта и так основной),
+    // потом jsDelivr — если один источник недоступен, берём второй.
+    static readonly string[] Sources =
+    {
+        "https://raw.githubusercontent.com/iamcal/emoji-data/master/img-apple-64/",
+        "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64/",
+    };
 
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
     static readonly ConcurrentDictionary<string, Task<Bitmap?>> Tasks = new(StringComparer.Ordinal);
@@ -84,17 +89,20 @@ public static class EmojiImages
 
     static async Task<byte[]?> DownloadAsync(string key)
     {
-        foreach (var candidate in Candidates(key))
+        foreach (var source in Sources)
         {
-            try
+            foreach (var candidate in Candidates(key))
             {
-                using var response = await Http.GetAsync(BaseUrl + candidate + ".png").ConfigureAwait(false);
-                if (response.IsSuccessStatusCode)
-                    return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-            }
-            catch
-            {
-                // Нет сети — просто попробуем следующий вариант написания.
+                try
+                {
+                    using var response = await Http.GetAsync(source + candidate + ".png").ConfigureAwait(false);
+                    if (response.IsSuccessStatusCode)
+                        return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Нет сети — просто попробуем следующий вариант написания или источник.
+                }
             }
         }
 
