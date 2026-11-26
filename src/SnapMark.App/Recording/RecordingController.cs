@@ -316,7 +316,7 @@ public static class RecordingController
             if (s.ShowRecordingFrame) ShowFrame(rect, scaling);
             // Камера — заранее: ей нужна секунда на запуск, а в первый кадр она попадёт уже живой.
             if (s.VideoCamera) CameraBubble.Start(rect, scaling);
-            await StartRecorderAsync(output, first: true);
+            await StartRecorderAsync(PartPath(output), first: true);
 
             if (_recorder?.SystemAudioProblem == "blackhole")
                 Toast.Show(L.T("Звук компьютера: нужен BlackHole"),
@@ -374,6 +374,18 @@ public static class RecordingController
         }
     }
 
+    /// <summary>
+    /// Файл очередного отрезка — рядом с итоговым видео: если программа упадёт посреди записи,
+    /// отрезок легко найти, а не искать в системном временном каталоге.
+    /// </summary>
+    static string PartPath(string output)
+    {
+        var dir = Path.GetDirectoryName(output) ?? Path.GetTempPath();
+        var name = Path.GetFileNameWithoutExtension(output);
+        var ext = Path.GetExtension(output);
+        return Path.Combine(dir, $"{name}_part{_parts.Count + 1}{ext}");
+    }
+
     /// <summary>Пауза/продолжение записи (кнопка на панели).</summary>
     public static async Task TogglePauseAsync()
     {
@@ -405,15 +417,9 @@ public static class RecordingController
     {
         _paused = false;
         _hud?.SetPaused(false);
-        if (_parts.Count == 0) return;
+        if (_parts.Count == 0 || _output is not string output) return;
 
-        var ext = AppServices.Settings.VideoFormat switch
-        {
-            VideoFileFormat.Mkv => "mkv",
-            VideoFileFormat.WebM => "webm",
-            _ => "mp4",
-        };
-        var part = Path.Combine(Path.GetTempPath(), $"snapmark_part_{Guid.NewGuid():N}.{ext}");
+        var part = PartPath(output);
 
         _starting = true;
         try
@@ -462,8 +468,10 @@ public static class RecordingController
         finally
         {
             try { File.Delete(list); } catch { }
-            foreach (var part in parts) { try { File.Delete(part); } catch { } }
         }
+
+        // Склейка удалась — отрезки больше не нужны. Если нет, они остались рядом с итоговым файлом.
+        foreach (var part in parts) { try { File.Delete(part); } catch { } }
     }
 
     public static async Task StopAsync()
@@ -823,47 +831,19 @@ public sealed class RecordingHud : Window
         return grip;
     }
 
-    StackPanel? _pauseBars;
-    Avalonia.Controls.Shapes.Path? _pausePlay;
-
     Button PauseButton()
     {
-        var bars = new StackPanel
-        {
-            Orientation = Orientation.Horizontal, Spacing = 2,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-        for (int i = 0; i < 2; i++)
-            bars.Children.Add(new Border { Width = 3, Height = 10, CornerRadius = new CornerRadius(1), Background = Brushes.White });
-
-        var play = new Avalonia.Controls.Shapes.Path
-        {
-            Data = Geometry.Parse("M 0 0 L 9 5.5 L 0 11 Z"),
-            Fill = Brushes.White,
-            IsVisible = false,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-        };
-
-        var button = new Button
-        {
-            Content = new Grid { Width = 14, Height = 12, Children = { bars, play } },
-            IsEnabled = false,
-        };
+        var button = new Button { Content = UiKit.Icon("Icon.Pause"), IsEnabled = false };
         button.Classes.Add("tool");
         ToolTip.SetTip(button, L.T("Пауза"));
         button.Click += (_, _) => _ = RecordingController.TogglePauseAsync();
-
-        _pauseBars = bars;
-        _pausePlay = play;
         return button;
     }
 
     void UpdatePauseVisual()
     {
-        if (_pauseBars is not null) _pauseBars.IsVisible = !_paused;
-        if (_pausePlay is not null) _pausePlay.IsVisible = _paused;
+        if (_pause?.Content is Avalonia.Controls.Shapes.Path path)
+            path.Data = UiKit.Geometry(_paused ? "Icon.Play" : "Icon.Pause");
         if (_pause is not null) ToolTip.SetTip(_pause, _paused ? L.T("Продолжить запись") : L.T("Пауза"));
     }
 
