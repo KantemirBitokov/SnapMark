@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.29
+- **Move the recording panel.** A small grip on the left of the recording bar lets you drag the panel anywhere on the screen, and the position is remembered for the next recording.
+- **Pause while recording.** A pause button next to Stop freezes the timer and turns the dot grey; the paused stretch is cut out of the result, because each stretch is recorded separately and joined at the end. GIF recording has no pause yet.
+
 ## 1.9.28
 - **Rotate cursor redesigned.** The circular arrow now sits on the tangent at the top of the circle and continues the arc, instead of hanging in the gap at an odd angle. Same size as before.
 
