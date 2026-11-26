@@ -897,10 +897,8 @@ public sealed class RecordingHud : Window
             _accum += _clock.Elapsed;
             _clock.Reset(); // не Stop: иначе Elapsed останется в сумме и время удвоится
         }
-        else
-        {
-            _clock.Restart();
-        }
+        // При возобновлении часы сознательно не запускаем: пока ffmpeg поднимается, таймер стоит,
+        // а стартует его SetRecording — иначе секунда запуска отсчиталась бы и откатилась назад.
 
         _dot.Background = new SolidColorBrush(Color.Parse(paused ? "#8E8E93" : "#FF3B30"));
         _dot.Opacity = 1;
