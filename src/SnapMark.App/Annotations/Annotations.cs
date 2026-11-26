@@ -603,15 +603,20 @@ public abstract class BoxAnnotation : Annotation
 
 public sealed class RectAnnotation : BoxAnnotation
 {
+    /// <summary>Радиус скругления углов в пикселях; 0 — автоматический (мягкие углы от толщины линии, как раньше).</summary>
+    public double Corner { get; set; }
+
     public override void Render(DrawingContext ctx)
     {
         var r = Box;
-        double radius = Math.Min(Thickness * 0.8, Math.Min(r.Width, r.Height) / 4);
+        double limit = Math.Min(r.Width, r.Height) / 2;
+        double radius = Corner > 0 ? Corner : Math.Min(Thickness * 0.8, Math.Min(r.Width, r.Height) / 4);
+        radius = Math.Clamp(radius, 0, limit);
         if (Filled) ctx.DrawRectangle(new SolidColorBrush(Color), null, r, radius, radius);
         else ctx.DrawRectangle(null, MakePen(), r, radius, radius);
     }
 
-    public override Annotation Clone() => CopyBaseTo(new RectAnnotation { Start = Start, End = End, Filled = Filled });
+    public override Annotation Clone() => CopyBaseTo(new RectAnnotation { Start = Start, End = End, Filled = Filled, Corner = Corner });
 }
 
 public sealed class EllipseAnnotation : BoxAnnotation

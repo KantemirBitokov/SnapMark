@@ -98,10 +98,20 @@ public sealed class EmojiPicker : UserControl
     {
         var b = new Button
         {
-            Content = new TextBlock { Text = icon, FontFamily = EmojiFont, FontSize = 17, HorizontalAlignment = HorizontalAlignment.Center },
+            Content = new TextBlock
+            {
+                Text = icon,
+                FontFamily = EmojiFont,
+                FontSize = 17,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center,
+            },
             Tag = index,
             Width = 34, Height = 30,
             Padding = new Thickness(0),
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
         };
         b.Classes.Add("chip");
         ToolTip.SetTip(b, tip);

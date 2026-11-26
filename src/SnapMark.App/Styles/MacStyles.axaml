@@ -368,6 +368,27 @@
   </Style>
 
   <!-- Маленькие переключатели (B, I, Подложка…). -->
+  <!-- Кнопки-иконки в библиотеке эмодзи: вид «чипа», но это обычные Button, поэтому стиль отдельный. -->
+  <Style Selector="Button.chip">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="CornerRadius" Value="9"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
+  <Style Selector="Button.chip /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style Selector="Button.chip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.HoverBg}"/>
+  </Style>
+  <Style Selector="Button.chip.selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource Sm.AccentFill}"/>
+  </Style>
+
   <Style Selector="ToggleButton.chip">
     <Setter Property="CornerRadius" Value="13"/>
     <Setter Property="Background" Value="{DynamicResource Sm.GlassField}"/>

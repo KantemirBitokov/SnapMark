@@ -331,6 +331,8 @@ public partial class OverlayWindow
         };
         if (target is BoxAnnotation box)
             controls.Add(Chip(L.T("Заливка"), box.Filled, v => Mutate(a => ((BoxAnnotation)a).Filled = v)));
+        if (target is RectAnnotation rect)
+            controls.Add(Stepper(rect.Corner, 0, 64, 4, v => Mutate(a => ((RectAnnotation)a).Corner = v), L.T("Скругление углов")));
         controls.Add(Spacer());
         controls.Add(ObjectActions());
         ContextContent.Children.Add(Row(controls.ToArray()));
