@@ -32,7 +32,10 @@ Settings → **Pages** → Source: *Deploy from a branch* → Branch: `main`, п
 Через минуту сайт будет на `https://kantemirbitokov.github.io/SnapMark/`.
 
 **Вариант Б — на sadlybear.pro:** залей файлы `docs/index.html` и `docs/icon.png` в папку, например
-`sadlybear.pro/snapmark/`. Страница сама подтягивает последнюю версию и ссылки на файлы с GitHub.
+`sadlybear.pro/snapmark/`. Ссылки на файлы и номер версии в странице уже прописаны прямо в разметке,
+сеть для них не нужна — после релиза их обновляет `packaging/update-site.py` (это делает job `manifests`
+в GitHub Actions и коммитит результат в `main`). Если страница лежит ещё и на своём домене,
+её копию после релиза нужно обновить тем же скриптом.
 
 ## Шаг 3. Магазины пакетов (установка одной командой)
 
