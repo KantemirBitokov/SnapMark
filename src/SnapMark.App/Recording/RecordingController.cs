@@ -621,6 +621,7 @@ public sealed class RecordingHud : Window
     bool _recording;
     bool _paused;
     bool _moved;
+    int _repositionTries;
     TimeSpan _accum;
 
     // Рисование на видео.
@@ -772,6 +773,7 @@ public sealed class RecordingHud : Window
         {
             PlatformServices.WindowHelper.ExcludeFromCapture(this);
             Reposition();
+            Dispatcher.UIThread.Post(Reposition, DispatcherPriority.Loaded); // размер окна известен только после раскладки
             Opacity = 1;
             _timer.Start();
         };
@@ -893,7 +895,7 @@ public sealed class RecordingHud : Window
         if (paused)
         {
             _accum += _clock.Elapsed;
-            _clock.Stop();
+            _clock.Reset(); // не Stop: иначе Elapsed останется в сумме и время удвоится
         }
         else
         {
@@ -912,35 +914,40 @@ public sealed class RecordingHud : Window
         var screen = Screens.ScreenFromPoint(_region.Center) ?? Screens.Primary;
         var area = screen?.WorkingArea ?? new PixelRect(0, 0, 1920, 1080);
 
-        // Панель уже переставляли вручную — держим её там, где её оставили.
+        // Раскладка ещё не посчитала размер окна — повторим чуть позже, иначе панель встанет в угол 0,0.
+        if (w <= 0 || h <= 0)
+        {
+            if (_repositionTries++ < 3) Dispatcher.UIThread.Post(Reposition, DispatcherPriority.Loaded);
+            return;
+        }
+
+        // Панель уже переставляли вручную в этой записи — держим её там, где её оставили.
         if (_moved)
         {
-            Position = new PixelPoint(
-                Math.Clamp(Position.X, area.X, Math.Max(area.X, area.Right - w)),
-                Math.Clamp(Position.Y, area.Y, Math.Max(area.Y, area.Bottom - h)));
+            Position = ClampTo(Position, area, w, h);
             return;
         }
 
-        // Панель уже переставляли — возвращаем её туда же (в пределах рабочего стола).
-        if (SavedPosition() is PixelPoint saved)
+        // Позиция из прошлой записи — только если она всё ещё на экране.
+        if (SavedPosition() is PixelPoint saved && area.Contains(saved))
         {
-            Position = new PixelPoint(
-                Math.Clamp(saved.X, area.X, Math.Max(area.X, area.Right - w)),
-                Math.Clamp(saved.Y, area.Y, Math.Max(area.Y, area.Bottom - h)));
+            Position = ClampTo(saved, area, w, h);
             return;
         }
 
-        int x = _region.X + (_region.Width - w) / 2;
-        int y = _region.Bottom + (int)(6 * _scaling);               // под областью
-        if (y + h > area.Bottom) y = _region.Y - h - (int)(6 * _scaling); // над областью
-        if (y < area.Y) y = area.Y;                                  // у верхнего края
-        x = Math.Clamp(x, area.X, Math.Max(area.X, area.Right - w));
-        Position = new PixelPoint(x, y);
+        // По умолчанию — снизу по центру экрана.
+        Position = new PixelPoint(
+            Math.Clamp(area.X + (area.Width - w) / 2, area.X, Math.Max(area.X, area.Right - w)),
+            Math.Clamp(area.Bottom - h - (int)(24 * _scaling), area.Y, Math.Max(area.Y, area.Bottom - h)));
     }
+
+    static PixelPoint ClampTo(PixelPoint point, PixelRect area, int w, int h) => new(
+        Math.Clamp(point.X, area.X, Math.Max(area.X, area.Right - w)),
+        Math.Clamp(point.Y, area.Y, Math.Max(area.Y, area.Bottom - h)));
 
     static PixelPoint? SavedPosition()
     {
-        var text = AppServices.Settings.VideoHudPosition;
+        var text = AppServices.Settings.VideoHudPos;
         if (string.IsNullOrWhiteSpace(text)) return null;
         var parts = text.Split(',');
         if (parts.Length != 2 || !int.TryParse(parts[0], out var x) || !int.TryParse(parts[1], out var y)) return null;
@@ -953,7 +960,7 @@ public sealed class RecordingHud : Window
         _timer.Stop();
 
         if (!_moved) return;
-        AppServices.Settings.VideoHudPosition = $"{Position.X},{Position.Y}";
+        AppServices.Settings.VideoHudPos = $"{Position.X},{Position.Y}";
         AppServices.SaveSettings();
     }
 }
