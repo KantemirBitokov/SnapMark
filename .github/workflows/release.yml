@@ -113,16 +113,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 packaging/make-manifests.py ${{ steps.ver.outputs.v }}
+      - name: Site
+        run: python3 packaging/update-site.py ${{ steps.ver.outputs.v }}
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add packaging
+          git add packaging docs
           if git diff --cached --quiet; then
-            echo "Manifests already up to date"
+            echo "Manifests and site already up to date"
             exit 0
           fi
-          git commit -m "Manifests for ${{ steps.ver.outputs.v }}"
+          git commit -m "Manifests and site for ${{ steps.ver.outputs.v }}"
           for i in 1 2 3; do
             git pull --rebase origin main && git push origin HEAD:main && exit 0
             sleep 5
