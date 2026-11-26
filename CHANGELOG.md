@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.34
+- **Missing translations.** Ten strings had no translations at all and fell back to Russian in every language: the recording panel (Pause, Resume recording, the drag hint, save and resume errors), “Emoji size”, “Corner radius” and the GIF label. They now have English, German, French, Italian and Spanish text; a check over the whole UI shows no string used by the program without a translation.
+
 ## 1.9.33
 - **Emoji category tabs are centred.** The tabs in the emoji library now use the chip style, so the category icons sit in the middle of their cells and the selected category is highlighted instead of showing a focus ring.
 - **Rounded corners for rectangles.** A selected rectangle gets a “Corner radius” stepper (0–64) in its style panel; 0 keeps the previous soft corners that scale with the line thickness.
