@@ -9,7 +9,7 @@ namespace SnapMark.Capture;
 /// </summary>
 internal static class RotateGlyph
 {
-    const double Radius = 8.5;
+    const double Radius = 6.2;
     const double Sweep = 275;
     const double Start = -55;
 
@@ -18,8 +18,8 @@ internal static class RotateGlyph
         var arc = Arc(at, out var end, out double endAngle);
 
         var shadow = new SolidColorBrush(Colors.Black, 0.5);
-        var shadowPen = new Pen(shadow, 4.4, null, PenLineCap.Round);
-        var whitePen = new Pen(Brushes.White, 1.9, null, PenLineCap.Round);
+        var shadowPen = new Pen(shadow, 3.5, null, PenLineCap.Round);
+        var whitePen = new Pen(Brushes.White, 1.55, null, PenLineCap.Round);
 
         // Сначала тёмная подложка (тень-обводка), затем белая линия и стрелка.
         ctx.DrawGeometry(null, shadowPen, arc);
@@ -54,9 +54,9 @@ internal static class RotateGlyph
     static StreamGeometry Head(Point end, double angleDeg, double scale)
     {
         double a = angleDeg * Math.PI / 180;
-        var tangent = new Vector(-Math.Sin(a), Math.Cos(a)) * 7.5 * scale;
-        var normal = new Vector(Math.Cos(a), Math.Sin(a)) * 3.3 * scale;
-        var back = new Vector(-Math.Sin(a), Math.Cos(a)) * 0.8 * scale;
+        var tangent = new Vector(-Math.Sin(a), Math.Cos(a)) * 5.4 * scale;
+        var normal = new Vector(Math.Cos(a), Math.Sin(a)) * 2.3 * scale;
+        var back = new Vector(-Math.Sin(a), Math.Cos(a)) * 0.55 * scale;
 
         var geometry = new StreamGeometry();
         using (var g = geometry.Open())

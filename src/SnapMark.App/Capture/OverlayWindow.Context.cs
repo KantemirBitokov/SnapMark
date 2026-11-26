@@ -169,6 +169,9 @@ public partial class OverlayWindow
             case TextAnnotation t:
                 BuildTextContext(t);
                 break;
+            case EmojiStickerAnnotation e:
+                BuildEmojiContext(e);
+                break;
             case MarkerAnnotation m:
                 BuildMarkerContext(m);
                 break;
@@ -209,6 +212,20 @@ public partial class OverlayWindow
                 ta.Shadow = true;
                 ta.ShadowColor = c;
             })));
+    }
+
+    /// <summary>Эмодзи-стикер: размер меняется числом — так же, как размер текста.</summary>
+    void BuildEmojiContext(EmojiStickerAnnotation e)
+    {
+        var size = Stepper(e.Size, 24, 320, 4, v => Mutate(a =>
+        {
+            var sticker = (EmojiStickerAnnotation)a;
+            var center = sticker.Bounds.Center;
+            sticker.Size = v;
+            sticker.Position = new Point(center.X - v / 2, center.Y - v / 2);
+        }), L.T("Размер эмодзи"));
+
+        ContextContent.Children.Add(Row(size, Spacer(), ObjectActions()));
     }
 
     /// <summary>«Скрыть»: размытие или пиксели и сила эффекта.</summary>

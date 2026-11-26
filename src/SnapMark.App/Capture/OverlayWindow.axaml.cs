@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using SnapMark.Annotations;
 using SnapMark.Core;
 using SnapMark.Export;
@@ -136,6 +137,9 @@ public partial class OverlayWindow : Window
         // Горячие клавиши ловим на этапе «туннеля» — до того, как их заберёт поле комментария.
         // Благодаря этому Ctrl+Z / Ctrl+C работают, даже когда курсор стоит в комментарии.
         AddHandler(KeyDownEvent, OnPreviewKeyDown, RoutingStrategies.Tunnel);
+
+        // Клик мимо библиотеки эмодзи закрывает её — как обычное всплывающее меню.
+        AddHandler(PointerPressedEvent, OnPointerPressedAnywhere, RoutingStrategies.Tunnel);
 
         BuildSwatches();
         BuildFontCombos();
@@ -883,6 +887,23 @@ public partial class OverlayWindow : Window
             ResumeEdit(le.Text, le.SelStart, le.SelEnd);
     }
 
+    /// <summary>Клик мимо библиотеки эмодзи (и мимо её кнопки) закрывает библиотеку.</summary>
+    void OnPointerPressedAnywhere(object? sender, PointerPressedEventArgs e)
+    {
+        if (!EmojiPanel.IsVisible) return;
+        if (e.Source is Visual v && (InsideOf(v, EmojiPanel) || InsideOf(v, EmojiButton))) return;
+
+        EmojiPanel.IsVisible = false;
+        LayoutBars();
+    }
+
+    static bool InsideOf(Visual? node, Visual parent)
+    {
+        for (; node is not null; node = node.GetVisualParent())
+            if (ReferenceEquals(node, parent)) return true;
+        return false;
+    }
+
     /// <summary>Текст, который только что редактировали (и он всё ещё выделен) — эмодзи пойдёт в него.</summary>
     LastEdit? RecentEdit()
     {
@@ -950,7 +971,8 @@ public partial class OverlayWindow : Window
             var picture = new EmojiStickerAnnotation
             {
                 Text = emoji,
-                Size = Math.Max(56, Surface.DrawStyle.FontSize * 2) * 1.7,
+                // Размер в тех же числах, что и размер текста: дальше его меняют в панели объекта.
+                Size = Math.Max(56, Surface.DrawStyle.FontSize * 2),
             };
             picture.Position = new Point(center.X - picture.Size / 2, center.Y - picture.Size / 2);
             Surface.AddAnnotation(picture);

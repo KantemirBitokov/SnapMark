@@ -21,7 +21,7 @@ public enum CaptureMode { Region, FullScreen, VideoRegion }
 /// </summary>
 public sealed class CaptureSurface : Control
 {
-    enum Drag { None, Selecting, MovingSelection, Resizing, Drawing, MovingAnnotation, Erasing, Rotating, Scaling }
+    enum Drag { None, Selecting, MovingSelection, Resizing, Drawing, MovingAnnotation, Erasing, Rotating }
 
     static readonly IBrush DimBrush = new SolidColorBrush(Color.FromArgb(120, 0, 0, 0));
     static readonly IBrush LabelBg = new SolidColorBrush(Color.FromArgb(200, 22, 22, 24));
@@ -48,7 +48,6 @@ public sealed class CaptureSurface : Control
     // Курсор поворота рисуем сами (см. RotateGlyph): системный курсор на это время прячем.
     Point _pointerView;
     bool _pointerInside, _rotateCursorShown;
-    double _scaleStartSize;
 
     public CaptureSurface()
     {
@@ -331,13 +330,6 @@ public sealed class CaptureSurface : Control
                     }
                     ctx.DrawGeometry(null, pen, geo);
                 }
-
-                // Эмодзи-стикер тянется за уголок — размер меняется, картинка остаётся резкой (160 px).
-                if (SelectedAnnotation is EmojiStickerAnnotation sticker && _drag is not Drag.Rotating)
-                {
-                    var corner = sticker.Corners()[2];
-                    ctx.DrawEllipse(Brushes.White, new Pen(_frameBrush, 1.6 * s), corner, 4.4 * s, 4.4 * s);
-                }
             }
         }
 
@@ -358,11 +350,6 @@ public sealed class CaptureSurface : Control
         if (_rotateCursorShown && _pointerInside)
             RotateGlyph.Draw(ctx, _pointerView);
     }
-
-    /// <summary>Уголок выделенного эмодзи-стикера, за который меняется размер.</summary>
-    bool HitScaleHandle(Point img) =>
-        SelectedAnnotation is EmojiStickerAnnotation sticker &&
-        Annotation.Distance(img, sticker.Corners()[2]) <= 8 * Scale;
 
     /// <summary>
     /// Курсор в кольце вокруг выделенного объекта — значит, зажав ЛКМ, его можно повернуть.
@@ -482,17 +469,6 @@ public sealed class CaptureSurface : Control
         _pressImg = _lastImg = _snapAnchor = img;
         _moved = false;
         _lastTimestamp = e.Timestamp;
-
-        // Уголок эмодзи-стикера: тянем — меняем размер (картинка 160 px, остаётся резкой).
-        if (HitScaleHandle(img) && SelectedAnnotation is EmojiStickerAnnotation scaled)
-        {
-            e.Pointer.Capture(this);
-            _snapshot = Document.Snapshot();
-            _scaleStartSize = scaled.Size;
-            SetDrag(Drag.Scaling);
-            InvalidateVisual();
-            return;
-        }
 
         // Поворот: ЛКМ за пределами объекта (как в Photoshop), Shift — шаг 15°, двойной щелчок — вернуть прямо.
         _handle = HitHandle(pt.Position);
@@ -734,17 +710,6 @@ public sealed class CaptureSurface : Control
                     ra.Rotation = Annotation.NormalizeAngle(_rotateStart + AngleTo(img) - _rotatePressAngle, shift);
                 break;
 
-            case Drag.Scaling:
-                if (SelectedAnnotation is EmojiStickerAnnotation sc)
-                {
-                    var center = sc.Bounds.Center;
-                    var local = sc.ToLocal(img);
-                    double half = Math.Max(Math.Abs(local.X - center.X), Math.Abs(local.Y - center.Y));
-                    sc.Size = Math.Clamp(half * 2, 24, 4000);
-                    sc.Position = new Point(center.X - sc.Size / 2, center.Y - sc.Size / 2);
-                }
-                break;
-
             case Drag.Erasing:
                 EraseAt(img);
                 break;
@@ -866,14 +831,6 @@ public sealed class CaptureSurface : Control
 
             case Drag.Rotating:
                 if (_snapshot is not null && SelectedAnnotation is { } ra && ra.Rotation != _rotateStart)
-                {
-                    Document.PushUndo(_snapshot);
-                    AnnotationsChanged?.Invoke();
-                }
-                break;
-
-            case Drag.Scaling:
-                if (_snapshot is not null && SelectedAnnotation is EmojiStickerAnnotation st && st.Size != _scaleStartSize)
                 {
                     Document.PushUndo(_snapshot);
                     AnnotationsChanged?.Invoke();
@@ -1002,14 +959,6 @@ public sealed class CaptureSurface : Control
         {
             _rotateCursorShown = false;
             Cursor = _cross;
-            return;
-        }
-
-        // Уголок эмодзи-стикера — курсор «изменить размер».
-        if (HitScaleHandle(ToImage(view)))
-        {
-            _rotateCursorShown = false;
-            Cursor = _handleCursors[4] ??= new Cursor(StandardCursorType.BottomRightCorner);
             return;
         }
 
