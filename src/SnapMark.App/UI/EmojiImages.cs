@@ -14,21 +14,21 @@ namespace SnapMark.UI;
 /// </summary>
 public static class EmojiImages
 {
-    // Набор Apple: PNG 64×64 на каждый эмодзи. Сначала GitHub (он у проекта и так основной),
-    // потом jsDelivr — если один источник недоступен, берём второй.
+    // Набор Apple: PNG 160×160 на каждый эмодзи — хватает и на стикер крупного размера.
+    // Сначала GitHub (он у проекта и так основной), потом jsDelivr — если один источник недоступен, берём второй.
     static readonly string[] Sources =
     {
-        "https://raw.githubusercontent.com/iamcal/emoji-data/master/img-apple-64/",
-        "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@15.1.2/img/apple/64/",
+        "https://raw.githubusercontent.com/iamcal/emoji-data/master/img-apple-160/",
+        "https://cdn.jsdelivr.net/gh/iamcal/emoji-data@master/img-apple-160/",
     };
 
     static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
     static readonly ConcurrentDictionary<string, Task<Bitmap?>> Tasks = new(StringComparer.Ordinal);
     static readonly ConcurrentDictionary<string, Bitmap> Memory = new(StringComparer.Ordinal);
 
-    /// <summary>Кэш картинок: %LOCALAPPDATA%\SnapMark\emoji\apple.</summary>
+    /// <summary>Кэш картинок: %LOCALAPPDATA%\SnapMark\emoji\apple160.</summary>
     public static string Folder { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SnapMark", "emoji", "apple");
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SnapMark", "emoji", "apple160");
 
     /// <summary>Включён ли набор Apple (настройка «Набор эмодзи»).</summary>
     public static bool Enabled => AppServices.Settings.EmojiSet == EmojiSet.Apple;

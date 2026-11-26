@@ -21,7 +21,7 @@ public enum CaptureMode { Region, FullScreen, VideoRegion }
 /// </summary>
 public sealed class CaptureSurface : Control
 {
-    enum Drag { None, Selecting, MovingSelection, Resizing, Drawing, MovingAnnotation, Erasing, Rotating }
+    enum Drag { None, Selecting, MovingSelection, Resizing, Drawing, MovingAnnotation, Erasing, Rotating, Scaling }
 
     static readonly IBrush DimBrush = new SolidColorBrush(Color.FromArgb(120, 0, 0, 0));
     static readonly IBrush LabelBg = new SolidColorBrush(Color.FromArgb(200, 22, 22, 24));
@@ -42,8 +42,13 @@ public sealed class CaptureSurface : Control
     readonly DispatcherTimer _snapTimer;
     IBrush _frameBrush = new SolidColorBrush(Color.Parse("#0A84FF"));
 
-    Cursor? _cross, _arrow, _hand, _sizeAll, _ibeam, _eraser, _rotate;
+    Cursor? _cross, _arrow, _hand, _sizeAll, _ibeam, _eraser, _none;
     readonly Cursor?[] _handleCursors = new Cursor?[8];
+
+    // Курсор поворота рисуем сами (см. RotateGlyph): системный курсор на это время прячем.
+    Point _pointerView;
+    bool _pointerInside, _rotateCursorShown;
+    double _scaleStartSize;
 
     public CaptureSurface()
     {
@@ -326,6 +331,13 @@ public sealed class CaptureSurface : Control
                     }
                     ctx.DrawGeometry(null, pen, geo);
                 }
+
+                // Эмодзи-стикер тянется за уголок — размер меняется, картинка остаётся резкой (160 px).
+                if (SelectedAnnotation is EmojiStickerAnnotation sticker && _drag is not Drag.Rotating)
+                {
+                    var corner = sticker.Corners()[2];
+                    ctx.DrawEllipse(Brushes.White, new Pen(_frameBrush, 1.6 * s), corner, 4.4 * s, 4.4 * s);
+                }
             }
         }
 
@@ -341,7 +353,16 @@ public sealed class CaptureSurface : Control
         if (IsAdjustingSelection) DrawSizeLabel(ctx, sel, v);
         if (_drag == Drag.Rotating && SelectedAnnotation is { } rotating)
             DrawAngleLabel(ctx, rotating.Rotation, ToView(_lastImg));
+
+        // Свой курсор поворота — рисуем поверх снимка, системный в это время скрыт.
+        if (_rotateCursorShown && _pointerInside)
+            RotateGlyph.Draw(ctx, _pointerView);
     }
+
+    /// <summary>Уголок выделенного эмодзи-стикера, за который меняется размер.</summary>
+    bool HitScaleHandle(Point img) =>
+        SelectedAnnotation is EmojiStickerAnnotation sticker &&
+        Annotation.Distance(img, sticker.Corners()[2]) <= 8 * Scale;
 
     /// <summary>
     /// Курсор в кольце вокруг выделенного объекта — значит, зажав ЛКМ, его можно повернуть.
@@ -462,6 +483,17 @@ public sealed class CaptureSurface : Control
         _moved = false;
         _lastTimestamp = e.Timestamp;
 
+        // Уголок эмодзи-стикера: тянем — меняем размер (картинка 160 px, остаётся резкой).
+        if (HitScaleHandle(img) && SelectedAnnotation is EmojiStickerAnnotation scaled)
+        {
+            e.Pointer.Capture(this);
+            _snapshot = Document.Snapshot();
+            _scaleStartSize = scaled.Size;
+            SetDrag(Drag.Scaling);
+            InvalidateVisual();
+            return;
+        }
+
         // Поворот: ЛКМ за пределами объекта (как в Photoshop), Shift — шаг 15°, двойной щелчок — вернуть прямо.
         _handle = HitHandle(pt.Position);
         if (_handle < 0 && InRotateZone(img) && SelectedAnnotation is { } rot)
@@ -482,6 +514,10 @@ public sealed class CaptureSurface : Control
             _snapshot = Document.Snapshot();
             _rotateStart = rot.Rotation;
             _rotatePressAngle = AngleTo(img);
+            _pointerView = ToView(img);
+            _pointerInside = true;
+            _rotateCursorShown = true;
+            Cursor = _none ??= new Cursor(StandardCursorType.None);
             SetDrag(Drag.Rotating);
             InvalidateVisual();
             return;
@@ -641,10 +677,14 @@ public sealed class CaptureSurface : Control
 
         var view = e.GetPosition(this);
         var img = ToImage(view);
+        _pointerView = view;
+        _pointerInside = true;
 
         if (_drag == Drag.None)
         {
+            bool wasRotate = _rotateCursorShown;
             UpdateCursor(view);
+            if (wasRotate || _rotateCursorShown) InvalidateVisual();
             return;
         }
 
@@ -692,6 +732,17 @@ public sealed class CaptureSurface : Control
             case Drag.Rotating:
                 if (SelectedAnnotation is { } ra)
                     ra.Rotation = Annotation.NormalizeAngle(_rotateStart + AngleTo(img) - _rotatePressAngle, shift);
+                break;
+
+            case Drag.Scaling:
+                if (SelectedAnnotation is EmojiStickerAnnotation sc)
+                {
+                    var center = sc.Bounds.Center;
+                    var local = sc.ToLocal(img);
+                    double half = Math.Max(Math.Abs(local.X - center.X), Math.Abs(local.Y - center.Y));
+                    sc.Size = Math.Clamp(half * 2, 24, 4000);
+                    sc.Position = new Point(center.X - sc.Size / 2, center.Y - sc.Size / 2);
+                }
                 break;
 
             case Drag.Erasing:
@@ -820,10 +871,25 @@ public sealed class CaptureSurface : Control
                     AnnotationsChanged?.Invoke();
                 }
                 break;
+
+            case Drag.Scaling:
+                if (_snapshot is not null && SelectedAnnotation is EmojiStickerAnnotation st && st.Size != _scaleStartSize)
+                {
+                    Document.PushUndo(_snapshot);
+                    AnnotationsChanged?.Invoke();
+                }
+                break;
         }
         _snapshot = null;
         InteractionChanged?.Invoke();
         InvalidateVisual();
+
+        // После поворота возвращаем обычный курсор и убираем нарисованную дугу.
+        if (drag == Drag.Rotating)
+        {
+            _rotateCursorShown = false;
+            UpdateCursor(ToView(_lastImg));
+        }
     }
 
     // ── Фигуры ────────────────────────────────────────────────────────
@@ -908,6 +974,20 @@ public sealed class CaptureSurface : Control
         return Normalize(new Point(l, t), new Point(rr, b));
     }
 
+    protected override void OnPointerEntered(PointerEventArgs e)
+    {
+        base.OnPointerEntered(e);
+        _pointerInside = true;
+    }
+
+    protected override void OnPointerExited(PointerEventArgs e)
+    {
+        base.OnPointerExited(e);
+        _pointerInside = false;
+        _rotateCursorShown = false;
+        InvalidateVisual();
+    }
+
     // ── Курсоры ───────────────────────────────────────────────────────
     void UpdateCursor(Point view)
     {
@@ -920,13 +1000,23 @@ public sealed class CaptureSurface : Control
 
         if (Selection is not PixelRect sel)
         {
+            _rotateCursorShown = false;
             Cursor = _cross;
+            return;
+        }
+
+        // Уголок эмодзи-стикера — курсор «изменить размер».
+        if (HitScaleHandle(ToImage(view)))
+        {
+            _rotateCursorShown = false;
+            Cursor = _handleCursors[4] ??= new Cursor(StandardCursorType.BottomRightCorner);
             return;
         }
 
         int h = HitHandle(view);
         if (h >= 0)
         {
+            _rotateCursorShown = false;
             Cursor = _handleCursors[h] ??= new Cursor(h switch
             {
                 0 => StandardCursorType.TopLeftCorner,
@@ -941,9 +1031,13 @@ public sealed class CaptureSurface : Control
 
         if (InRotateZone(ToImage(view)))
         {
-            Cursor = _rotate ??= RotateCursor.Create();
+            // Системный курсор прячем — вместо него рисуем свою дугу (RotateGlyph).
+            _rotateCursorShown = true;
+            Cursor = _none ??= new Cursor(StandardCursorType.None);
             return;
         }
+
+        _rotateCursorShown = false;
 
         var img = ToImage(view);
         if (!Contains(sel, img))

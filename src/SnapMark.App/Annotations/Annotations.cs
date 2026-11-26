@@ -210,12 +210,16 @@ public abstract class Annotation
     /// </summary>
     public double DistanceOutside(Point p)
     {
-        var q = Rotation == 0 || !CanRotate ? p : p.Transform(RotationMatrix(-Rotation));
+        var q = ToLocal(p);
         var b = Bounds;
         double dx = Math.Max(Math.Max(b.X - q.X, q.X - b.Right), 0);
         double dy = Math.Max(Math.Max(b.Y - q.Y, q.Y - b.Bottom), 0);
         return Math.Sqrt(dx * dx + dy * dy);
     }
+
+    /// <summary>Точка в системе объекта: у повёрнутого объекта — как будто поворота нет.</summary>
+    public Point ToLocal(Point p) =>
+        Rotation == 0 || !CanRotate ? p : p.Transform(RotationMatrix(-Rotation));
 
     /// <summary>Описанный прямоугольник с учётом поворота — чтобы панели и подписи не наезжали на объект.</summary>
     public Rect VisualBounds
