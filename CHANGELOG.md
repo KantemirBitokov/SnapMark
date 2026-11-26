@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.30
+- **Fixed: a recording that used pause was not saved.** The first stretch was written under the final file name and then used as an input for joining, so ffmpeg could not produce a result. Each stretch now goes to its own file next to the final one; if joining ever fails, the parts stay next to the video instead of being deleted.
+- **The pause button now matches the other icons.** It uses the same stroked icon set and colour as the rest of the recording bar instead of a filled white glyph.
+
 ## 1.9.29
 - **Move the recording panel.** A small grip on the left of the recording bar lets you drag the panel anywhere on the screen, and the position is remembered for the next recording.
 - **Pause while recording.** A pause button next to Stop freezes the timer and turns the dot grey; the paused stretch is cut out of the result, because each stretch is recorded separately and joined at the end. GIF recording has no pause yet.
