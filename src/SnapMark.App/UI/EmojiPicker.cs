@@ -82,12 +82,17 @@ public sealed class EmojiPicker : UserControl
     {
         _search.Text = "";
         _category = AppServices.Settings.RecentEmoji.Count > 0 ? -1 : 0;
+        // Набор эмодзи могли переключить в настройках — тогда иконки категорий тоже другие.
+        if (_appleTabs != EmojiImages.Enabled) BuildTabs();
         Refill();
         _scroll.Offset = default;
     }
 
+    bool _appleTabs;
+
     void BuildTabs()
     {
+        _appleTabs = EmojiImages.Enabled;
         _tabs.Children.Clear();
         _tabs.Children.Add(Tab("🕘", L.T("Недавние"), -1));
         for (int i = 0; i < EmojiCatalog.Categories.Length; i++)
@@ -96,17 +101,34 @@ public sealed class EmojiPicker : UserControl
 
     Button Tab(string icon, string tip, int index)
     {
-        var b = new Button
+        var glyph = new TextBlock
         {
-            Content = new TextBlock
+            Text = icon,
+            FontFamily = EmojiFont,
+            FontSize = 17,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment = TextAlignment.Center,
+        };
+
+        Control content = glyph;
+        Image? picture = null;
+        if (EmojiImages.Enabled)
+        {
+            // Иконка категории — картинка из того же набора Apple, что и сами эмодзи.
+            picture = new Image
             {
-                Text = icon,
-                FontFamily = EmojiFont,
-                FontSize = 17,
+                Width = 22, Height = 22,
+                IsVisible = false,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                TextAlignment = TextAlignment.Center,
-            },
+            };
+            content = new Panel { Width = 26, Height = 26, Children = { glyph, picture } };
+        }
+
+        var b = new Button
+        {
+            Content = content,
             Tag = index,
             Width = 34, Height = 30,
             Padding = new Thickness(0),
@@ -122,6 +144,7 @@ public sealed class EmojiPicker : UserControl
             Refill();
             _scroll.Offset = default;
         };
+        if (picture is not null) ShowPicture(icon, glyph, picture);
         return b;
     }
 
