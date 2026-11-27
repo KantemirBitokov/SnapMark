@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.35
+- **Apple artwork in the emoji category tabs.** When the Apple emoji set is selected, the tabs above the library use the same Apple images as the emoji themselves instead of the system font, and they switch back if the set changes while the library is open.
+
 ## 1.9.34
 - **Missing translations.** Ten strings had no translations at all and fell back to Russian in every language: the recording panel (Pause, Resume recording, the drag hint, save and resume errors), “Emoji size”, “Corner radius” and the GIF label. They now have English, German, French, Italian and Spanish text; a check over the whole UI shows no string used by the program without a translation.
 
