@@ -1,0 +1,3 @@
+[build] case A: overlay=True after 2 s, snip opened 0 times, setting now=0
+[build] case B: overlay=True after 1.9 s, snip opened 1 times, setting now=0
+[build] case C: overlay=True after 1.9 s, snip opened 1 times, setting now=1
