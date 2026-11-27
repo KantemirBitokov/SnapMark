@@ -121,10 +121,10 @@
     <h1 data-i18n="hero.title">Screenshots that explain themselves</h1>
     <p class="lead" data-i18n="hero.lead">Put A-B-C markers with comments right on a screenshot, copy a whole series with one Ctrl+C — and paste images and text into any chat at once.</p>
     <div class="cta">
-      <a class="btn primary" id="main-download" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.34/SnapMark-1.9.34-Setup.exe">⬇ <span data-i18n="hero.download">Download</span></a>
+      <a class="btn primary" id="main-download" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.35/SnapMark-1.9.35-Setup.exe">⬇ <span data-i18n="hero.download">Download</span></a>
       <a class="btn ghost" href="https://github.com/KantemirBitokov/SnapMark">★ GitHub</a>
     </div>
-    <div class="small" id="version-line">Version 1.9.34 · free, open source</div>
+    <div class="small" id="version-line">Version 1.9.35 · free, open source</div>
 
     <div class="demo" aria-hidden="true">
       <div class="bar"><i></i><i></i><i></i></div>
@@ -168,14 +168,14 @@
     <p class="sub" id="dl-sub" data-i18n="d.sub">Latest version from GitHub Releases.</p>
     <div class="downloads">
       <div class="card dl"><h3>Windows</h3><p>Windows 10 / 11</p>
-        <a class="file" data-asset="Setup.exe" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.34/SnapMark-1.9.34-Setup.exe"><span data-i18n="d.installer">Installer</span> <em>.exe</em></a>
-        <a class="file" data-asset="portable.zip" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.34/SnapMark-1.9.34-portable.zip"><span data-i18n="d.portable">Portable</span> <em>.zip</em></a></div>
+        <a class="file" data-asset="Setup.exe" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.35/SnapMark-1.9.35-Setup.exe"><span data-i18n="d.installer">Installer</span> <em>.exe</em></a>
+        <a class="file" data-asset="portable.zip" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.35/SnapMark-1.9.35-portable.zip"><span data-i18n="d.portable">Portable</span> <em>.zip</em></a></div>
       <div class="card dl"><h3>macOS</h3><p>macOS 11+</p>
-        <a class="file" data-asset="macOS-arm64.dmg" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.34/SnapMark-1.9.34-macOS-arm64.dmg">Apple Silicon (M1–M4) <em>.dmg</em></a>
-        <a class="file" data-asset="macOS-x64.dmg" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.34/SnapMark-1.9.34-macOS-x64.dmg">Intel <em>.dmg</em></a></div>
+        <a class="file" data-asset="macOS-arm64.dmg" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.35/SnapMark-1.9.35-macOS-arm64.dmg">Apple Silicon (M1–M4) <em>.dmg</em></a>
+        <a class="file" data-asset="macOS-x64.dmg" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.35/SnapMark-1.9.35-macOS-x64.dmg">Intel <em>.dmg</em></a></div>
       <div class="card dl"><h3>Linux</h3><p>x64 · arm64</p>
-        <a class="file" data-asset="linux-x64.AppImage" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.34/SnapMark-1.9.34-linux-x64.AppImage">AppImage <em>x64</em></a>
-        <a class="file" data-asset="_amd64.deb" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.34/snapmark_1.9.34_amd64.deb">Ubuntu / Debian <em>.deb</em></a></div>
+        <a class="file" data-asset="linux-x64.AppImage" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.35/SnapMark-1.9.35-linux-x64.AppImage">AppImage <em>x64</em></a>
+        <a class="file" data-asset="_amd64.deb" href="https://github.com/KantemirBitokov/SnapMark/releases/download/v1.9.35/snapmark_1.9.35_amd64.deb">Ubuntu / Debian <em>.deb</em></a></div>
     </div>
     <div class="note" data-i18n-html="d.note"><b>First launch.</b> SnapMark isn't signed with a paid certificate yet, so the system asks once.
       Windows: <i>More info → Run anyway</i>. macOS: right-click the app → <i>Open</i>, then allow <i>Screen Recording</i>.
@@ -216,7 +216,7 @@
   document.querySelectorAll("[data-i18n-html]").forEach(el => EN[el.dataset.i18nHtml] = el.innerHTML);
 
   // ── Версия и прямые ссылки на файлы обновляются при выпуске релиза (packaging/update-site.py) ──
-  const VERSION = "1.9.34";
+  const VERSION = "1.9.35";
   const UA = navigator.userAgent;
   const OS = /Mac/.test(UA) ? "mac" : (/Linux|X11/.test(UA) && !/Android/.test(UA)) ? "linux" : "windows";
   const OS_LABEL = { windows: "Windows", mac: "macOS", linux: "Linux" }[OS];
