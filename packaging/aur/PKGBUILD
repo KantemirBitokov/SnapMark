@@ -1,6 +1,6 @@
 # Maintainer: Kantemir Bitokov <119302116+KantemirBitokov@users.noreply.github.com>
 pkgname=snapmark-bin
-pkgver=1.9.33
+pkgver=1.9.34
 pkgrel=1
 pkgdesc="Screenshots with A-B-C markers and comments, series in one Ctrl+C, screen recording with sound"
 arch=('x86_64')
@@ -12,7 +12,7 @@ provides=('snapmark')
 conflicts=('snapmark')
 options=('!strip')
 source=("SnapMark-$pkgver.AppImage::https://github.com/KantemirBitokov/SnapMark/releases/download/v$pkgver/SnapMark-$pkgver-linux-x64.AppImage")
-sha256sums=('2994b18ae7a68622292b76f4f596d00918f8e1ce390ff979f6bab8588929fbef')
+sha256sums=('482d869fdc35b9c967e2ddd9ee1980973125664835ed3dc54a72310d47b9c647')
 
 prepare() {
   chmod +x "SnapMark-$pkgver.AppImage"
